@@ -5,7 +5,7 @@
 
 
 # should set this to the name of the package
-package_name <- "SDS100"
+package_name <- "SDS1000"
 
 # should set this to the github user name
 github_user_name <- "emeyers"
@@ -49,5 +49,6 @@ get_base_url <- function() {
                       github_user_name, "/", package_name, "/master/ClassMaterial/")
   base_path
 }
+
 
 
