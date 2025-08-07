@@ -1,11 +1,11 @@
-Package: SDS100
+Package: SDS1000
 Type: Package
 Title: Tools for the class Introductory Statistics
 Version: 0.0.8
 Author: Ethan Meyers
 Maintainer: Ethan Meyers <ethan.meyers@gmail.com>
 Description: A package with functions for downloading material and  
-    potentially other useful functions. 
+    other useful functions. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
