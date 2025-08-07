@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 ```
-# SDS100: Introductory Statistics
+# SDS1000: Introductory Statistics
 
 <!-- badges: start -->
 <!-- badges: end -->
