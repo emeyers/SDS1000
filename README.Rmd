@@ -18,12 +18,12 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 
-Class material and functions for S&DS 100: Introductory Statistics
+Class material and functions for S&DS 1000: Introductory Statistics
 
 
-## Installing the SDS100 package
+## Installing the SDS1000 package
 
-To install the SDS100 package that contains functions that are useful for the
+To install the SDS1000 package that contains functions that are useful for the
 class run the function below 
 
 Note: we recommend you cut and paste all these commands to avoid typos.
@@ -31,13 +31,13 @@ Note: we recommend you cut and paste all these commands to avoid typos.
 
 ```{r gh-installation, eval = FALSE}
 install.packages("devtools")
-devtools::install_github("emeyers/SDS100")
+devtools::install_github("emeyers/SDS1000")
 ```
 
 
-## Initial setup using the SDS100 package
+## Initial setup using the SDS1000 package
 
-Once you have installed the SDS100 package, you can use this package to install other packaged required by the class as well as LaTeX using the `SDS100:::initial_setup()` function shown below. 
+Once you have installed the SDS1000 package, you can use this package to install other packaged required by the class as well as LaTeX using the `SDS1000:::initial_setup()` function shown below. 
 
 Notes: 
 
@@ -47,7 +47,7 @@ Notes:
   4. When the function is done running, if it asks you to restart R, please close and then reopen R Studio. 
 
 ```{r, eval=FALSE}
-SDS100:::initial_setup()
+SDS1000:::initial_setup()
 ```
 
 
@@ -66,11 +66,12 @@ If the function returns TRUE, then you have successfully installed LaTeX.
 ## Class material
 
 All class material is in the
-[ClassMaterial](https://github.com/emeyers/SDS100/tree/master/ClassMaterial)
+[ClassMaterial](https://github.com/emeyers/SDS1000/tree/master/ClassMaterial)
 directory. In particular the
-[ClassMaterial/slides](https://github.com/emeyers/SDS100/tree/master/ClassMaterial/slides)
+[ClassMaterial/slides](https://github.com/emeyers/SDS1000/tree/master/ClassMaterial/slides)
 directory contains the class slides which can be useful to review what was
 covered in class.
+
 
 
 
