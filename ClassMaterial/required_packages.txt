@@ -1,9 +1,0 @@
-tinytex,
-formatR,
-mosaic,
-carData,
-Lahman,
-lazyeval,
-xkcd,
-fivethirtyeight,
-Lock5Data
