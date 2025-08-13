@@ -1,4 +1,29 @@
 
+#' Download all files from a GitHub directory
+#'
+#' This function downloads all files from a specified directory in the class
+#' GitHub site
+#'
+#' @param github_directory_name A string indicating the name of the directory in
+#'   the class GitHub repository
+#'   
+#' @examples
+#'  # Download the first homework file
+#'  \dontrun{download_homework(1)}
+#'
+#' @export
+download_github_directory <- function(github_directory_name) {
+  
+  class_files <- list_class_files(github_directory_name)
+  
+  # fill in the rest of the code to download all files in a GitHub directory...
+  
+}
+
+
+
+
+
 
 #' Download a homework R Markdown file
 #'
