@@ -12,21 +12,18 @@
 #'
 #' @export
 download_homework <- function(homework_number) {
-
+  
   base_path <- paste0(get_base_url(), "homework/")
   file_name <- paste0("homework_", sprintf("%02d", homework_number), ".Rmd")
-
-  # if a file already exists with this name, don't download the file
-  #  but instead give an error message
-  check_file_exists(file_name)
-
   full_path <- paste0(base_path, file_name)
-
+  
   # check the file exists on GitHub and if not throw and error
   check_github_file_exists("homework", file_name)
-
-  utils::download.file(full_path, file_name)
-
+  
+  # if a file doesn't exist download it, otherwise give a warning that it already
+  #  exits and don't download it
+  download_nonexistent_file(file_name, full_path, mode = "w")
+  
 }
 
 
@@ -50,47 +47,44 @@ download_homework <- function(homework_number) {
 #'
 #' @export
 download_class_code <- function(class_number, with_answers = FALSE) {
-
+  
   base_path <- paste0(get_base_url(), "class_code/")
-
- file_names <- paste0("class_", sprintf("%02d", class_number), c(".Rmd", ".R"))
-
- if (with_answers) {
-   file_names <- paste0("class_", sprintf("%02d", class_number), "_with_answers", c(".Rmd", ".R"))
- }
-
-
+  
+  file_names <- paste0("class_", sprintf("%02d", class_number), c(".Rmd", ".R"))
+  
+  if (with_answers) {
+    file_names <- paste0("class_", sprintf("%02d", class_number), "_with_answers", c(".Rmd", ".R"))
+  }
+  
+  
   result = tryCatch({
-
+    
     file_name <- file_names[1]
     full_path <- paste0(base_path, file_name)
-
+    
     # check the file exists on GitHub and if not throw and error
     check_github_file_exists("class_code", file_name)
-
+    
   }, error = function(e) {
-
+    
     file_name <- file_names[2]
     full_path <- paste0(base_path, file_name)
-
+    
     # check the file exists on GitHub and if not throw and error
     check_github_file_exists("class_code", file_name)
-
+    
   }, error = function(e) {
-
+    
     stop(paste("Neither of the files", paste(file_names, collapse = " nor "),
                "exist on the class GitHub repository."))
-
+    
   })
-
-
-  # if a file already exists with this name, don't download the file
-  #  but instead give an error message
-  check_file_exists(file_name)
-
-  # if the file does not already exist, download it
-  utils::download.file(full_path, file_name)
-
+  
+  
+  # if a file doesn't exist download it, otherwise give a warning that it already
+  #  exits and don't download it
+  download_nonexistent_file(file_name, full_path, mode = "w")
+  
 }
 
 
@@ -113,20 +107,18 @@ download_class_code <- function(class_number, with_answers = FALSE) {
 #'
 #' @export
 download_data <- function(file_name, mode = "wb") {
-
+  
   base_path <- paste0(get_base_url(), "data/")
   full_path <- paste0(base_path, file_name)
-
-  # if a file already exists with this name, don't download the file
-  #  but instead give an error message
-  check_file_exists(file_name)
-
+  
   # check the file exists on GitHub and if not throw and error
   check_github_file_exists("data", file_name)
-
-  # if the file does not already exist, download it
-  utils::download.file(full_path, file_name, mode = mode)
-
+  
+  
+  # if a file doesn't exist download it, otherwise give a warning that it already
+  #  exits and don't download it
+  download_nonexistent_file(file_name, full_path, mode = "w")
+  
 }
 
 
@@ -155,18 +147,18 @@ download_data <- function(file_name, mode = "wb") {
 #'
 #' @export
 download_image <- function(file_name, force_download = FALSE, mode = "wb"){
-
+  
   base_path <- paste0(get_base_url(), "images/")
   full_path <- paste0(base_path, file_name)
-
+  
   # check the file exists on GitHub and if not throw and error
   check_github_file_exists("images", file_name)
-
+  
   # only download the image if it doesn't exist or if force_download is TRUE
   if (!file.exists(file_name) || force_download == TRUE) {
     utils::download.file(full_path, file_name, mode = mode)
   }
-
+  
 }
 
 
@@ -194,7 +186,7 @@ download_image <- function(file_name, force_download = FALSE, mode = "wb"){
 #'
 #' @export
 download_any_file <- function(file_path_and_name, force_download = FALSE, mode = "wb"){
-
+  
   full_path <- paste0(get_base_url(), file_path_and_name)
   file_name <- basename(file_path_and_name)
   file_dir_name <- dirname(file_path_and_name)
@@ -221,17 +213,28 @@ download_any_file <- function(file_path_and_name, force_download = FALSE, mode =
 ### Helper functions -----------------------------------------------------
 
 
-# A helper function that checks if a file that is being downloaded already
-# exists. If the file exists and error message is given and the code is stopped.
 
-check_file_exists <- function(file_name) {
+# A helper function that downloads a file if it does not already exist. 
+# Otherwise it gives a warning that the file already exists and does not download it. 
 
-  if (file.exists(file_name)){
-    stop(paste("The class code file you are trying to download", file_name,
-               "already exists. Please rename the file", file_name,
-               "and then rerun this function to download a new copy"))
+download_nonexistent_file <- function(file_name, full_path, mode = "wb") {
+  
+
+  if (file.exists(file_name)) {
+    
+    file_exists_message <- paste("The class code file you are trying to download", file_name,
+                                 "already exists. Please rename the file", file_name,
+                                 "and then rerun this function to download a new copy")
+    warning(get_file_exists_message(file_name))
+    
+  } else {
+    
+    # if the file does not already exist, download it
+    utils::download.file(full_path, file_name, mode = mode)
+    
   }
-
+  
 }
+
 
 
