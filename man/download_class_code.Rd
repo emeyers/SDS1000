@@ -4,15 +4,11 @@
 \alias{download_class_code}
 \title{Download code related to the class}
 \usage{
-download_class_code(class_number, with_answers = FALSE)
+download_class_code(class_number)
 }
 \arguments{
 \item{class_number}{A number indicating which class we should get the code
 for.}
-
-\item{with_answers}{A boolean indicating whether you want the class Markdown
-document that contains all the code filled out, or you want the version
-that will be used in class where we fill out the solutions as you go.}
 }
 \description{
 This function downloads code that will be used in class from the class GitHub

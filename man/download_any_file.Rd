@@ -23,6 +23,6 @@ repository.
 }
 \examples{
  # Download an image from the class GitHub repository
- \dontrun{download_any_file("images/valentin.png")}
+ \dontrun{download_any_file("homework/homework_-1/homework_-1.Rmd")}
 
 }

@@ -7,14 +7,13 @@
 list_class_files(file_dir_name)
 }
 \arguments{
-\item{file_dir_name}{The name of a directory in the GitHub repository.
-Options are: "homework", "class_code", "data", "images".}
+\item{file_dir_name}{The name of a directory in the GitHub repository.}
 }
 \description{
 Lists the files that are on the class GitHub site in a particular directory
 }
 \examples{
  # List files in the data directory on GitHub 
- \dontrun{list_class_files("data")}
+ \dontrun{list_class_files("homework/homework_-1")}
 
 }

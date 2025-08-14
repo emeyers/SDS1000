@@ -2,7 +2,7 @@
 % Please edit documentation in R/download_functions.R
 \name{download_homework}
 \alias{download_homework}
-\title{Download a homework R Markdown file}
+\title{Download homework}
 \usage{
 download_homework(homework_number)
 }

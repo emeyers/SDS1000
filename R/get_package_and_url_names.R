@@ -10,6 +10,12 @@ package_name <- "SDS1000"
 # should set this to the github user name
 github_user_name <- "emeyers"
 
+# if the default branch is not "main", change this
+branch_name <- "refs/heads/download_github_directory"    # "main"
+#branch_name <- "main"
+
+# should set this to the path where you want to save the files
+save_path <- file.path(getwd(), "sds1000_material")
 
 
 #' Get the package name and version number
@@ -46,9 +52,17 @@ get_github_user_name <- function() {
 
 get_base_url <- function() {
   base_path <- paste0("https://raw.githubusercontent.com/",
-                      github_user_name, "/", package_name, "/master/ClassMaterial/")
+                      github_user_name, "/", package_name, "/", branch_name, "/ClassMaterial/")
   base_path
 }
 
 
+get_branch_name <- function() {
+  branch_name
+}
+
+
+get_save_path <- function() {
+  save_path
+}
 
