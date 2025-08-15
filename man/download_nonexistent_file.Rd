@@ -2,8 +2,8 @@
 % Please edit documentation in R/download_functions.R
 \name{download_nonexistent_file}
 \alias{download_nonexistent_file}
-\title{A helper function that downloads a file if it does not already exist. 
-If the file already exists, a warning message is shown (if desired).}
+\title{A helper function that downloads a file only if it does not already exist.
+If the file already exists, a message is shown (if desired).}
 \usage{
 download_nonexistent_file(
   save_file_name,
@@ -30,8 +30,8 @@ warning message if the file already exists.}
 message when downloading a file that does not already exist.}
 }
 \description{
-A helper function that downloads a file if it does not already exist. 
-If the file already exists, a warning message is shown (if desired).
+A helper function that downloads a file only if it does not already exist.
+If the file already exists, a message is shown (if desired).
 }
 \examples{
  # Download a file if it doesn't already exist
