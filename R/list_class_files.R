@@ -9,18 +9,8 @@
 #'  \dontrun{list_class_files("homework/homework_-1")}
 #'
 #' @export
-list_class_files <- function(file_dir_name) {
+list_github_files <- function(file_dir_name) {
 
-  # possible_file_dir_names <- c("homework", "class_code",  "practice_sessions")  
-  # 
-  # base_dir_name <- dirname(file_dir_name)
-  # 
-  # if (!(base_dir_name %in% possible_file_dir_names))
-  #   stop(paste0("The argument 'file_dir_name' was set to '", file_dir_name, "'.",
-  #               " This argument must be set to one of the following: '",
-  #               paste(possible_file_dir_names,collapse="', '"), "'."))
-
-  
   # newer repositories use the term "main" for the default repository branch
   file_url <- paste0("https://api.github.com/repos/", get_github_user_name(), "/",
                      get_package_name(), "/git/trees/", get_branch_name(), "?recursive=1")

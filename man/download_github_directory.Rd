@@ -4,7 +4,11 @@
 \alias{download_github_directory}
 \title{Download files from a GitHub directory}
 \usage{
-download_github_directory(download_dir_name)
+download_github_directory(
+  download_dir_name,
+  show_existing_file_message = FALSE,
+  show_nonexistent_file_message = FALSE
+)
 }
 \arguments{
 \item{github_directory_name}{A string indicating the name of the directory in
