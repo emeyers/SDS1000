@@ -15,7 +15,9 @@ branch_name <- "refs/heads/download_github_directory"    # "main"
 #branch_name <- "main"
 
 # should set this to the path where you want to save the files
-save_path <- file.path(getwd(), "sds1000_material")
+class_material_root_path <- file.path(getwd(), "sds1000_material")
+
+
 
 
 #' Get the package name and version number
@@ -62,7 +64,14 @@ get_branch_name <- function() {
 }
 
 
-get_save_path <- function() {
-  save_path
+get_class_material_root_path <- function() {
+  class_material_root_path
 }
+
+
+# could alternatively read these from ClassMaterials directory on GitHub
+get_main_directory_names <- function() {
+  c("homework", "class_code", "practice_session", "final_project", "other")
+}
+
 

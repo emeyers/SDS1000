@@ -16,7 +16,7 @@ download_github_directory <- function(download_dir_name,
                                       show_existing_file_message = FALSE,
                                       show_nonexistent_file_message = FALSE) {
   
-  save_full_path <- file.path(get_save_path(), download_dir_name) 
+  save_full_path <- file.path(get_class_material_root_path(), download_dir_name) 
   github_dir_name <- paste0(get_base_url(), download_dir_name)
   
   github_file_names <- list_github_files(download_dir_name)
@@ -36,7 +36,7 @@ download_github_directory <- function(download_dir_name,
     save_file_name <- file.path(save_full_path, file_name)
     
     # if a file doesn't exist download it
-    download_nonexistent_file(save_file_name, git_full_path, mode = "w",
+    download_only_if_missing(save_file_name, git_full_path, mode = "w",
                               show_existing_file_message = show_existing_file_message,
                               show_nonexistent_file_message = show_nonexistent_file_message)
     
@@ -66,7 +66,7 @@ download_github_directory <- function(download_dir_name,
 #' @export
 goto_directory <- function(dir_path, download_message = "") {
   
-  local_full_dir_path <- file.path(get_save_path(), dir_path)
+  local_full_dir_path <- file.path(get_class_material_root_path(), dir_path)
   
   if (!dir.exists(local_full_dir_path)) {
     
@@ -284,11 +284,11 @@ download_any_file <- function(file_path_and_name, force_download = FALSE, mode =
 #'
 #' @examples
 #'  # Download a file if it doesn't already exist
-#'  \dontrun{download_nonexistent_file("homework_-1.Rmd",
+#'  \dontrun{download_only_if_missing("homework_-1.Rmd",
 #'  "https://raw.githubusercontent.com/your_github_username/your_repo_name/main/ClassMaterial/homework/homework_-1/homework_-1.Rmd")}
 #'
 #' @export
-download_nonexistent_file <- function(save_file_name, git_full_path, mode = "wb",
+download_only_if_missing <- function(save_file_name, git_full_path, mode = "wb",
                                       show_existing_file_message = FALSE,
                                       show_nonexistent_file_message = FALSE) {
   
