@@ -1,8 +1,5 @@
-
-
 #' @import httr
-
-
+#' @importFrom tools R_user_dir
 
 # should set this to the name of the package
 package_name <- "SDS1000"
@@ -11,13 +8,7 @@ package_name <- "SDS1000"
 github_user_name <- "emeyers"
 
 # if the default branch is not "main", change this
-branch_name <- "refs/heads/download_github_directory"    # "main"
-#branch_name <- "main"
-
-# should set this to the path where you want to save the files
-class_material_root_path <- file.path(getwd(), "sds1000_material")
-
-
+branch_name <- "main"
 
 
 #' Get the package name and version number
@@ -36,7 +27,71 @@ get_version <- function() {
 }
 
 
+#' Set the root path where class materials will be downloaded
+#'
+#' This function sets the root path where the sds1000_class_materials/ folder will be located.
+#' By default, it sets the location to be in the Documents folder of a user on Windows and Mac,
+#' and creates a Documents folder in the home directory of Unix users.
+#' It also adds metadata listing where this directory is so that get_class_material_root_path()
+#' works correctly after it is set across R sessions.
+#'
+#' @param dir_name A string indicating the directory where the class materials should be saved.
+#'   If NULL, the default directory is used.
+#' @export
+set_class_material_root_path <- function(dir_name = NULL) {
 
+  if (is.null(dir_name)) {
+    # Determine the default directory based on the OS
+    if (.Platform$OS.type == "windows") {
+      dir_name <- normalizePath("~/Documents")
+    } else {
+      dir_name <- normalizePath("~/Documents")
+      if (!dir.exists(dir_name)) {
+        dir.create(dir_name)
+      }
+    }
+  }
+
+  # Path to the configuration directory
+  config_dir <- tools::R_user_dir("SDS1000", which = "config")
+  if (!dir.exists(config_dir)) {
+    dir.create(config_dir, recursive = TRUE)
+  }
+
+  # Path to the configuration file
+  config_file <- file.path(config_dir, "root_path.txt")
+
+  # Write the selected directory to the configuration file
+  writeLines(dir_name, config_file)
+
+  message(paste("Class material root path set to:", dir_name))
+
+  # Return the path invisibly
+  invisible(dir_name)
+}
+
+
+#' Get the root path for class materials
+#'
+#' This function gets the root path where the class materials are stored.
+#' If the path has not been set, it will be set to a default location.
+#'
+#' @return A string with the path to the root of the class materials directory.
+#' @export
+get_class_material_root_path <- function() {
+
+  config_dir <- tools::R_user_dir("SDS1000", which = "config")
+  config_file <- file.path(config_dir, "root_path.txt")
+
+  if (file.exists(config_file)) {
+    root_path <- readLines(config_file, n = 1)
+  } else {
+    message("Root path not set. Setting to default location.")
+    root_path <- set_class_material_root_path()
+  }
+
+  file.path(root_path, "sds1000_material")
+}
 
 
 ### Helper functions used throughout the package ---------------------------
@@ -64,14 +119,7 @@ get_branch_name <- function() {
 }
 
 
-get_class_material_root_path <- function() {
-  class_material_root_path
-}
-
-
 # could alternatively read these from ClassMaterials directory on GitHub
 get_main_directory_names <- function() {
   c("homework", "class_code", "practice_session", "final_project", "other")
 }
-
-
