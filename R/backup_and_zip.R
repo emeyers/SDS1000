@@ -164,3 +164,39 @@ list_backups <- function() {
 
 
 
+
+#' Save a zip file of all class material
+#' 
+#' @examples
+#' #' \dontrun{save_zip_of_all_class_material()}
+#' @export
+
+save_zip_of_all_class_material <- function() {
+  
+  # Check if the backup directory exists, create it if not
+  backup_folder_full_path <- file.path(get_class_material_root_path(), "backup")
+  if (!dir.exists(backup_folder_full_path)) {
+    dir.create(backup_folder_full_path, recursive = TRUE)
+  }
+  
+  # Create a timestamp
+  timestamp <- format(Sys.time(), "%Y%m%d_%H%M%S")
+  
+  # Create the backup folder name with timestamp
+  backup_folder_name <- paste0("all_sds1000_class_material_", timestamp)
+  
+  backup_folder_path <- file.path(get_class_material_root_path(), "backup")
+  
+  # Zip the entire class material root path
+  zip_file_name <- paste0(backup_folder_name, ".zip")
+  zip_file_path <- file.path(backup_folder_path, zip_file_name)
+  
+  zip(zipfile = zip_file_path, files = get_class_material_root_path(), flags = "-r", extras = "-j")
+  
+}
+
+
+
+
+
+
