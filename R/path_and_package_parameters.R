@@ -44,7 +44,6 @@ get_version <- function() {
 #' @export
 set_class_material_root_path <- function(dir_name = NULL) {
 
-  
   # Determine the default directory based on the OS
   if (is.null(dir_name)) {
     if (.Platform$OS.type == "windows") {
@@ -66,6 +65,50 @@ set_class_material_root_path <- function(dir_name = NULL) {
   # Path to the configuration file
   config_file <- file.path(config_dir, "root_path.txt")
 
+
+  # If the sds1000_material/ already exists and has content, move this content
+  if (file.exists(config_file)) {
+    
+    # Read the existing path from the configuration file
+    existing_path <- readLines(config_file, n = 1)
+    
+    # Check if the new path is the same as the existing path
+    if (dir_name == existing_path) {
+      message("Class material root path is already set to: ", dir_name)
+      return(invisible(dir_name))
+    } 
+    
+    
+    # move existing files to the new directory
+    message(paste("Changing class material root path from", existing_path, "to", dir_name))
+    
+    # Create the new directory if it doesn't exist
+    if (!dir.exists(dir_name)) {
+      dir.create(dir_name, recursive = TRUE)
+    } 
+    
+    # Move existing sds1000_class_material files to the new root location
+    old_materials_path <- file.path(existing_path, "sds1000_material")
+    
+    if (dir.exists(old_materials_path)) {
+      
+      if (!dir.exists(dir_name)) {
+        dir.create(dir_name, recursive = TRUE)
+      }
+      
+      dir_copy(old_materials_path, dir_name)
+      
+      # Remove the old directory after copying
+      setwd(dir_name)  # ensure we are not in the directory to be deleted
+      unlink(old_materials_path, recursive = TRUE)
+      
+      message(paste("Moved existing class materials from", old_materials_path, "to", file.path(dir_name, "sds1000_material")))
+      
+    }
+    
+  }
+  
+  
   # Write the selected directory to the configuration file
   writeLines(dir_name, config_file)
 

@@ -6,9 +6,16 @@ original_wd <- getwd()
 
 
 
+
 # a helper function to set the root path for testing
 setup_test_root_path <- function() {
 
+  
+  # clean up to start with in case any previous tests left files behind
+  if (dir.exists(test_root_path)) {
+    unlink(test_root_path, recursive = TRUE)
+  }
+  
   if (!dir.exists(test_root_path)) {
     dir.create(test_root_path, recursive = TRUE)
   }
@@ -44,7 +51,6 @@ test_that("can download a github directory", {
 
   # set the root path to a temporary directory
   test_root_path <- setup_test_root_path()
-  original_wd <- getwd()
 
   # download a test directory
   # using a directory that should exist in the test branch
@@ -74,7 +80,6 @@ test_that("goto_directory downloads files when prompted", {
 
   # set the root path to a temporary directory
   test_root_path <- setup_test_root_path()
-  original_wd <- getwd()
 
   # unfortunately can't mock menu so going to just download the file first to avoid call to menu()
   # use goto_directory for a test directory, mocking menu and rstudioapi
@@ -173,8 +178,7 @@ test_that("can backup the whole sds1000_class_materials directory to a zip file"
   
   # set the root path to a temporary directory
   test_root_path <- setup_test_root_path()
-  original_wd <- getwd()
-  
+
   # download a test directory to have something to backup
   download_github_directory("homework/homework_-1")
   
@@ -192,4 +196,47 @@ test_that("can backup the whole sds1000_class_materials directory to a zip file"
 
   
 })
+
+
+
+
+test_that("can move the sds1000_class_material/ directory when changing the root dir path", {
+  
+  # set the root path to a temporary directory
+  test_root_path <- setup_test_root_path()
+
+  # download a test directory to have something to move
+  download_github_directory("homework/homework_-1")
+  
+  # move the class material root path to a new location
+  new_test_root_path <- file.path(tempdir(), "new_root")
+  set_class_material_root_path(new_test_root_path)
+  
+  # check that the new root path is set correctly
+  expect_equal(get_class_material_root_path(), file.path(new_test_root_path, "sds1000_material"))
+  
+  # check that the old directory is moved to the new location
+  expected_dir <- file.path(new_test_root_path, "sds1000_material", "homework", "homework_-1")
+  expect_true(dir.exists(expected_dir))
+  
+  # check for a specific file in the moved directory
+  expected_file <- file.path(expected_dir, "homework_-1.Rmd")
+  expect_true(file.exists(expected_file))
+  
+  # check that old sds1000_material directory is removed
+  old_materials_path <- file.path(test_root_path, "sds1000_material")
+  expect_false(dir.exists(old_materials_path))
+  
+  # cleanup
+  setwd(original_wd)
+  unlink(test_root_path, recursive = TRUE)
+  unlink(new_test_root_path, recursive = TRUE)
+  
+  
+})
+          
+
+
+# move RStudio back to display the original working directory
+rstudioapi::filesPaneNavigate(original_wd)
 
