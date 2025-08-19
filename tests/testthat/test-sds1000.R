@@ -6,7 +6,6 @@ original_wd <- getwd()
 
 
 
-
 # a helper function to set the root path for testing
 setup_test_root_path <- function() {
 
@@ -168,4 +167,29 @@ test_that("can backup and restore a directory", {
 
 
 
+
+
+test_that("can backup the whole sds1000_class_materials directory to a zip file", {
+  
+  # set the root path to a temporary directory
+  test_root_path <- setup_test_root_path()
+  original_wd <- getwd()
+  
+  # download a test directory to have something to backup
+  download_github_directory("homework/homework_-1")
+  
+  # save a zip of all class materials
+  save_zip_of_all_class_material()
+  
+  # check that the zip file exists
+  zip_file_path <- file.path(get_class_material_root_path(), "backup")
+  expect_true(grepl("all_sds1000_class_material.*", 
+                    list.files(zip_file_path, pattern = "\\.zip$", full.names = TRUE)))
+
+  # cleanup
+  setwd(original_wd)
+  unlink(test_root_path, recursive = TRUE)
+
+  
+})
 

@@ -1,15 +1,19 @@
 #' @import httr
 #' @importFrom tools R_user_dir
 
+
 # should set this to the name of the package
 package_name <- "SDS1000"
+
 
 # should set this to the github user name
 github_user_name <- "emeyers"
 
+
 # if the default branch is not "main", change this
 #branch_name <- "main"
 branch_name <- "download_github_directories"
+
 
 #' Get the package name and version number
 #'
