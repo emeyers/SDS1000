@@ -17,7 +17,8 @@ move_to_backup <- function(folder_root_name, n = NULL) {
   
   # Check that the folder name is valid  
   if(!(folder_root_name %in% get_main_directory_names())) {
-    stop(paste("Invalid folder name. Please use one of the following:", get_main_directory_names()))
+    stop(paste0("Invalid folder name, please use one of the following: ", 
+               "'", paste0(get_main_directory_names(), collapse = "', '"), "'"))
   }
   
   

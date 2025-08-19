@@ -8,8 +8,8 @@ package_name <- "SDS1000"
 github_user_name <- "emeyers"
 
 # if the default branch is not "main", change this
-branch_name <- "main"
-
+#branch_name <- "main"
+branch_name <- "download_github_directories"
 
 #' Get the package name and version number
 #'
@@ -40,10 +40,11 @@ get_version <- function() {
 #' @export
 set_class_material_root_path <- function(dir_name = NULL) {
 
+  
+  # Determine the default directory based on the OS
   if (is.null(dir_name)) {
-    # Determine the default directory based on the OS
     if (.Platform$OS.type == "windows") {
-      dir_name <- normalizePath("~/Documents")
+      dir_name <- normalizePath("~/")  #normalizePath("~/Documents")
     } else {
       dir_name <- normalizePath("~/Documents")
       if (!dir.exists(dir_name)) {
@@ -71,6 +72,9 @@ set_class_material_root_path <- function(dir_name = NULL) {
 }
 
 
+
+
+
 #' Get the root path for class materials
 #'
 #' This function gets the root path where the class materials are stored.
@@ -94,6 +98,10 @@ get_class_material_root_path <- function() {
 }
 
 
+
+
+
+
 ### Helper functions used throughout the package ---------------------------
 
 
@@ -114,9 +122,11 @@ get_base_url <- function() {
 }
 
 
+
 get_branch_name <- function() {
   branch_name
 }
+
 
 
 # could alternatively read these from ClassMaterials directory on GitHub
