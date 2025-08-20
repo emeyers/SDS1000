@@ -58,7 +58,4 @@ LaTeX.
 
 All class material is in the
 [ClassMaterial](https://github.com/emeyers/SDS1000/tree/master/ClassMaterial)
-directory. In particular the
-[ClassMaterial/slides](https://github.com/emeyers/SDS1000/tree/master/ClassMaterial/slides)
-directory contains the class slides which can be useful to review what
-was covered in class.
+directory.
