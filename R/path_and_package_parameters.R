@@ -96,7 +96,7 @@ set_class_material_root_path <- function(dir_name = NULL) {
         dir.create(dir_name, recursive = TRUE)
       }
       
-      dir_copy(old_materials_path, dir_name)
+      fs::dir_copy(old_materials_path, dir_name)
       
       # Remove the old directory after copying
       setwd(dir_name)  # ensure we are not in the directory to be deleted
