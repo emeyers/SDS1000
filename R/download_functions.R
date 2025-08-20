@@ -111,7 +111,7 @@ goto_directory <- function(dir_path, download_message = "") {
       download_github_directory(dir_path, show_nonexistent_file_message = TRUE)
       
     } else if (choice == 2) { 
-      return("Not downloading files. Please post to Ed Discussion if you need help.")
+      print("Not downloading missing files. Please post to Ed Discussion if you need help.")
       
     } else {     # This happens if they select 0
       return("You must select 1 or 2. Please try again.")
@@ -120,7 +120,6 @@ goto_directory <- function(dir_path, download_message = "") {
   }
       
 
-  
   # set the working directory to the directory where the files were downloaded
   # set RStudio file pane to that directory
   setwd(local_full_dir_path)
