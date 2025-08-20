@@ -12,6 +12,7 @@ LazyData: true
 RoxygenNote: 7.3.2
 Imports: 
     httr,
-    devtools
+    devtools,
+    fs
 Suggests: 
     testthat (>= 2.1.0)
