@@ -22,7 +22,10 @@ download_github_directory <- function(download_dir_name,
   github_file_names <- list_github_files(download_dir_name)
   
   if (length(github_file_names) == 0) {
-    stop(paste("The directory", github_dir_name, "does not exist in the class GitHub repository."))
+    stop(paste("\n\n The directory", download_dir_name, "does not exist in the class GitHub repository.\n",
+               "\n Perhaps these files have not been uploaded yet by the instructor?\n",
+               "\n Please check the class syllabus to make sure the files are available (e.g., homework is posted by class on Tuesday, etc.)\n",
+               "\n If you think this is a real issue, please post to Ed Discussion to let the instructor know."))
   }
   
   # create the directory to save the homework files
@@ -73,14 +76,18 @@ goto_directory <- function(dir_path, download_message = "") {
     prompt_message <- paste("\nThe files for", download_message, 
                             "do not exist. Would you like to download the files now?")
     
-    if (menu(c("Yes", "No"), graphics = FALSE, title = prompt_message)) {
+    choice <- menu(c("Yes", "No"), graphics = FALSE, title = prompt_message)
+
+    if (choice == 1) {
       
-      print(paste0("Downloading ",  download_message, "files..."))
-      
+      print(paste0("Downloading ",  download_message, " files..."))
       download_github_directory(dir_path)
-      
-    } else { 
-      print("Not downloading files. Please post to Ed Discussion if you need help.")
+
+    } else if (choice == 2) { 
+      return("Not downloading files. Please post to Ed Discussion if you need help.")
+
+    } else {     # This happens if they select 0
+      return("You must select 1 or 2. Please try again.")
     }
     
   }
