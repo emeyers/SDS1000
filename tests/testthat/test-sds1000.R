@@ -61,7 +61,7 @@ test_that("can download a github directory", {
   expect_true(dir.exists(expected_dir))
 
   # check for a specific file
-  expected_file <- file.path(expected_dir, "homework_-1.Rmd")
+  expected_file <- file.path(expected_dir, "homework_-1.qmd")
   expect_true(file.exists(expected_file))
 
   # cleanup
@@ -98,7 +98,7 @@ test_that("goto_directory downloads files when prompted", {
   expect_true(dir.exists(expected_dir))
 
   # check for a specific file
-  expected_file <- file.path(expected_dir, "class_-1.Rmd")
+  expected_file <- file.path(expected_dir, "class_-1.qmd")
   expect_true(file.exists(expected_file))
 
   # check that the working directory is set correctly
@@ -220,7 +220,7 @@ test_that("can move the sds1000_class_material/ directory when changing the root
   expect_true(dir.exists(expected_dir))
   
   # check for a specific file in the moved directory
-  expected_file <- file.path(expected_dir, "homework_-1.Rmd")
+  expected_file <- file.path(expected_dir, "homework_-1.qmd")
   expect_true(file.exists(expected_file))
   
   # check that old sds1000_material directory is removed
