@@ -1,6 +1,6 @@
 ---
 title: "Test file"
-output: pdf
+output: html_document
 ---
 
 ```{r setup, include=FALSE}

@@ -1,0 +1,33 @@
+---
+title: "Test file"
+format: pdf
+editor: source
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+$\\$
+
+
+
+
+# Test download practice session material
+
+Testing that downloading practice session material works.
+
+
+$\\$
+
+
+
+![Valentin](valentin.png)
+
+
+
+
+

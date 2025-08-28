@@ -1,0 +1,30 @@
+---
+title: "Test download homework -1"
+format: pdf
+editor: source
+---
+
+
+$\\$
+
+
+# File to test downloading homework
+
+
+
+$\\$
+
+
+```{r}
+
+load("test_data.rda")
+
+test_data
+
+```
+
+
+
+
+
+
