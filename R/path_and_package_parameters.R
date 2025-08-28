@@ -11,8 +11,8 @@ github_user_name <- "emeyers"
 
 
 # if the default branch is not "main", change this
-#branch_name <- "main"
-branch_name <- "download_github_directories"
+branch_name <- "main"
+#branch_name <- "download_github_directories"
 
 
 #' Get the package name and version number
