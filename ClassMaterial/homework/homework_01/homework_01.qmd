@@ -1,0 +1,519 @@
+---
+title: "Homework 1"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+$\\$
+
+
+
+
+
+In the following homework, you will explore descriptive statistics and
+visualizations of categorical data. Please render this Quarto document and
+submit the compiled pdf document with your answers to Gradescope
+*by 11pm on Sunday September 7th*. Please also make sure to mark the correct
+pages to each question's answers on Gradescope to allow the TAs to grade each
+problem.
+
+
+Some functions that could be useful for completing this worksheet are: `dim()`,
+`length()`, `table()`, `prop.table()`, `get_proportion()`, `barplot()`,
+`hist()`, `mean()`, `median()`, `max()`. You might also find the following
+symbols useful: $\mu$, $\bar{x}$, $\pi$, $\hat{p}$
+
+
+If you need help with any of the homework assignments, please attend the TA
+office hours which are listed on Canvas and/or ask questions on [Ed Discussions
+forum](https://edstem.org/us/courses/78564/discussion). Also, please help
+members of the class by answering questions on Ed Discussions. Finally, if you
+have conceptual questions, reviewing the class slides and videos will be
+helpful.
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+# Part 1:  Lock 5 questions
+
+
+
+Please answer the following questions that are based on questions from the Lock5
+textbook. Some symbols that might be useful for answering these questions
+include $\hat{p}$, $\bar{x}$, $\pi$, and $\mu$. You can also write subscripts in
+LaTeX by using an underscore, e.g., $\beta_{treatment}$.
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Exercise 1.1 (6 points)**:  A study by Hamscher et al. (Environmental Health
+Perspectives, 2003) shows that antibiotics added to animal feed to accelerate
+growth can become airborne. Some of these drugs can be toxic if inhaled and may
+increase the evolution of antibiotic-resistant bacteria. The researchers
+analyzed 20 samples of dust particles from animal farms. Tylosin, an antibiotic
+used in animal feed that is chemically related to erythromycin, showed up in 16
+samples. Based on this study please report:
+
+a. What are the individual cases in this study?
+
+b. What is the variable of interest in this study? 
+
+c. What is the statistic of interest in this study, what symbol should be used
+for this statistic, and what is the value of this statistic? Your choice of
+statistic and symbol should be one of the statistics/symbol we used in class.
+
+
+
+
+**Answers:**  
+
+a. 
+
+
+
+b. 
+
+
+
+c. 
+
+
+
+
+
+$\\$
+
+
+**Exercise 1.2 (6 points)**: A study by Valasek and Walter (Pediatric and 
+Adolescent Concussions, Springer, 2012) examined all sports-related concussions
+reported to an emergency room for children ages 5 to 18 in the United States
+over the course of one year. The table below displays the number of concussions
+in each of the major activity categories.
+
+
+| Activity              | Number of concussions |
+|-----------------------|-----------------------|
+| Bicycles              |      23,405           |
+| Football              |      20,293           |
+| Basketball            |      11,507           |
+| Playground            |      10,414           |
+| Soccer                |       7,667           |
+| Baseball              |       7,433           |
+| All-Terrain Vehicles  |       5,220           |
+| Hockey                |       4,111           |
+| Skateboarding         |       4,408           |
+| Swimming              |       3,846           |
+| Horseback Riding      |       2,648           |
+|-----------------------|-----------------------|
+| Total                 |      100,952          |
+
+
+
+Based on this study please report:
+
+a. Are these results from a population or a sample. In 1-3 sentences please
+explain your answer.
+
+b. What proportion of concussions came from playing football? Please write down
+your answer and denote it with the appropriate symbol (e.g., symbol = value). 
+
+c. What proportion of concussions came from riding bicycles? Please write down
+your answer and denote it with the appropriate symbol.
+
+d. Can we conclude that, at least in terms of concussions, riding bicycles is
+more dangerous to children in the US than playing football? Why or why not?
+
+
+
+
+**Answers:**
+
+a.  
+
+
+
+
+b.  
+
+
+
+
+c.  
+
+
+
+
+
+d. 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+**Exercise 1.3 (6 points)**: A study by Reinhold et al. (Science, 2009) examined 
+animal behavior and found that rats can quickly learn to play hide-and-seek with
+humans. The rats seem to love the game, squeaking and jumping for joy when they
+find the human or are found by the human. The game is played in a large room
+with multiple boxes. Some of the boxes are transparent and easy to see through,
+while others are opaque and the inside cannot be seen. Rats go in and out of
+these boxes and the researchers studied whether they treated the boxes
+differently depending on whether they were hiding (and didn't want to be seen) or
+seeking (and didn't care if they were seen). For rats who had been learning the
+game for about a week, the data on the number of times the rats entered the two
+types of boxes in each situation is shown in the table below:
+
+
+| Situation | Transparent boxes | Opaque boxes | Total |
+|-----------|-------------------|--------------|-------|
+| Hiding    |        15         |      38      |  53   |
+| Seeking   |        17         |      14      |  31   |
+| Total     |        32         |      52      |  84   |
+
+
+Based on this study please report:
+
+a. When the rats were hiding, what proportion of the time did they go into
+opaque boxes?
+
+b. When the rats were seeking, what proportion of the time did they go into
+opaque boxes?
+
+c. Find the difference in proportions and give the notation for the difference
+in proportions using the notation we used in class. Hint: using subscripts on
+the symbols could be useful (see the top of part 1 of the homework for how to
+create subscripts in LaTeX). 
+
+
+
+**Answers:**
+
+a. 
+
+
+
+b. 
+
+
+
+c. 
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+# Part 2: Oxford commas
+
+
+The Oxford comma is a comma used before the conjunction in a list of three or more
+items. For example, in the list "apples, oranges, and bananas," the Oxford comma
+is the comma before the "and." As discussed in the book Eats Shoots & Leaves,
+Oxford commas can clarify meaning and avoid ambiguity in sentences. However, to
+paraphrase a song by [Vampire Weekend](https://youtu.be/P_i1xk07o4g?si=7aF-wGA1_B4W_60D), 
+does anyone really care about the Oxford comma?
+
+To address the question of whether most Americans prefer Oxford commas, the
+website FiveThirtyEight conducted a survey where they asked people "How much, if
+at all, do you care about the use (or lack thereof) of the serial (or Oxford)
+comma in grammar?" They also collected other information about their
+demographics and grammatical preferences from each survey participant. The
+results were published in an article titled ["Elitist, Superfluous, Or Popular?
+We Polled Americans on the Oxford Comma"](https://fivethirtyeight.com/features/elitist-superfluous-or-popular-we-polled-americans-on-the-oxford-comma/).
+
+The R chunk below load the data that was collected in their survey into a data
+frame called `comma_survey`. Each row (case) corresponds to one survey
+respondent, and the variable we are most interested in is `care_oxford_comma`,
+which indicates how much the respondent cares about the Oxford comma. The
+possible values for this variable are "Not at all", "Not much", "Some",
+and "A lot.
+
+Let's analyze this data now to address the very important question of whether 
+most Americans care about Oxford commas!
+
+
+```{r load_oxford_comma_data, message = FALSE}
+
+library(SDS1000)
+library(fivethirtyeight)
+library(dplyr)
+
+data(comma_survey)
+
+head(select(comma_survey, respondent_id, care_oxford_comma, everything()))
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 2.1 (6 points):** To start, please extract the column `care_oxford_comma` 
+as a vector from the `comma_survey` data frame. Assign this vector the to an
+object called `oxford_care`.
+
+Then, using the `oxford_care` vector, please print out how many people were surveyed 
+in their study and report the number of people surveyed in the answer section as
+well. Also, in answer section, please report what you believe the population of
+interest is that the survey is trying to estimate.
+
+
+```{r}
+
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Exercise 2.2 (6 points):** Now that you have the `oxford_care` vector, please 
+use the `table()` function on this object to create a count of how many people
+care about the Oxford comma at each factor level of the variable. Assign the
+results to an object called `oxford_comma_counts`. Finally, report which factor
+level has the most responses.
+
+
+```{r oxford_comma_counts}
+
+
+
+
+
+```
+
+**Answer**: 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 2.3 (6 points):** Next, please calculate the **relative frequencies**
+(i.e., proportions) of how much each level of care was reported in the survey, and 
+print out the results to "show your work". In the answer section, report what is 
+the proportion of people who care "A lot" about the Oxford comma and what proportion 
+of people care "Not at all"?
+
+```{r oxford_comma_freqs}
+
+
+
+
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Exercise 2.4 (6 points):** Now create a bar chart of the counts of how many people
+care about the Oxford comma at each level of the variable. Also, suppose had conducted
+another survey 2 years later which asked the same questions. In the answer
+section, report whether you think the proportion of people who care about the
+Oxford comma would be different in this new survey? Why or why not?
+
+
+
+```{r barplot}
+
+
+
+
+
+
+
+```
+
+
+
+**Answers:**  
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 2.5 (6 points):** Next create a pie chart of the proportions of how 
+many people care about the Oxford comma at each level of the variable. In the
+answer section, report whether you think the bar chart or pie chart is a better
+way to visualize this data and why?
+
+
+```{r piechart}
+
+
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 2.6 (6 points):** Finally, the survey conducted by FiveThirtyEight also
+collected information about several other variables. To see a list of these
+variables, you can type `? comma_survey` in the R console, and you can view the
+full `comma_survey` using the `View()` function. You can also learn more about
+the survey by reading the original FiveThirtyEight article (link is at the top
+of this part of the homework).
+
+Please look through the `comma_survey` data frame and explore some of the other
+variables in the data frame by visualizing them and/or calculating summary
+statistics. In the R chunk below, please show your work exploring some of these
+other variables, and in the answer section, please report what your analysis
+shows.
+
+Note: Our grading will be fairly relaxed on this question so do not stress too
+much about coming up with the perfect analysis here, but do see if you can
+find something interesting and explain why you think it is interesting. 
+
+
+```{r explore_other_variables}
+
+
+
+
+
+
+
+
+
+
+
+```
+
+**Answer**: 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Reflection (6 points)
+
+
+Please reflect on how the homework went by going to Canvas, going to the Quizzes link, and clicking on 
+[Reflection on homework 1](https://yale.instructure.com/courses/109046/quizzes/89888)
+
+Also, if you have not done so already, please be sure to fill out the class 
+[background survey](https://yale.instructure.com/courses/109046/quizzes/89879).
+Three points will be deducted from this homework if the background survey has not
+been filled out by the time homework 1 is due. 
+
+
+
+
+
