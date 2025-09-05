@@ -6,5 +6,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Part 1:   
-# Part 2: 
+# Part 1:   Measures of central tendency for quantitative data		
+
+# Part 2:   Measures of spread for quantitative data	
