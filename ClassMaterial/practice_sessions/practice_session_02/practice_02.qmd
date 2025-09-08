@@ -22,11 +22,10 @@ editor_options:
 
 \[s = \sqrt{\frac{1}{n - 1} \sum_{i = 1}^n (x_i - \bar{x})^2}\]
 
-#### Using these formulas, complete the following exercise:
+#### Using these formulas, complete the following :
 
-&nbsp;
 
-![](q1.png){width=70%}
+
 
 Using the above data, perform the following calculations:
 
