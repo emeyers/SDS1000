@@ -33,11 +33,11 @@ Using the numbers from the previous exercise, do the following:
 * Find the 5-number summary (minimum, Q1, median, Q3, maximum)
 * Check your work using R functions 
 
-## Graphing the shape of quantitative data: histograms and outliers
+# Graphing the shape of quantitative data: histograms and outliers
 
 Consider the data from the previous exercises. Using R, create a histogram of the data. What would you consider to be the shape of the distribution? Do you consider any of the data points to be potential outliers?
 
-## Classifying shapes of distributions
+# Classifying shapes of distributions
 
 Generate histograms for each of the following data sets. Use the `$` command to access the individual data sets. Do you see any potential outliers? Also calculate the five-number summary for each using R.
 
