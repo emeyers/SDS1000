@@ -48,7 +48,7 @@ s2_data = data.frame(
   dat2 = rchisq(1000, df = 1)
   dat3 = runif(1000)
   dat4 = rnorm(1000)
-  dat5 = sample(c(rnorm(1000, mean = 2), rnorm(1000, mean = 10)))
+  dat5 = sample(c(rnorm(1000, mean = 2), rnorm(1000, mean = 10)), size = 1000)
 )
 ```
 
