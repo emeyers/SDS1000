@@ -52,5 +52,17 @@ s2_data = data.frame(
 )
 ```
 
+# Z-Scores
+
+Read the following description on Z-scores, then answer the question below.
+
+![](z_score.png)
+
+![](weather.png)
+
+
+# Percentiles
+
+
 
 
