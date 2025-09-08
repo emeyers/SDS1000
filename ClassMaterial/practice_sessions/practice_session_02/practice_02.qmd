@@ -6,6 +6,32 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Part 1:   Measures of central tendency for quantitative data		
+# Part 1:   Measures of central tendency 	&  Measures of spread for quantitative data	
 
-# Part 2:   Measures of spread for quantitative data	
+
+
+&nbsp;
+
+## Exercise 5.1 Calculating Sample Mean and Standard Deviation by Hand
+
+#### Here is the formula for the sample mean:
+
+\[\bar{x} = \frac{1}{n} \sum_{i = 1}^n x_i\]
+
+#### And here is the formula for the sample standard deviation:
+
+\[s = \sqrt{\frac{1}{n - 1} \sum_{i = 1}^n (x_i - \bar{x})^2}\]
+
+#### Using these formulas, complete the following exercise:
+
+&nbsp;
+
+![](q1.png){width=70%}
+
+Using the above data, perform the following calculations:
+
+* Calculate the sample mean
+* Calculate the sample median
+* Calculate the sample standard deviation
+* Find the 5-number summary (minimum, Q1, median, Q3, maximum)
+
