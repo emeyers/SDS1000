@@ -43,7 +43,7 @@ Consider the data from the previous exercises. Using R, create a histogram of th
 
 # Classifying shapes of distributions
 
-Generate histograms for each of the following data sets. Use the `$` command to access the individual data sets. Do you see any potential outliers? Also calculate the five-number summary for each using R.
+Generate histograms for each of the following data sets. Use the `$` command to access the individual data sets. For each histogram, add the mean to the plot using `abline()`. Do you see any potential outliers? Also calculate the five-number summary for each using R.
 
 ```{r}
 set.seed(999)
@@ -55,7 +55,7 @@ s2_data = data.frame(
   dat5 = sample(c(rnorm(1000, mean = 2), rnorm(1000, mean = 10)), size = 1000)
 )
 ```
- 
+
 # Z-Scores
 
 Read the following description on Z-scores, then answer the question below.
@@ -64,7 +64,21 @@ Read the following description on Z-scores, then answer the question below.
 
 ![](weather.png)
 
+
 # Percentiles
 
 Compute the 25th, 50th, and 75th percentile for the 5 data sets in the `s2_data` data.frame. Which has the smallest median? Which as the largest?
+
+# Normal Distribution and +/- 2 Standard Deviations
+
+The normal distribution (also known as the "bell-curve") occurs very frequently in mathematics, statistics, and the natural and social sciences. Which of the 5 data sets in the `s2_data` data.frame appears to be normally distributed?
+
+Using this data set, find the mean and standard deviation, then calculate 2 standard deviations above, and 2 standard deviations below the mean. What percentiles do these values correspond to?
+
+# Boxplots
+
+Consider the `mtcars` data set. This data is built into R, so you can access it directly; no downloads required! First, create a histogram of the variable `mpg`. Then create a boxplot of `mpg`. How do these two plots compare? 
+
+
+
 
