@@ -166,7 +166,7 @@ Can you tell which boxplot corresponds to which histogram?
 ```{r}
 
 # Load the data
-load("hist_vs_boxplot.rda")
+load("hist_vs_boxplot.Rda")
 
 # Create the histograms
 #par(mfrow = c(2, 2))  # Set up a 2x2 plotting area
