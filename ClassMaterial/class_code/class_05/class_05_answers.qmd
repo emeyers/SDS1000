@@ -146,7 +146,7 @@ $\\$
 
 
 
-# Part 5: If there is time - additional practice
+# Part 4: If there is time - additional practice
 
 The code below loads 4 vectors of data called `x1`, `x2`, `x3`, and `x4`.
 
