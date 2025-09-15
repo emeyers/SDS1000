@@ -53,9 +53,11 @@ Load the data of " FloridaLakes" from the library of lock5Data.
 
 - Create a scatter plot each two variables and describe it. Add a line to the scatter plot using "abline()" function.  
 
-- What is the correlation coefficient between "pH" and "Calcium". Is it positive or negative, and what this coefficient means in the context of this data.
+- What is the correlation coefficient between "pH" and "Calcium". Is it positive or negative.
 
-- What is the correlation coefficient between "Calcium"  and "pH".  
+- What this coefficient means in the context of this data.
+
+  
 
 $\\$
 
