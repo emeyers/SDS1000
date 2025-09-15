@@ -10,7 +10,64 @@ editor_options:
 # Part 2:  Two quantitative variables: Linear Regression 
 # Part 3:  Review
 
+### 
+
+i) In this session you might use the formula of the correlation bewtween two quatitative variables:
+
+$r_{x y}=\frac{1}{(n-1) s_z s_y} \sum_{i=1}^n\left(x_i-\bar{x}\right)\left(y_i-\bar{y}\right)$
 
 
-Excercice 1.1: 
+ii) Remember that the fitted regression line is defined by the equation: 
+
+$\hat{y}=a+bx$
+
+$\hat{Response}= a + b ( Explanatory)$
+
+Where: 
+
+  ** Response: is the response variable or the dependent variable
+
+  ** Explanatory: is the independent variable
+  
+  ** a: is the y- intercept
+  
+  ** b: is the slope of the regression line
+  
+  iii) You may use the following R functions: plot(), lm(), cor(), abline(). And you
+  might need to download Lock5Data using Library(Lock5Data ). 
+
+  
+## Practice 1: 
+
+
+![](scatterplots.png)
+
+
+
+$\\$
+
+
+## Practice 2:
+
+Load the data of " Floridalakes" from the library of lock5Data. 
+
+- Describe the type of each of the variables "ph" and "Calcium". 
+
+- Create a scatter plot of the two variables and describe it. 
+
+- What is the correlation coefficient between "ph" and "Calcium". Is it positive or negative, and what it means in the context.
+
+- What is the correlation coefficient between "Calcium" "ph".  
+
+$\\$
+
+## Practice 3:
+
+![](regression_true_false.png)
+
+
+
+
+  
+
 
