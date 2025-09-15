@@ -33,8 +33,7 @@ Where:
   
   ** b: is the slope of the regression line
   
-  iii) You may use the following R functions: plot(), lm(), cor(), abline(). And you
-  might need to download Lock5Data using Library(Lock5Data ). 
+  iii) You may use the following R functions: plot(), lm(), cor(), abline(). And you might need to download Lock5Data using Library(Lock5Data ). 
 
   
 ## Practice 1: 
@@ -55,7 +54,7 @@ Load the data of " Floridalakes" from the library of lock5Data.
 
 - Create a scatter plot of the two variables and describe it. 
 
-- What is the correlation coefficient between "ph" and "Calcium". Is it positive or negative, and what it means in the context.
+- What is the correlation coefficient between "ph" and "Calcium". Is it positive or negative, and what this coefficient means in the context of this data.
 
 - What is the correlation coefficient between "Calcium" "ph".  
 
@@ -64,6 +63,35 @@ $\\$
 ## Practice 3:
 
 ![](regression_true_false.png)
+
+
+
+## Practice 4: 
+use abline in the data
+
+Use the previous data " FloridaLakes" and the two variables "hp" and " calcium.
+
+1)- Using the appropriate R function, create a linear model to predict " calcium" from "hp".
+
+2)- Write the correct regresion equation of this linear model.
+
+3)- Interpret the intercept, the slop, and  $R^2of the model within the context of the data
+
+4)- Find the five num of the "hp".
+
+5)- Prodict the calcium level when   hp= .., and hp= , hp=
+
+..   . 
+6)- Which prediction is valid and which one is an "extrapolation" .
+
+7)- find the residuals for each of the previous predictions.
+
+
+## Practive 5 (A Review):
+
+
+
+
 
 
 
