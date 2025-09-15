@@ -10,7 +10,6 @@ editor_options:
 # Part 2:  Two quantitative variables: Linear Regression 
 # Part 3:  Review
 
-### 
 
 i) In this session you might use the formula of the correlation bewtween two quatitative variables:
 
