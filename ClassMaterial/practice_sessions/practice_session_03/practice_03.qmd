@@ -39,7 +39,7 @@ Where:
 ## Practice 1: 
 
 
-![](scatterplots.png)
+![](scatterplots.png){width=50%}
 
 
 
@@ -48,46 +48,52 @@ $\\$
 
 ## Practice 2:
 
-Load the data of " Floridalakes" from the library of lock5Data. 
+Load the data of " FloridaLakes" from the library of lock5Data. 
 
-- Describe the type of each of the variables "ph" and "Calcium". 
+- Describe the type of each of the variables "pH" and "Calcium", "Alkalinity". 
 
-- Create a scatter plot of the two variables and describe it. 
+- Create a scatter plot each two variables and describe it. Add a line to the scatter plot using "abline()" function.  
 
-- What is the correlation coefficient between "ph" and "Calcium". Is it positive or negative, and what this coefficient means in the context of this data.
+- What is the correlation coefficient between "pH" and "Calcium". Is it positive or negative, and what this coefficient means in the context of this data.
 
-- What is the correlation coefficient between "Calcium" "ph".  
+- What is the correlation coefficient between "Calcium"  and "pH".  
 
 $\\$
 
 ## Practice 3:
 
-![](regression_true_false.png)
+![](regression_true_false.png){width=100%}
 
 
 
 ## Practice 4: 
-use abline in the data
 
-Use the previous data " FloridaLakes" and the two variables "hp" and " calcium.
+Use the previous data " FloridaLakes" and the two variables "pH" and " calcium.
 
-1)- Using the appropriate R function, create a linear model to predict " calcium" from "hp".
+1)- Using the appropriate R function, create a linear model to predict " calcium" from "pH".
 
-2)- Write the correct regresion equation of this linear model.
+2)- Write the correct regression equation of this linear model.
 
-3)- Interpret the intercept, the slop, and  $R^2of the model within the context of the data
+3)- Interpret the intercept, the slop, and  $R^2 of the model within the context of the data
 
-4)- Find the five num of the "hp".
+4)- Find the five number  of the "pH".
 
-5)- Prodict the calcium level when   hp= .., and hp= , hp=
+5)- Predict the calcium level when:    pH= 2.6,  pH= 5.3 , pH= 9.7
 
-..   . 
 6)- Which prediction is valid and which one is an "extrapolation" .
 
-7)- find the residuals for each of the previous predictions.
+7)- Find the residuals for each of the previous predictions.
 
 
 ## Practive 5 (A Review):
+
+From the data " ICUAdmissions",study the following variables by creating descriptive statistics such as: boxplot, histogram, five number summary:
+ " Infection", " Age", " Race".
+
+
+
+
+
 
 
 
