@@ -1,1 +1,16 @@
+---
+title: "Practice Session 2"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+# Part 1:  Two quantitative variables: Scatterplot and Correlation
+# Part 2:  Two quantitative variables: Linear Regression 
+# Part 3:  Review
+
+
+
+Excercice 1.1: 
 
