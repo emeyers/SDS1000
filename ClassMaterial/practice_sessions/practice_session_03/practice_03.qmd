@@ -10,34 +10,39 @@ editor_options:
 
 # The Relationship Between Two Quantitative Variables: Correlation and Regression 
 
+$\\$
 
 
 
 
+In this session you might use the formula of the correlation bewtween two quatitative variables:
 
-* In this session you might use the formula of the correlation bewtween two quatitative variables:
 
 $r_{x y}=\frac{1}{(n-1) s_z s_y} \sum_{i=1}^n\left(x_i-\bar{x}\right)\left(y_i-\bar{y}\right)$
 
 
-* Remember that the fitted regression line is defined by the equation: 
+$\\$
 
-** $\hat{y}=a+bx$ , or 
+Remember that the fitted regression line is defined by the equation: 
 
-** $\hat{Response}= a + b ( Explanatory)$
+* $\hat{y}=a+bx$ , or 
+
+
+* $\hat{Response}= a + b ( Explanatory)$
 
 Where: 
 
-  *** Response: is the response variable or the dependent variable
+* Response: is the response variable or the dependent variable
 
-  *** Explanatory: is the independent variable
+* Explanatory: is the independent variable
   
-  *** a: is the y- intercept
+* a: is the y- intercept
   
-  *** b: is the slope of the regression line
+* b: is the slope of the regression line
 
-  
-  * You may use the following R functions: `plot()`, `lm()`, `cor()`, `abline()`. And you might need to download Lock5Data using Library(Lock5Data ). 
+$\\$
+
+ You may use the following R functions: `plot()`, `lm()`, `cor()`, `abline()`. And you might need to download Lock5Data using Library(Lock5Data ). 
 
 
 
@@ -49,6 +54,7 @@ Where:
 
 Here are several scatterplots. The calculated correlations are 0.006, - 0.977, - 0.487, and 0.777. Match each scatter plot with the appropriate correlation coeffecient
 
+
 ![](scatterplot.png){width=50%}
 
 
@@ -57,9 +63,12 @@ Here are several scatterplots. The calculated correlations are 0.006, - 0.977, -
 
 a.
 
+
 b.
 
+
 c.
+
 
 d.
 
@@ -76,15 +85,18 @@ Load the data of `FloridaLakes` from the library of lock5Data.
 
 1. Describe the type of each of the variables `pH` and `Calcium`, `Alkalinity`. 
 
-2. Create a scatter plot each two variables and describe it. Add a line to the scatter plot using "abline()" function.  
+2. Create a scatter plot each two variables and describe it. Add a line to the scatter plot using `abline()` function.  
 
 3. What is the correlation coefficient between `pH` and `Calcium`. Is it positive or negative.
 
 4. What this coefficient means in the context of this data.
 
+5. Try to calculate the correlation without using `R`function.
+
   
 **Answers:**
 
+```{r}
 # download the data and load it into R
 library(Lock5Data)
 data(FloridaLakes)
@@ -92,11 +104,17 @@ data(FloridaLakes)
 
 
 
+```
+
+
 1.
+
 
 2.
 
+
 3.
+
 
 4.
 
@@ -130,13 +148,18 @@ f. We write $\hat{y}$ to denote the predicted values and the y to denote the obs
 
 a.
 
+
 b.
+
 
 c.
 
+
 d.
 
+
 e.
+
 
 f.
 
@@ -162,16 +185,24 @@ Use the previous data `FloridaLakes` and the two variables `pH` and `calcium`.
 
 4. Find the five number  of the `pH`.
 
-5. Predict the calcium level when:    pH= 2.6,  pH= 5.3 , pH= 9.7
+5. Predict the calcium level when: pH= 2.6, pH= 5.3 , pH= 9.7
 
-6. Which prediction is valid and which one is an extrapolation .
+6. Which prediction is valid and which one is an extrapolation.
 
 7. Find the residuals for each of the previous predictions.
 
 
 **Answers:**
+```{r}
+
+
+
+
+```
+
 
 1.
+
 
 2.
 
@@ -198,6 +229,16 @@ From the data `ICUAdmissions` create descriptive statistics ( such as: `boxplot`
  `Infection`, `Age`, `Race`.
 
 
+**Answers:**
+
+```{r}
+# download the data and load it into R
+library(Lock5Data)
+data(ICUAdmissions)
+
+
+
+```
 
 
 
@@ -211,5 +252,3 @@ From the data `ICUAdmissions` create descriptive statistics ( such as: `boxplot`
 
 
   
-
-
