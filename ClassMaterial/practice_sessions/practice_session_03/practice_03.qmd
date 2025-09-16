@@ -111,14 +111,19 @@ $\\$
 **Practice 3:**
 
 
-![](regression_true_false.png){width=100%}
+State if the following sentences are true or false.
 
+a. We choose the linear model that passes through the most data points on scatterplot.
 
+b. The residuals are observed y-values minus the y-value predicted by linear model.
 
+c.Least square means that the square of the largerst residuals is as small as it could be possible.
 
+d. Some of the residuals from least linear model will be positive and some will be negative.
 
+c. Least squares means that some of the squares of the residuals are minimized.
 
-
+d. We write $\hat{y}$ to denote the predicted values and the y to denote the observed value.
 
 
 **Answers:**
@@ -189,8 +194,9 @@ $\\$
 
 **Practive 5:**
 
-From the data " ICUAdmissions",study the following variables by creating descriptive statistics such as: boxplot, histogram, five number summary:
- " Infection", " Age", " Race".
+From the data `ICUAdmissions` create descriptive statistics ( such as: `boxplot`, `histogram`, `five number summary`) for the variables
+ `Infection`, `Age`, `Race`.
+
 
 
 
