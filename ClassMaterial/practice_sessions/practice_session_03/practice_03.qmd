@@ -226,7 +226,7 @@ $\\$
 
 **Practive 5:**
 
-From the data `ICUAdmissions` create descriptive statistics and visualizations for the variables `Infection`, `Age`, and `Race`.
+From the data `ICUAdmissions` create descriptive statistics and visualizations for the variables `Infection`, `Age`, and `Race`, `HeartRate`.
 
 
 **Answers:**
