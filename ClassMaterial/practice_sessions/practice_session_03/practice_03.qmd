@@ -25,7 +25,7 @@ $\\$
 
 Remember that the fitted regression line is defined by the equation: 
 
-* $\hat{y}=a+bx$, or 
+* $\hat{y} = a + bx$, or 
 
 
 * $\hat{Response} = a + b \text{(Explanatory)}$
