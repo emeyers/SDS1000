@@ -28,7 +28,7 @@ Remember that the fitted regression line is defined by the equation:
 * $\hat{y} = a + bx$, or 
 
 
-* $\hat{Response} = a + b \text{(Explanatory)}$
+* $\hat{\text{Response}} = a + b \cdot \text{(Explanatory)}$
 
 * Residuals = observed - predicted = y - $\hat{y}$
 
