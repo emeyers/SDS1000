@@ -86,6 +86,13 @@ Load the data of " FloridaLakes" from the library of lock5Data.
   
 **Answers:**
 
+# download the data and load it into R
+library(Lock5Data)
+data(FloridaLakes)
+
+
+
+
 1.
 
 2.
