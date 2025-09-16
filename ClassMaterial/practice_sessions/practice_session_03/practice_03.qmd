@@ -6,94 +6,155 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Part 1:  Two quantitative variables: Scatterplot and Correlation
+
+
+# The Relationship Between Two Quantitative Variables: Correlation and Regression 
 
 
 
-i) In this session you might use the formula of the correlation bewtween two quatitative variables:
+
+
+
+* In this session you might use the formula of the correlation bewtween two quatitative variables:
 
 $r_{x y}=\frac{1}{(n-1) s_z s_y} \sum_{i=1}^n\left(x_i-\bar{x}\right)\left(y_i-\bar{y}\right)$
 
 
-ii) Remember that the fitted regression line is defined by the equation: 
+* Remember that the fitted regression line is defined by the equation: 
 
-$\hat{y}=a+bx$
+** $\hat{y}=a+bx$ , or 
 
-$\hat{Response}= a + b ( Explanatory)$
+** $\hat{Response}= a + b ( Explanatory)$
 
 Where: 
 
-  ** Response: is the response variable or the dependent variable
+  *** Response: is the response variable or the dependent variable
 
-  ** Explanatory: is the independent variable
+  *** Explanatory: is the independent variable
   
-  ** a: is the y- intercept
+  *** a: is the y- intercept
   
-  ** b: is the slope of the regression line
-  
-  iii) You may use the following R functions: plot(), lm(), cor(), abline(). And you might need to download Lock5Data using Library(Lock5Data ). 
+  *** b: is the slope of the regression line
 
   
-## Practice 1: 
+  * You may use the following R functions: `plot()`, `lm()`, `cor()`, `abline()`. And you might need to download Lock5Data using Library(Lock5Data ). 
+
+
+
+
+
+## Part 1:  Two quantitative variables: Scatterplot and Correlation
+
+**Practice 1:** 
 
 
 ![](scatterplots.png){width=50%}
 
 
 
+**Answers:**
+
+
+
+
+
+
+
 $\\$
 
 
-## Practice 2:
+
+
+**Practice 2:**
+
 
 Load the data of " FloridaLakes" from the library of lock5Data. 
 
-- Describe the type of each of the variables "pH" and "Calcium", "Alkalinity". 
+1. Describe the type of each of the variables "pH" and "Calcium", "Alkalinity". 
 
-- Create a scatter plot each two variables and describe it. Add a line to the scatter plot using "abline()" function.  
+2. Create a scatter plot each two variables and describe it. Add a line to the scatter plot using "abline()" function.  
 
-- What is the correlation coefficient between "pH" and "Calcium". Is it positive or negative.
+3. What is the correlation coefficient between "pH" and "Calcium". Is it positive or negative.
 
-- What this coefficient means in the context of this data.
+4. What this coefficient means in the context of this data.
 
   
+**Answers:**
+
+1.
+
+2.
+
+3.
+
+4.
+
 
 $\\$
 
 
-# Part 2:  Two quantitative variables: Linear Regression 
 
-## Practice 3:
+## Part 2:  Two quantitative variables: Linear Regression 
+
+
+**Practice 3:**
+
 
 ![](regression_true_false.png){width=100%}
 
 
 
-# Part 2:  Two quantitative variables: Linear Regression 
-## Practice 4: 
+
+
+
+
+
+
+## Part 2:  Two quantitative variables: Linear Regression 
+
+
+
+**Practice 4:** 
 
 Use the previous data " FloridaLakes" and the two variables "pH" and " calcium.
 
-1)- Using the appropriate R function, create a linear model to predict " calcium" from "pH".
+1. Using the appropriate R function, create a linear model to predict " calcium" from "pH".
 
-2)- Write the correct regression equation of this linear model.
+2. Write the correct regression equation of this linear model.
 
-3)- Interpret the intercept, the slop, and  $R^2 of the model within the context of the data
+3. Interpret the intercept, the slop, and  $R^2 of the model within the context of the data
 
-4)- Find the five number  of the "pH".
+4. Find the five number  of the "pH".
 
-5)- Predict the calcium level when:    pH= 2.6,  pH= 5.3 , pH= 9.7
+5. Predict the calcium level when:    pH= 2.6,  pH= 5.3 , pH= 9.7
 
-6)- Which prediction is valid and which one is an "extrapolation" .
+6. Which prediction is valid and which one is an "extrapolation" .
 
-7)- Find the residuals for each of the previous predictions.
-
-
-# Part 3:  Review
+7. Find the residuals for each of the previous predictions.
 
 
+**Answers:**
 
-## Practive 5 (A Review):
+1.
+
+2.
+
+3.
+
+4.
+
+5.
+
+6.
+
+7.
+
+
+## Part 3:  Review
+
+
+
+**Practive 5:**
 
 From the data " ICUAdmissions",study the following variables by creating descriptive statistics such as: boxplot, histogram, five number summary:
  " Infection", " Age", " Race".
