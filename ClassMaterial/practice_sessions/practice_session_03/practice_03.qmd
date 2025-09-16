@@ -7,8 +7,7 @@ editor_options:
 ---
 
 # Part 1:  Two quantitative variables: Scatterplot and Correlation
-# Part 2:  Two quantitative variables: Linear Regression 
-# Part 3:  Review
+
 
 
 i) In this session you might use the formula of the correlation bewtween two quatitative variables:
@@ -61,6 +60,9 @@ Load the data of " FloridaLakes" from the library of lock5Data.
 
 $\\$
 
+
+# Part 2:  Two quantitative variables: Linear Regression 
+
 ## Practice 3:
 
 ![](regression_true_false.png){width=100%}
@@ -87,8 +89,9 @@ Use the previous data " FloridaLakes" and the two variables "pH" and " calcium.
 7)- Find the residuals for each of the previous predictions.
 
 
-
 # Part 3:  Review
+
+
 
 ## Practive 5 (A Review):
 
