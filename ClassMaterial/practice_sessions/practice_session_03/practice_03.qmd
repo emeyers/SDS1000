@@ -15,7 +15,7 @@ $\\$
 
 
 
-In this session you might use the formula of the correlation bewtween two quatitative variables:
+In this session you might use the formula of the correlation between two quantitative variables:
 
 
 $r_{x y}=\frac{1}{(n-1) s_z s_y} \sum_{i=1}^n\left(x_i-\bar{x}\right)\left(y_i-\bar{y}\right)$
