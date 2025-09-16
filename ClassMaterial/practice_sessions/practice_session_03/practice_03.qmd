@@ -72,13 +72,13 @@ $\\$
 **Practice 2:**
 
 
-Load the data of " FloridaLakes" from the library of lock5Data. 
+Load the data of `FloridaLakes` from the library of lock5Data. 
 
-1. Describe the type of each of the variables "pH" and "Calcium", "Alkalinity". 
+1. Describe the type of each of the variables `pH` and `Calcium`, `Alkalinity`. 
 
 2. Create a scatter plot each two variables and describe it. Add a line to the scatter plot using "abline()" function.  
 
-3. What is the correlation coefficient between "pH" and "Calcium". Is it positive or negative.
+3. What is the correlation coefficient between `pH` and `Calcium`. Is it positive or negative.
 
 4. What this coefficient means in the context of this data.
 
@@ -117,13 +117,13 @@ a. We choose the linear model that passes through the most data points on scatte
 
 b. The residuals are observed y-values minus the y-value predicted by linear model.
 
-c.Least square means that the square of the largerst residuals is as small as it could be possible.
+c. Least square means that the square of the largerst residuals is as small as it could be possibly be.
 
 d. Some of the residuals from least linear model will be positive and some will be negative.
 
-c. Least squares means that some of the squares of the residuals are minimized.
+e. Least squares means that some of the squares of the residuals are minimized.
 
-d. We write $\hat{y}$ to denote the predicted values and the y to denote the observed value.
+f. We write $\hat{y}$ to denote the predicted values and the y to denote the observed value.
 
 
 **Answers:**
@@ -152,19 +152,19 @@ $\\$
 
 **Practice 4:** 
 
-Use the previous data " FloridaLakes" and the two variables "pH" and " calcium.
+Use the previous data `FloridaLakes` and the two variables `pH` and `calcium`.
 
-1. Using the appropriate R function, create a linear model to predict " calcium" from "pH".
+1. Using the appropriate R function, create a linear model to predict `calcium` from `pH`.
 
 2. Write the correct regression equation of this linear model.
 
 3. Interpret the intercept, the slop, and  $R^2 of the model within the context of the data
 
-4. Find the five number  of the "pH".
+4. Find the five number  of the `pH`.
 
 5. Predict the calcium level when:    pH= 2.6,  pH= 5.3 , pH= 9.7
 
-6. Which prediction is valid and which one is an "extrapolation" .
+6. Which prediction is valid and which one is an extrapolation .
 
 7. Find the residuals for each of the previous predictions.
 
