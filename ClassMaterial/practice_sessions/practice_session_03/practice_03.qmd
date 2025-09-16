@@ -47,8 +47,9 @@ Where:
 
 **Practice 1:** 
 
+Here are several scatterplots. The calculated correlations are 0.006, - 0.977, - 0.487, and 0.777. Match each scatter plot with the appropriate correlation coeffecient
 
-![](scatterplots.png){width=50%}
+![](correlation.png){width=50%}
 
 
 
