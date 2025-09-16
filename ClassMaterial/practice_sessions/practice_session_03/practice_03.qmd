@@ -67,6 +67,7 @@ $\\$
 
 
 
+# Part 2:  Two quantitative variables: Linear Regression 
 ## Practice 4: 
 
 Use the previous data " FloridaLakes" and the two variables "pH" and " calcium.
@@ -85,6 +86,9 @@ Use the previous data " FloridaLakes" and the two variables "pH" and " calcium.
 
 7)- Find the residuals for each of the previous predictions.
 
+
+
+# Part 3:  Review
 
 ## Practive 5 (A Review):
 
