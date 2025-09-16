@@ -177,24 +177,27 @@ $\\$
 
 **Practice 4:** 
 
-Use the previous data `FloridaLakes` and the two variables `pH` and `calcium`.
 
-1. Using the appropriate R function, create a linear model to predict `calcium` from `pH`.
+Use the previous data `FloridaLakes` and the two variables  `calcium` and `Alkalinity`. 
 
-2. Write the correct regression equation of this linear model.
+1. Using the appropriate R function, create a linear model to predict `Alkalinity` from `calcium`.
 
-3. Interpret the intercept, the slop, and  $R^2 of the model within the context of the data
+2. Find the coefficients of the regression and write the correct  equation of this linear model.
 
-4. Find the five number  of the `pH`.
+3. Interpret the intercept, the slope of the model within the context of the data.
 
-5. Predict the calcium level when: pH= 2.6, pH= 5.3 , pH= 9.7
+4. Find the five number  of the `Calcium`.
+
+5. Predict the `Alkalinity` level when: Calcium = 2.6, 0.5
 
 6. Which prediction is valid and which one is an extrapolation.
 
 7. Find the residuals for each of the previous predictions.
 
 
+
 **Answers:**
+
 ```{r}
 
 
