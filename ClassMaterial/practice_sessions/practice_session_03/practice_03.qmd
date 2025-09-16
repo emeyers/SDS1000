@@ -117,7 +117,17 @@ $\\$
 
 **Answers:**
 
+a.
 
+b.
+
+c.
+
+d.
+
+e.
+
+f.
 
 
 
@@ -165,9 +175,11 @@ Use the previous data " FloridaLakes" and the two variables "pH" and " calcium.
 7.
 
 
+
+$\\$
+
+
 ## Part 3:  Review
-
-
 
 **Practive 5:**
 
