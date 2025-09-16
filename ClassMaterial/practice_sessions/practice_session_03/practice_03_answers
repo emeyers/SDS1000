@@ -1,0 +1,361 @@
+---
+title: "Practice Session 3"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+# The Relationship Between Two Quantitative Variables: Correlation and Regression 
+
+$\\$
+
+
+
+
+In this session you might use the formula of the correlation bewtween two quatitative variables:
+
+
+$r_{x y}=\frac{1}{(n-1) s_z s_y} \sum_{i=1}^n\left(x_i-\bar{x}\right)\left(y_i-\bar{y}\right)$
+
+
+$\\$
+
+Remember that the fitted regression line is defined by the equation: 
+
+* $\hat{y}=a+bx$ , or 
+
+
+* $\hat{Response}= a + b ( Explanatory)$
+
+* Residuals= observed- predicted= y-
+
+Where: 
+
+* Response: is the response variable or the dependent variable
+
+* Explanatory: is the independent variable
+  
+* a: is the y- intercept
+  
+* b: is the slope of the regression line
+
+$\\$
+
+ You may use the following R functions: `plot()`, `lm()`, `cor()`, `abline()`. And you might need to download Lock5Data using Library(Lock5Data ). 
+
+
+
+
+
+## Part 1:  Two quantitative variables: Scatterplot and Correlation
+
+**Practice 1:** 
+
+Here are several scatterplots. The calculated correlations are 0.006, - 0.977, - 0.487, and 0.777. Match each scatter plot with the appropriate correlation coeffecient
+
+
+![](scatterplot.png){width=50%}
+
+
+
+**Answers:**
+
+a.  0.006
+
+
+b.  0.777
+
+
+c.  - 0.977
+
+
+d.  - 0.487
+
+
+
+
+$\\$
+
+
+**Practice 2:**
+
+
+Load the data of `FloridaLakes` from the library of lock5Data. 
+
+1. Describe the type of each of the variables `pH` and `Calcium`, `Alkalinity`. 
+
+2. Create a scatter plots for each of the pair of variables ( add the main title of the plot).
+
+3. What is the correlation coefficient between `pH` and `Calcium`. Is it positive or negative.
+
+4. What this coefficients mean in the context of this data.
+
+5. Try to calculate the correlation coefficient between pH and Calcium without using `R`function.
+
+  
+**Answers:**
+
+```{r}
+# download the data and load it into R
+library(Lock5Data)
+data(FloridaLakes)
+
+# Describe the structure of the variables of FloridaLake
+str(FloridaLakes)
+```
+
+1.  Describe the type of each of the variables `pH` and `Calcium`, `Alkalinity`.
+
+The variables `pH` and `Calcium`, `Alkalinity` are quantitative variables (continuous)
+
+
+
+2.Create a scatter plots for each of the pair of variables ( add the main title of the plot).
+
+```{r}
+# Create scatter pH vs  Calcium 
+
+plot(FloridaLakes$pH, 
+     FloridaLakes$Calcium,
+     main = "ph vs Calcium Scatter plot") 
+
+# Create scatter pH vs  Alkalinity  
+
+plot(FloridaLakes$pH, 
+     FloridaLakes$Alkalinity ,
+     main = "ph vs AlkalinityScatter plot")
+
+# Create scatter Calcium vs  Alkalinity      
+plot(FloridaLakes$Calcium, FloridaLakes$Alkalinity,
+    main = "Calcium vs Alkalinity Scatter plot")
+```
+
+
+
+3. What is the correlation coefficient between `pH` and `Calcium`. Is it positive or negative.
+
+```{r}
+
+# correlation
+
+cor_pH_Calcium <- cor(FloridaLakes$pH,FloridaLakes$Calcium)
+cor_pH_Alk <- cor(FloridaLakes$pH,FloridaLakes$Alkalinity)
+cor_Cal_Alk <- cor(FloridaLakes$Calcium,FloridaLakes$Alkalinity)
+
+cor_pH_Calcium 
+cor_pH_Alk 
+cor_Cal_Alk
+```
+
+4. What this coefficients mean in the context of this data.
+A correlation coefficient of 0.577  between `pH`and `Calcium` means that there is a linear positive association of moderate strength of 0.577.
+
+
+
+5.calculate the correlation coefficient between pH and Calcium without using `R`function.
+
+```{r}
+
+n<- length(FloridaLakes$pH)
+
+X<-FloridaLakes$pH
+
+Y<- FloridaLakes$Calcium
+
+
+m2_cor_pH_Cal<- sum((X - mean(X)) * (Y - mean(Y)))*(1/(n - 1))*1/sd(X)*1/sd(Y)
+
+m2_cor_pH_Cal
+
+```
+
+
+
+$\\$
+
+
+
+## Part 2:  Two quantitative variables: Linear Regression 
+
+
+**Practice 3:**
+
+
+State if the following sentences are true or false.
+
+a. We choose the linear model that passes through the most data points on scatter plot.
+
+b. The residuals are observed y-values minus the y-value predicted by linear model.
+
+c. Least square means that the square of the largest residuals is as small as it could be possibly be.
+
+d. Some of the residuals from least linear model will be positive and some will be negative.
+
+e. Least squares means that some of the squares of the residuals are minimized.
+
+f. We write $\hat{y}$ to denote the predicted values and the y to denote the observed value.
+
+
+**Answers:**
+
+a.  False; we choose a model that minimizes the sum of squared residuals (i.e., sum of squared distances between each point and the regression line).
+
+
+b.  True; this is the definition of a residual.
+
+
+c.  False; the least squares method minimizes the **total** sum of squared distances, not the largest squared distance. It takes into account all observations, not a single observation.
+
+
+d.  True; we see this from the residual plot normally; some values are above 0, others are below.
+
+e. False; the least squares method minimizes the **total** sum of squared distances. The least squares method does not minimize individual squared 
+
+
+f. True; this is the definition of $y$ and $\hat y$ in regression.
+
+
+$\\$
+
+
+
+**Practice 4:** 
+
+Use the previous data `FloridaLakes` and the two variables c.
+
+1. Using the appropriate R function, create a linear model to predict `Alkalinity` from `calcium`.
+
+2. Find the coefficients of the regression and write the correct  equation of this linear model.
+
+3. Interpret the intercept, the slope of the model within the context of the data.
+
+4. Find the five number  of the `Calcium`.
+
+5. Predict the `Alkalinity` level when: Calcium = 2.6, 0.5
+
+6. Which prediction is valid and which one is an extrapolation.
+
+7. Find the residuals for each of the previous predictions.
+
+
+**Answers:**
+
+
+
+```{r}
+ # 1. Using the appropriate R function, create a linear model to predict  `calcium` from `pH`.
+# Fit a linear regression model data and add the regression line to the plot
+Calcium_Alk_fit <- lm( FloridaLakes$Alkalinity ~ FloridaLakes$Calcium)
+
+# Add the regression line to the plot
+abline(Calcium_Alk_fit, col = "green")
+
+```
+
+#2. Find the coefficients of the regression and write the correct  equation of this linear model.
+ 
+$\hat{Alkalinity} = 9.206 + 1.276  \cdot Calcium$.
+
+```{r}
+
+print(Calcium_Alk_fit )
+#or 
+reg_coef<-coef(Calcium_Alk_fit) 
+reg_coef
+
+```
+
+
+
+
+# 4. Find the five number  of the `Calcium`.
+```{r}
+fivenum(FloridaLakes$Calcium)
+
+```
+
+
+5. Predict the `Alkalinity` level when: Calcium = 2.6, 0.5
+
+```{r}
+
+```
+
+6. Which prediction is valid and which one is an extrapolation.
+The level of Calcium = 2.6 is within the range of the data. But the Level of Calcium= 0.5 id an extrapolation.
+
+
+7. Find the residuals for each of the previous predictions.
+```{r}
+## Method 1 or 2
+(predicted_Alk_2.6 <- reg_coef[1] + reg_coef[2] * 2.6
+res_2.6<- 
+
+
+predicted_Alk_2.6-2.6
+
+9.206 + 1.276*(2.6)
+
+
+```
+
+
+
+
+1.
+
+
+2.
+
+3.
+
+4.
+
+5.
+
+6.
+
+7.
+
+
+
+$\\$
+
+
+## Part 3:  Review
+
+**Practive 5:**
+
+From the data `ICUAdmissions` create descriptive statistics ( such as: `boxplot`, `histogram`, `five number summary` ) for the variables
+ `Infection`, `Age`, `Race`.
+
+
+**Answers:**
+
+```{r}
+# download the data and load it into R
+library(Lock5Data)
+data(ICUAdmissions)
+
+
+plot(ICUAdmissions$Age, ICUAdmissions$Infection)
+
+age_infection_corr <- cor(ICUAdmissions$Age, ICUAdmissions$Infection)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+  
