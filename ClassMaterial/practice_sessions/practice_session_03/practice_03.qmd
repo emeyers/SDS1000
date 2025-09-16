@@ -171,10 +171,6 @@ $\\$
 
 
 
-## Part 2:  Two quantitative variables: Linear Regression 
-
-
-
 **Practice 4:** 
 
 
