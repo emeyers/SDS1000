@@ -30,6 +30,8 @@ Remember that the fitted regression line is defined by the equation:
 
 * $\hat{Response}= a + b ( Explanatory)$
 
+* Residuals= observed- predicted= y- $\hat{y}$
+
 Where: 
 
 * Response: is the response variable or the dependent variable
@@ -85,13 +87,13 @@ Load the data of `FloridaLakes` from the library of lock5Data.
 
 1. Describe the type of each of the variables `pH` and `Calcium`, `Alkalinity`. 
 
-2. Create a scatter plot each two variables and describe it. Add a line to the scatter plot using `abline()` function.  
+2. Create a scatter plots for each of pair of variables ( add the main title of the plot).
 
 3. What is the correlation coefficient between `pH` and `Calcium`. Is it positive or negative.
 
-4. What this coefficient means in the context of this data.
+4. What these coefficients mean in the context of this data.
 
-5. Try to calculate the correlation without using `R`function.
+5. Try to calculate the correlation coefficient between `pH` and `Calcium` without using `R`function.
 
   
 **Answers:**
