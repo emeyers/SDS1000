@@ -30,7 +30,7 @@ Remember that the fitted regression line is defined by the equation:
 
 * $\hat{Response}= a + b ( Explanatory)$
 
-* Residuals= observed- predicted= y-
+* Residuals= observed- predicted= y- $\hat{y}$
 
 Where: 
 
@@ -99,12 +99,14 @@ Load the data of `FloridaLakes` from the library of lock5Data.
 **Answers:**
 
 ```{r}
+
 # download the data and load it into R
 library(Lock5Data)
 data(FloridaLakes)
 
 # Describe the structure of the variables of FloridaLake
 str(FloridaLakes)
+
 ```
 
 1.  Describe the type of each of the variables `pH` and `Calcium`, `Alkalinity`.
@@ -113,7 +115,7 @@ The variables `pH` and `Calcium`, `Alkalinity` are quantitative variables (conti
 
 
 
-2.Create a scatter plots for each of the pair of variables ( add the main title of the plot).
+2.Create a scatter plots for each pair of variables ( add the main title of each plot).
 
 ```{r}
 # Create scatter pH vs  Calcium 
@@ -150,7 +152,7 @@ cor_pH_Alk
 cor_Cal_Alk
 ```
 
-4. What this coefficients mean in the context of this data.
+4. What these coefficients mean in the context of this data.
 A correlation coefficient of 0.577  between `pH`and `Calcium` means that there is a linear positive association of moderate strength of 0.577.
 
 
@@ -244,9 +246,10 @@ Use the previous data `FloridaLakes` and the two variables c.
 **Answers:**
 
 
-
-```{r}
  # 1. Using the appropriate R function, create a linear model to predict  `calcium` from `pH`.
+ 
+```{r}
+
 # Fit a linear regression model data and add the regression line to the plot
 Calcium_Alk_fit <- lm( FloridaLakes$Alkalinity ~ FloridaLakes$Calcium)
 
@@ -269,19 +272,23 @@ reg_coef
 ```
 
 
-
-
 # 4. Find the five number  of the `Calcium`.
 ```{r}
+
 fivenum(FloridaLakes$Calcium)
 
 ```
 
 
-5. Predict the `Alkalinity` level when: Calcium = 2.6, 0.5
+5. Predict the `Alkalinity` level when Calcium = 2.6, 0.5
 
 ```{r}
+# for calcium= 2.6 
+(predicted_Alk_2.6 <- reg_coef[1] + reg_coef[2] * 2.6)
 
+
+# for calcium= 0.5 
+(predicted_Alk_0.5 <- reg_coef[1] + reg_coef[2] * 0.5)
 ```
 
 6. Which prediction is valid and which one is an extrapolation.
@@ -290,14 +297,20 @@ The level of Calcium = 2.6 is within the range of the data. But the Level of Cal
 
 7. Find the residuals for each of the previous predictions.
 ```{r}
-## Method 1 or 2
+## residuals of  when Calcium =2.6
+
 (predicted_Alk_2.6 <- reg_coef[1] + reg_coef[2] * 2.6
-res_2.6<- 
+ 9.206 + 1.276*(2.6)
+ 
+(res_2.6<- predicted_Alk_2.6-2.6 )
 
 
-predicted_Alk_2.6-2.6
+## residuals of  when Calcium = 0.5
+(predicted_Alk_0.5 <- reg_coef[1] + reg_coef[2] * 2.6
+  9.206 + 1.276*0.5
+  
+res_0.5<- predicted_Alk_0.5-0.5 
 
-9.206 + 1.276*(2.6)
 
 
 ```
