@@ -50,7 +50,7 @@ $\\$
 
 
 
-## Part 1:  Two quantitative variables: Scatterplot and Correlation
+## Part 1:  Two quantitative variables/ Scatterplot and Correlation
 
 **Practice 1:** 
 
@@ -87,7 +87,7 @@ Load the data `FloridaLakes` from library(Lock5Data).
 
 1. Describe the type of each of the variables: `pH`, `Calcium`, and `Alkalinity`. 
 
-2. Create a scatter plots for each of pair of variables. Add the main title to the plots.
+2. Create a three scatter plots for each pair of variables: pH` vs `Calcium`, pH` vs `Alkalinity` ,and  `Calcium` vs`Alkalinity` . Add the main title to each plot.
 
 3. What is the correlation coefficient between `pH` and `Calcium`? Is it positive or negative?
 
@@ -125,7 +125,7 @@ $\\$
 
 
 
-## Part 2:  Two quantitative variables: Linear Regression 
+## Part 2:  Two quantitative variables/ Linear Regression 
 
 
 **Practice 3:**
@@ -174,23 +174,21 @@ $\\$
 **Practice 4:** 
 
 
-Use the previous data `FloridaLakes` and the variables `calcium` and `Alkalinity`. 
-
 1. Using the appropriate R function, create a linear model to predict `Alkalinity` from `calcium`.
 
 2. Find the coefficients of the regression and write the correct equation of this linear model.
 
 3. Interpret the intercept and slope of the model within the context of the data.
 
-4. Find the five number summary for the variable `Calcium`.
+4. Predict the `Alkalinity` level when  Calcium = 2.5.
 
-5. Predict the `Alkalinity` level when Calcium = 0.5 and when Calcium = 2.6.
+5. The actual `Alkalinity` level was 8.5 when Calcium = 2.5. Find the residual for this data point.
 
-6. Do both of these predictions make sense given the data?
+6. Find the five number summary for the variable `Calcium`.
 
-7. Find the residuals for each of the previous predictions.
+7. Predict the `Alkalinity` level when  Calcium = 0.5
 
-
+8. Do both of these predictions make sense given the data?
 
 **Answers:**
 
@@ -216,6 +214,8 @@ Use the previous data `FloridaLakes` and the variables `calcium` and `Alkalinity
 6.
 
 7.
+
+8.
 
 
 
