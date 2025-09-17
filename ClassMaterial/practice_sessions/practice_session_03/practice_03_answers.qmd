@@ -428,7 +428,7 @@ cor(ICUAdmissions$Age, ICUAdmissions$HeartRate)
 we can describe them with `boxpot`
 
 ```{r}
-# boxplot of age( quantitative) versus categorical variable: Infection( which has two levels )
+# boxplot of age( quantitative) versus categorical variable Infection( which has two levels )
 
 boxplot(ICUAdmissions$Age ~ ICUAdmissions$Infection)
 
