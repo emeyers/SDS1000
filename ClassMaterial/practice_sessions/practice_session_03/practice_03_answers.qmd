@@ -340,7 +340,7 @@ $\\$
 **Practive 5:**
 
 From the data `ICUAdmissions` create descriptive statistics ( such as: `boxplot`, `histogram`, `five number summary` ) for the variables
- `Infection`, `Age`, `Race`, `HeartRate`.
+ `Infection`, `Age`, `Race`, and `HeartRate`.
 
 
 **Answers:**
