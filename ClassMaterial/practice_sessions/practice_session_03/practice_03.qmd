@@ -25,7 +25,6 @@ Remember that the fitted regression line is defined by the equation:
 
 * $\hat{y} = a + bx$, or 
 
-
 * $\hat{\text{Response}} = a + b \cdot \text{(Explanatory)}$
 
 * Residuals = observed - predicted = y - $\hat{y}$
@@ -43,9 +42,6 @@ Where:
 $\\$
 
  You may use the following R functions: `plot()`, `lm()`, `cor()`, `abline()`. And you might need to download Lock5Data using `library(Lock5Data)`. 
-
-
-
 
 
 ## Part 1:  Two quantitative variables/ Scatterplot and Correlation
@@ -127,11 +123,11 @@ $\\$
 
 State if the following sentences are true or false:
 
-a. We choose the linear model that passes through the most data points on a scatterplot.
+a. We choose the linear model that passes through the most data points on a scatter plot.
 
 b. The residuals are observed y-values minus the y-value predicted by a linear model.
 
-c. Least square means that the square of the largestt residuas is as small as it could possibly be.
+c. Least square means that the square of the largest residuals is as small as it could possibly be.
 
 d. Some of the residuals from least linear model will be positive, and some will be negative.
 
@@ -164,15 +160,17 @@ $\\$
 
 **Practice 4:** 
 
+Use the previous data `FloridaLakes` and the two variables `Alkalinity`  and  `calcium`.
+
 1. Using the appropriate R function, create a linear model to predict `Alkalinity` from `calcium`.
 
 2. Find the coefficients of the regression and write the correct equation of this linear model.
 
 3. Interpret the intercept and slope of the model within the context of the data.
 
-4. Predict the `Alkalinity` level when  Calcium = 2.5.
+4. Predict the `Alkalinity` level when Calcium= 2.5.
 
-5. The actual `Alkalinity` level was 8.5 when Calcium = 2.5. Find the residual for this data point.
+5. The actual `Alkalinity`  was 8.5 when Calcium= 2.5. Find the residual for this data point.
 
 6. Find the five number summary for the variable `Calcium`.
 
