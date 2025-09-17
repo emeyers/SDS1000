@@ -68,14 +68,14 @@ $\\$
 
 Load the data of `FloridaLakes` from the library of lock5Data. 
 
-1. Describe the type of each of the variables `pH` and `Calcium`, `Alkalinity`. 
+1. Describe the type of each of the variables `pH` ,`Calcium`, and `Alkalinity`. 
 
 
-2. Create a three scatter plots for each pair of variables: pH`  vs  `Calcium` ,`pH` vs `Alkalinity` , and  `Calcium` vs `Alkalinity` . Add the main title to each plot.
+2. Create a three scatter plots for each pair of the variables: pH`  vs  `Calcium` ,`pH` vs `Alkalinity` , and  `Calcium` vs `Alkalinity` . Add the main title to each plot.
 
-3. What is the correlation coefficient between `pH` and `Calcium`. Is it positive or negative.
+3. What is the correlation coefficient between `pH` and `Calcium`. Is it positive or negative?
 
-4. What do these coefficients mean in the context of this data.
+4. What do these coefficients mean in the context of this data ?
 
 5. Try to calculate the correlation coefficient between pH and Calcium without using `R` function.
 
