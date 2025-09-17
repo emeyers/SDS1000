@@ -13,8 +13,6 @@ editor_options:
 $\\$
 
 
-
-
 In this session you might use the formula of the correlation between two quantitative variables:
 
 
@@ -75,8 +73,6 @@ c.
 d.
 
 
-
-
 $\\$
 
 
@@ -87,7 +83,7 @@ Load the data `FloridaLakes` from library(Lock5Data).
 
 1. Describe the type of each of the variables: `pH`, `Calcium`, and `Alkalinity`. 
 
-2. Create a three scatter plots for each pair of variables: pH` vs `Calcium`, pH` vs `Alkalinity` ,and  `Calcium` vs`Alkalinity` . Add the main title to each plot.
+2. Create a three scatter plots for each pair of variables: pH` vs `Calcium`, pH` vs `Alkalinity`, and `Calcium` vs `Alkalinity` . Add the main title to each plot.
 
 3. What is the correlation coefficient between `pH` and `Calcium`? Is it positive or negative?
 
@@ -102,8 +98,6 @@ Load the data `FloridaLakes` from library(Lock5Data).
 # download the data and load it into R
 library(Lock5Data)
 data(FloridaLakes)
-
-
 
 
 ```
@@ -121,9 +115,9 @@ data(FloridaLakes)
 4.
 
 
+5.
+
 $\\$
-
-
 
 ## Part 2:  Two quantitative variables/ Linear Regression 
 
@@ -166,13 +160,9 @@ e.
 f.
 
 
-
 $\\$
 
-
-
 **Practice 4:** 
-
 
 1. Using the appropriate R function, create a linear model to predict `Alkalinity` from `calcium`.
 
@@ -193,15 +183,14 @@ $\\$
 **Answers:**
 
 ```{r}
-
-
+# download the data and load it into R
+library(Lock5Data)
+data(FloridaLakes)
 
 
 ```
 
-
 1.
-
 
 2.
 
@@ -217,14 +206,11 @@ $\\$
 
 8.
 
-
-
 $\\$
-
 
 ## Part 3:  Review
 
-**Practive 5:**
+**Practice 5:**
 
 From the data `ICUAdmissions` create descriptive statistics and visualizations for the variables `Infection`, `Age`, and `Race`, `HeartRate`.
 
@@ -235,8 +221,6 @@ From the data `ICUAdmissions` create descriptive statistics and visualizations f
 # download the data and load it into R
 library(Lock5Data)
 data(ICUAdmissions)
-
-
 
 ```
 
