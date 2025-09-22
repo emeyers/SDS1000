@@ -1,0 +1,283 @@
+---
+title: "Class 8 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+# Part 1: Creating sampling distributions
+
+
+Let's create a sampling distribution by repeatedly sampling the word lengths
+from the Gettysburg Address.
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 1.1: Loading the data
+
+
+The code below loads the Gettysburg Address into a data frame called `gettysburg`.
+
+Let's start by extracting the word lengths from this data frame into a vector
+object called `word_lengths`. Then report how many words are in the Gettysburg Address.
+
+We are viewing the the Gettysburg Address word lengths as our population, and
+we will be drawing samples from this population to create a sampling distribution.
+
+
+
+```{r load_gettysburg}
+
+# Load SDS1000 library - we will use the do_it() function from this package later 
+library(SDS1000)
+
+# Load the Gettysburg Address data frame
+load("gettysburg.Rda")
+
+
+# store the word lengths in a vector object called word_lengths
+word_lengths <- gettysburg$num_letters
+
+
+# print out how many words in are the Gettysburg Address
+length(word_lengths)
+
+
+```
+
+
+
+$\\$
+
+
+
+### Part 1.2: Generated one random sample and statistic
+
+Now let's generate a random sample of size 10 from the `word_lengths` vector and
+store it in an object called `curr_sample`. Then let's calculate the mean of this 
+sample.
+
+
+```{r one_sample}
+
+# set the random seed to 1234
+set.seed(1234)
+
+# generate a random sample of size 10 from the word_lengths vector
+curr_sample <- sample(word_lengths, size = 10)
+
+
+# calculate the mean of the sample
+mean(curr_sample)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 1.3: Using the do_it function
+
+
+Now let's use the `do_it()` function from the `SDS1000` package to repeat a
+piece of code many times.
+
+In particular, let's add the numbers 2 and 3 together 100 times, and store the results
+in a vector called `results`. Then print out the `results` vector.
+
+
+
+```{r do_it_example}
+
+# use the do_it function to add 2 and 3 together 100 times
+
+results <- do_it(100) * {
+  
+ 2 + 3
+  
+}
+
+# print out the results vector
+results
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 1.4: Creating a sampling distribution
+
+Now let's use the `do_it()` function to create a sampling distribution of the
+mean word length in samples of size n = 10 drawn from the `word_lengths` vector.
+
+In particular, use the `do_it()` function to repeat the following steps 10,000 times:
+
+1. Draw a random sample of size 10 from the `word_lengths` vector
+2. Calculate the mean of this sample
+
+Store the results in a vector called `sampling_dist`. Then create a histogram showing
+the shape of the (approximate) sampling distribution
+
+
+```{r sampling_distribution}
+
+# use the do_it function to create a sampling distribution of the mean word length
+
+sampling_dist <- do_it(1000) * {
+  
+  curr_sample <- sample(word_lengths, size = 10)
+  mean(curr_sample)
+  
+}
+
+# create a histogram of the sampling distribution
+hist(sampling_dist, 
+     xlab = "Mean Word Length", 
+     ylab = "Frequency",
+     main = "Sampling Distribution of Mean Word Length")
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 1.5: Bias in our sampling distribution? 
+
+Let's examine if there is bias in our sampling distribution by comparing the 
+population mean $\mu$ to the average of our sample means; i.e., to $E[\bar{x}]$
+
+
+
+```{r sampling_dist_bias}
+
+# population mean
+mean(word_lengths)
+
+# sampling distribution mean
+mean(sampling_dist)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 1.6: The standard error
+
+The **standard error (SE)** is the standard deviation of our sampling distribution. 
+
+Let's calculate the standard error of the sampling distribution we created above. 
+
+
+Note: The standard error (SE) is different from the population standard deviation 
+($\sigma$) and from the sample standard deviation ($s$). It is very important
+that you understand the difference between these values. If the difference is
+not clear to you, please come to office hours (and/or the practice sessions)
+to review this!
+
+
+
+
+```{r standard_error}
+
+SE <- sd(sampling_dist)
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 1.7: Exampling how the sample size changes our results
+
+Let's explore how our results changing the sample size changes our results by
+rerunning our code with different sample sizes $n$
+
+Let's cut and paste our code above to explore this by looking at:
+
+1. How does the shape of our sampling distribution change with different sample sizes $n$
+
+2. How does the standard error (SE) change with different sample sizes. 
+
+Let's try this with values of `n = 40` and `n = 160`. 
+
+
+```{r diff_sample_sizes}
+
+
+# create sampling distributions for sample sizes of n = 40 and n = 160
+
+n <- 40  # 160
+
+sampling_dist <- do_it(1000) * {
+  
+  curr_sample <- sample(word_lengths, size = n)
+  mean(curr_sample)
+  
+}
+
+
+# plot a histogram of the sampling distribution
+hist(sampling_dist, 
+     xlab = "Mean Word Length", 
+     ylab = "Frequency",
+     main = paste("Sampling Distribution with n = ", n))
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
