@@ -39,9 +39,9 @@ Let's generate a sampling distribution using polling data from the president's a
 1.) Use the `get_approval_sample()` function to obtain a sample of `n = 1000` individual approval ratings. Use the `get_proportions()` function to obtain the proportion of voters in this sample that approve of the president.
 
 ```{r}
-# Load the SDS1000 package
+# Setting the seed so that we all get the same "random sample"
 library(SDS1000)
-
+set.seed(1000)  
 ```
 
 2.) Next, use the `do_it` function from class to generate 10000 samples, and repeat the above steps to obtain the proportion for each sample. Assign this vector of proportions to the variable `polling_distribution`, and create a histogram of it. Make sure to have an appropriate title.\ 
@@ -93,31 +93,43 @@ For this section, we will use the `BaseballSalaries2015` data set from the `Lock
 1.) Using the `sample()` function, obtain a sample of 100 baseball player salaries. Make sure to sample **without replacement**. See the `help` page for `sample()` for details.
 
 ```{r}
-library(Lock5Data)
+# Your code here
 ```
 
-2.) Using your sample of 100 salaries, calculate a point estimate of the mean salary and the standard deviation of salaries. 
+2.) Now, using the `do_it()` function, repeat this process $n = 10,000$ times, and calculate the mean each time.
 
 ```{r}
 # Your code here
 ```
 
+3.) Using your original sample of 100 salaries from part 1.), calculate a point estimate of the mean salary. 
 
-3.) Next, generate a 95% interval estimate for the mean salary of baseball players. The interval estimate is of the form:\ 
+```{r}
+# Your code here
+```
+
+4.) Calculate the standard deviation of your sampling distribution from part 2.) to estimate the standard error.
+
+```{r}
+# Your code here
+```
+
+5.) Using your answers from part 3.) and 4.), generate a 95% interval estimate for the mean salary of baseball players. The interval estimate is of the form:\ 
 
 $\text{Point Estimate} \pm 1.96 \cdot \text{Standard Error}$. 
 
-**You can calculate the standard error by taking your sample standard deviation and dividing it by 10.**
+```{r}
+# Your code here
+```
+
+6.) Interpret your interval estimate. 
+
+7.) Compare your interval estimates to the actual mean salary from the entire data set. Comment on what you notice.
 
 ```{r}
 # Your code here
 ```
 
-4.) Interpret your interval estimate. 
 
-5.) Compare your point and interval estimates to the actual mean salary from the entire data set. Comment on what you notice.
 
-```{r}
-# Your code here
-```
 
