@@ -9,3 +9,47 @@ editor_options:
 # Sampling Ditributions
 # Construct Bootstarap Distribution 
 # Construct Bootstraap  Confidence Intervals
+
+## Exercise 2: True or False
+
+A catalog sales company promises to deliver orders placed on the Internet within 3 days. Follow-up calls to a few randomly selected customers show that a 95% confidence interval for the proportion of all orders that arrive on time is $85 \% \pm 5 \%$.
+
+*What does this mean? Are these conclusions correct? Explain.
+
+1.) Between 80% and 90% of all orders arrive on time.
+2.) Ninety-five percent of all random samples of customers will show that 85% of orders arrive on time.
+3.) One can be 95% confident that the true population proportion of orders that arrive within 3 days is between 80% and 90%
+4.) We are 95% sure that between 80% and 90% of the orders placed by the sampled customers arrived on time.
+5.) There is a 95% chance that on any given day, a customer has an 80% to 90% chance of receiving his package on time.
+
+
+###Answers:
+
+1.) Not correct. This statement implies certainty. There is no level of confidence in the statement.
+2.) Not correct. Different samples will give different results. Many fewer than $95 \%$ of samples are expected to have exactly $88 \%$ on-time orders.
+3.) Correct. A confidence interval should say something about the unknown population proportion, not the sample proportion in different samples.
+4.) Not correct. We know that $88 \%$ of the orders arrived on time. There is no need to make an interval for the sample proportion.
+5.) Not correct. The interval should be about the proportion of on-time orders, not the days.
+
+
+
+
+
+### Exercise 3:  True or False ( Sample size, the level of confidence, and the margin of error)
+
+Several factors are involved in the creation of a confidence interval. Among them are the sample size, the level of confidence, and the margin of error. 
+
+1.) For a given sample size, higher confidence means a larger margin of error.
+2.) For a specified confidence level, smaller samples provide smaller margins of error.
+3.) For a fixed margin of error, larger samples provide greater confidence.
+4.) For a given confidence level, halving the margin of error requires a sample twice as large.
+
+### Answers:
+
+1.) False. For a given sample size, higher confidence means a larger margin of error.
+2.) True. Larger samples lead to smaller standard errors, which lead to smaller margins of error.
+3.) True. Larger samples are less variable, which makes us more confident that a given confidence interval succeeds in catching the population proportion.
+4.) False. The margin of error decreases as the square root of the sample size increases. Halving the margin of error requires a sample four times as large as the original.
+
+
+
