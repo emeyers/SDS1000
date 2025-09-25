@@ -1,1 +1,8 @@
 
+---
+title: "Practice Session 5"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
