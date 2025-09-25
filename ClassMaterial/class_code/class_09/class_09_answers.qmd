@@ -1,0 +1,181 @@
+---
+title: "Class 9 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+# Part 1: Normal quantiles
+
+We use quantiles from a standard normal distribution to create confidence
+intervals for different confidence levels.
+
+For a given confidence level *C*, we want to find the quentile value q* such
+that C percent of the area of a standard normal distribution is between -q* and
+q*.
+
+
+
+```{r}
+
+# install.packages("mosaic")
+
+quantile_values <- mosaic::xqnorm(c(.025, .975))
+
+
+quantile_values
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+#  Part 2: Simple example of sampling with replacement
+
+
+
+```{r}
+
+
+library(SDS1000)
+
+
+# simple vector
+my_sample <- c(3, 1, 4, 1, 5, 9)
+
+
+# resampling values in the vector with replacement
+boot_sample  <-  sample(my_sample,  6,  replace = TRUE)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+#  Part 3: Simple fake data bootstrap example
+
+
+```{r}
+
+# simple bootstrap example
+
+my_sample <- c(21, 29, 25, 19, 24, 22, 25, 26, 25, 29)
+
+
+# calculate the x-bar statistic
+obs_mean <- mean(my_sample)
+
+
+# create the bootstrap distribution
+bootstrap_dist <-  do_it(10000) * {    
+  
+  curr_boot <- sample(my_sample , 10, replace = TRUE)  
+  mean(curr_boot)  
+  
+}
+
+
+# visualize the bootstrap distribution
+hist(bootstrap_dist, 100)
+
+
+# calculate the standard error
+SE_boot <- sd(bootstrap_dist)
+
+
+# 95% confidence interval
+CI_lower <-  obs_mean  - 2 * SE_boot 
+CI_upper <-  obs_mean  + 2 * SE_boot 
+
+
+c(CI_lower, CI_upper)
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+#  Part 4: Confidence interval for Gettysburg mean word length
+
+
+```{r}
+
+
+# set the random seed
+set.seed(123)
+
+
+# load the gettysburg data
+load("gettysburg.Rda")
+
+
+# store the word lengths in a vector object called word_lengths
+word_lengths <- gettysburg$num_letters
+
+
+# get a random sample from the word lengths
+
+n <- 10
+
+my_sample <- sample(word_lengths, size = n)
+
+
+
+# calculate the x-bar statistic
+obs_mean <- mean(my_sample)
+
+
+# create the bootstrap distribution
+bootstrap_dist <-  do_it(10000) * {    
+  
+  curr_boot <- sample(my_sample, n, replace = TRUE)  
+  mean(curr_boot)  
+  
+}
+
+
+# visualize the bootstrap distribution
+hist(bootstrap_dist, 100)
+
+
+# calculate the standard error
+(SE_boot <- sd(bootstrap_dist))
+
+
+# 95% confidence interval
+CI_lower <-  obs_mean  - 2 * SE_boot 
+CI_upper <-  obs_mean  + 2 * SE_boot 
+
+
+c(CI_lower, CI_upper)
+
+
+
+```
+
+
+
