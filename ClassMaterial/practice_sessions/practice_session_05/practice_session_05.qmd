@@ -6,3 +6,6 @@ editor: source
 editor_options: 
   chunk_output_type: console
 ---
+# Sampling Ditributions
+# Construct Bootstarap Distribution 
+# Construct Bootstraap  Confidence Intervals
