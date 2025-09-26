@@ -83,6 +83,16 @@ Here’s the clever idea: We don’t have the population, but we have a sample. 
 
 * Collect the statistics for many bootstrap samples to create a bootstrap distribution.
 
+
+**Example:**
+
+Using statkey link from the text book: `https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html`
+
+Try to play with the creation of the bootstrap distribution from different data.
+
+![](statkey_bootstap.png) 
+
+
 **Practice 2:**
 
 We will use  `CarDepreciation` data from ` Library(Lock5Data)` to create a bootstrap sampling distribution of the sample mean of the ` Depreciation`
