@@ -86,9 +86,10 @@ Here’s the clever idea: We don’t have the population, but we have a sample. 
 
 **Example:**
 
-Using statkey link from the text book: `https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html`
+Using StatKey link from the text book: `https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html`
 
-Try to play with the creation of the bootstrap distribution from different data.
+Try to play with the creation of the bootstrap distribution from different data. The following picture shows the website and an example of bootstrap CI for `Price` from the data `MustangPrcice`.
+
 
 ![](statkey_bootstap.png) 
 
@@ -109,17 +110,14 @@ data(CarDepreciation)
 
 
 ```{r}
-
 set.seed(1000)
 sample_one <- sample(CarDepreciation$Depreciation, 
                     size = 20, replace = T)
-
 ```
 
 2.2) Second, you might replicate this one sample `10000` times `with replacement` using the functiopn ` do_it()` to create a `bootstrap sampling ditribution`
 
 ```{r}
-
 set.seed(1000)
 
 boot_dist <- do_it(10000) * {
