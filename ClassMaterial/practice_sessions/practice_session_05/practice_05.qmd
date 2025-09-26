@@ -10,6 +10,20 @@ editor_options:
 # Construct Bootstarap Distribution 
 # Construct Bootstraap  Confidence Intervals
 
+You may use the following codes to create bootstrap distribution and calculate its mean, standard error and confidence interval.
+
+•  boot_sample <- sample(my_sample, n, replace = TRUE) #sample with replacement 
+•  bootstrap_dist <- do_it(10000) * {
+curr_boot <- sample(my_sample, n, replace = TRUE)
+mean(curr_boot)
+} 
+SE_boot <- sd(bootstrap_dist) #make a bootstrap distribution  
+•  obs_mean <- mean(my_sample)
+CI_lower <- obs_mean - 2 * SE_boot
+CI_upper<-obs_mean+2*SE_boo
+
+
+
 ## Exercise 2: True or False
 
 A catalog sales company promises to deliver orders placed on the Internet within 3 days. Follow-up calls to a few randomly selected customers show that a 95% confidence interval for the proportion of all orders that arrive on time is $85 \% \pm 5 \%$.
