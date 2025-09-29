@@ -172,9 +172,7 @@ $\\$
 
 ```{r}
 # Note:  99\% has different critical value than 95%
-# 0.99+(1-0.99)/2
 
-```{r}
 #your code here
 ```
 
