@@ -6,7 +6,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-In this practice section we will introduce the bootstrap distribution, bootstrap confidence interval, and hypothesis testing. You may use the functions: `sample()`, `do_it` to create the bootstrap distribution.
+In this practice section we will introduce the bootstrap distribution, bootstrap confidence interval, and hypothesis testing. You may use the functions: `sample()`, `do_it()` to create the bootstrap distribution.
 
 # Part 1: Confidence interval concept
 
@@ -22,10 +22,12 @@ A catalog sales company promises to deliver orders placed on the Internet within
 
 **Answers:**
 
-1.) 
-2.) 
+1.  
 
-3.) 
+2.  
+
+3.  
+
 
 $\\$
 
@@ -42,11 +44,12 @@ Several factors are involved in the creation of a confidence interval. Among the
 
 **Answers:**
 
-1.) 
+1.  
 
-2.) 
+2.  
 
-3.) 
+3.  
+
 
 $\\$
 
@@ -64,7 +67,7 @@ Here’s the clever idea: We don’t have the population, but we have a sample. 
 
 **Example:**
 
-Using StatKey [link](https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html),  try to play with the creation of the bootstrap distribution from different data. The following picture shows the website and an example of bootstrap CI for the variable`tip` from the data `Resturant tips`.
+Using `StatKey`website [link](https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html), try to play with the creation of the bootstrap distribution from different data. The following picture shows the website and an example of bootstrap CI for the variable `tip` from the dataset `Resturant tips` .
 
 `https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html`
 
@@ -85,12 +88,10 @@ library(SDS1000)
 data(GlobalInternet2019)
 
 #your code here
-
 ```
 
 
-2.) Second, create a one bootstrap sample from `HoursOnline` . You might use the functions `sample`.
-
+2.) Second, create a one bootstrap sample from `HoursOnline` . You might use the functions `sample()`.
 
 ```{r}
 #your code here
@@ -109,7 +110,7 @@ data(GlobalInternet2019)
 #your code here
 ```
 
-5.) congrats!, you created bootstrap sampling distribution from one sample !
+5.) Congrats! you created bootstrap sampling distribution from one sample !
 $\\$
 
 ## Part 3: Construct Bootstrap Confidence Interval
@@ -152,27 +153,30 @@ From the `GlobalInternet2019` bootstrap sampling distribution you have created i
 #your code here
 ```
 
-Congrat!, you created a $95\%$ CI with bootstrap distribution !
+Congrats! you created a $95\%$ CI with bootstrap distribution !
 
-4.) Calculate the confidence interval of $99\%$ using the formula 
-
-```{r}
-# Note: 99\% has different critical value than 95%
-#your code here
-
-```
+$\\$
 
 ## Part 4:Create Bootstrap Confidence Interval with Percentiles
 
 **Practice 4:**
 
-1.) Let create a $95\%$ , $90\%$  CI of the mean `HoursOnline` in `R`, using **the percentiles** which they can be calculated using `quantile` function. 
+1.) Let create a $95\%$ , $90\%$  CI of the mean `HoursOnline` in `R`, using **Percentiles** which can be calculated using `quantile()` function. 
 
 ```{r}
 #your code here
 ```
 
+2.) Calculate the confidence interval of $99\%$ using the formula 
 
+
+```{r}
+# Note:  99\% has different critical value than 95%
+# 0.99+(1-0.99)/2
+
+```{r}
+#your code here
+```
 
 $\\$
 
@@ -197,7 +201,6 @@ State the null and alternative hypotheses for the statistical test described:
 4.) Testing to see if there is evidence that the correlation between two variables is positive.
 
 **Answers:**
-
 1.  
 
 2.  
@@ -206,5 +209,3 @@ State the null and alternative hypotheses for the statistical test described:
 
 4.
 
-
-4.  $\ H_0:\rho = 0$            vs      $\ H_a:\rho > 0$
