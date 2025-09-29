@@ -22,12 +22,11 @@ A catalog sales company promises to deliver orders placed on the Internet within
 
 **Answers:**
 
-1.
+1.) Not correct. This statement implies certainty. There is no level of confidence in the statement.
 
-2.
+2.) Not correct. Different samples will give different results. Many fewer than $95\%$ of samples are expected to have exactly $88\%$ on-time orders.
 
-3.
-
+3.) Correct. 
 
 **Practice 1.b: ** True or False/ confidence level, Sample size, and confidence interval
 
@@ -42,12 +41,11 @@ Several factors are involved in the creation of a confidence interval. Among the
 
 **Answers:**
 
-1.
+1.) True. For a given sample size, higher confidence means a larger margin of error.
 
-2.
+2.) False. Smaller samples lead to larger  standard errors, which lead to larger margins of error.
 
-3.
-
+3.) True. Larger samples are less variable, which makes us more confident that a given confidence interval succeeds in catching the population proportion.
 
 $\\$
 
@@ -65,30 +63,31 @@ Here’s the clever idea: We don’t have the population, but we have a sample. 
 
 **Example:**
 
-Using StatKey [link](https://www.lock5stat.com/StatKey/
-bootstrap_1_quant/bootstrap_1_quant.html), try to play with the creation of the bootstrap distribution from different data. The following picture shows the website and an example of bootstrap CI for the variable`tip` from the data `Resturant tips`.
+Using StatKey [link](https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html),  try to play with the creation of the bootstrap distribution from different data. The following picture shows the website and an example of bootstrap CI for the variable`tip` from the data `Resturant tips`.
 
 `https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html`
 
 
 ![](resturant_tip.png){width=90%} 
 
+$\\$
 
 **Practice 2:**
 
+The data `GlobalInternet2019` provide the average number of hours spent online for  countries.
 
-The `GeneticDiversity` data give a measure of genetic diversity for different populations and the geographic distance of each population from East Africa (Addis Ababa, Ethiopia), as one would travel over the surface of the earth by land (migration long ago is thought to have happened by land).
-
-The variables in this study were : Population, Country, Continent,Genetic Diversity (a measure of genetic diversity in the population), Distance (distance by land to East Africa in km).
-
-1) First, create `histogram` of `Distance`. What is the `sample size` of the data ?
+1) First, create `histogram` of `HoursOnline`. What is the `sample size` of the data ?
 
 ```{r}
+library(Lock5Data)
+library(SDS1000)
+data(GlobalInternet2019)
 #your code here
+
 ```
 
 
-2) Second, create a one bootstrap sample from `Distance` . You might use the functions `sample`.
+2) Second, create a one bootstrap sample from `HoursOnline` . You might use the functions `sample`.
 
 
 ```{r}
@@ -101,14 +100,16 @@ The variables in this study were : Population, Country, Continent,Genetic Divers
 #your code here
 ```
 
-4) Fourth, create a `histogram` for the bootstrap distribution of the variable ` Distance` 
+4) Fourth, create a `histogram` for the bootstrap distribution of the variable 
+`HoursOnline`
 
 ```{r}
 #your code here
+
 ```
 
 5) congrats!, you created bootstrap sampling distribution from one sample !
-
+$\\$
 
 ## Part 3: Construct Bootstrap Confidence Interval
 
@@ -129,47 +130,50 @@ The distribution of these statistics is the bootstrap distribution.
 
 **Practice 3:**
 
-From the `GeneticDiversity` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of `Distance`.
+From the `GlobalInternet2019` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of `HoursOnline`.
 
-1.) Calculate the mean of `Distance` from your original sample
-
-```{r}
-#your code here
-```
-
-2.) Calculate the standard error of our bootstrap sampling distribution of the `Distance`
+1.) First, calculate the mean of `HoursOnline` from your original sample
 
 ```{r}
 #your code here
 ```
 
+2.) Second, calculate the standard error of our bootstrap sampling distribution of the `HoursOnline`
 
-3.) Calculate the $95\%$ CI, which is based on the formula:$statistic\pm 2*SE$
+```{r}
+#your code here
+```
+
+
+3.) Third, calculate the $95\%$ CI, which is based on the formula:$statistic\pm 2*SE$
 
 ```{r}
 #your code here
 
 ```
+ Congrat!, you created a CI with bootstrap distribution !
 
 4) Calculate the confidence interval of $99\%$ using the formula 
 
 ```{r}
-# Note: 99\% CI has different critical value than 95% CI
-
+# 99\% has different critical value than 95%
 #your code here
-
 ```
 
-## Part 4: Create Bootstrap Confidence Interval with Percentiles
+## Part 4:Create Bootstrap Confidence Interval with Percentiles
 
 **Practice 4:**
 
-1) Let create a $95\%$ , $90\%$  CI of the mean `Distance` in `R`, using **the percentiles** which they can be calculated using `quantile` function. 
+1) Let create a $95\%$ , $90\%$  CI of the mean `HoursOnline` in `R`, using **the percentiles** which they can be calculated using `quantile` function. 
 
 ```{r}
 #your code here
+
 ```
 
+
+
+$\\$
 
 ## Part 5: Hypothesis testing 
 
@@ -193,10 +197,7 @@ State the null and alternative hypotheses for the statistical test described:
 
 **Answers:**
 
-1. 
-
-2.  
-
-3. 
-
-4. 
+1.
+2.
+3.
+4.
