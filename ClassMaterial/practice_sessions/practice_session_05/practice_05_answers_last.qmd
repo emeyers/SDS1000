@@ -63,11 +63,10 @@ Here’s the clever idea: We don’t have the population, but we have a sample. 
 
 **Example:**
 
-Using StatKey [link](https://www.lock5stat.com/StatKey/
+Using StatKey [link](https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html)
 bootstrap_1_quant/bootstrap_1_quant.html), try to play with the creation of the bootstrap distribution from different data. The following picture shows the website and an example of bootstrap CI for the variable`tip` from the data `Resturant tips`.
 
 `https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html`
-
 
 ![](resturant_tip.png){width=90%} 
 
