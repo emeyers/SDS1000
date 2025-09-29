@@ -20,11 +20,7 @@ A catalog sales company promises to deliver orders placed on the Internet within
 
 2.) Ninety five percent of all random samples of customers will show that $85\%$ of orders arrive on time.
 
-3.) One can be $95\%$ confident that the true population proportion of orders that arrive within 3 days is between $80\%$ and $90\%$
-
-4.) We are $95\%$  sure that between $80\%$ and $90\%$ of the orders placed by the sampled customers arrived on time.
-
-5.) There is a $95\%$ chance that on any given day, a customer has a $80\%$ to $90\%$ chance of receiving his package on time.
+3.)The interval between $80\%$ and $90\%$ gives a plausible range of values for where the true population parameter lies since 95% of intervals created will contain the population proportion.
 
 **Answers:**
 
@@ -33,10 +29,6 @@ A catalog sales company promises to deliver orders placed on the Internet within
 2.
 
 3.
-
-4.
-
-5.
 
 **Practice 1.b: ** True or False/ confidence level, Sample size, and confidence interval
 
@@ -48,7 +40,6 @@ Several factors are involved in the creation of a confidence interval. Among the
 
 3.) For a fixed margin of error, larger samples provide greater confidence.
 
-4.) For a given confidence level, halving the margin of error requires a sample twice as large.
 
 **Answers:**
 
@@ -58,7 +49,6 @@ Several factors are involved in the creation of a confidence interval. Among the
 
 3.
 
-4.
 
 ## Part 2: Construct Bootstrap Distribution 
 
@@ -68,31 +58,35 @@ Here’s the clever idea: We don’t have the population, but we have a sample. 
 
 * Generate bootstrap samples by **sampling with replacement** from the original sample, using the **same sample size**.
 
-* Compute the **statistic of interest**( called a bootstrap statistic), for each of the bootstrap samples.
+* Compute the **statistic of interest** (called a bootstrap statistic), for each of the bootstrap samples.
 
 * Collect the **samples statistics** for many bootstrap samples to create a **bootstrap distribution**.
 
 **Example:**
 
 Using StatKey [link](https://www.lock5stat.com/StatKey/
-bootstrap_1_quant/bootstrap_1_quant.html), try to play with the creation of the bootstrap distribution from different data. The following picture shows the website and an example of bootstrap CI for `Price` from the data `MustangPrcice`.
+bootstrap_1_quant/bootstrap_1_quant.html), try to play with the creation of the bootstrap distribution from different data. The following picture shows the website and an example of bootstrap CI for `GeneticDiversity` from the data `GeneticDiversity`.
 
 `https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html`
 
-![](bootstrap_statkey.png){width=90%} 
+![](genetic_diversity.png){width=90%} 
 $\\$
 
 **Practice 2:**
 
-We will use  `CarDepreciation` data from ` Library(Lock5Data)` to create a bootstrap sampling distribution of the sample mean of the ` Depreciation` . 
+The `GlobalInternet` data is from  Nielsen Company which has measured connection speeds on home computers in nine different countries. 
+Variables include the percent of internet users with a fast connection (defined as 2Mb/sec or faster)and the average amount of time spent online, defined as total hours connected to the web from a home computer during the month of February 2011.
 
-* Load the data
+ We can find `GlobalInternet` data in the `Library(Lock5Data)`, we will use it to create a bootstrap sampling distribution of the sample mean of the variable
+`HoursOnline` . 
+
+* Load the data and create a histogram for the variable `HoursOnline`
 ```{r}
 #your code here
 ```
 
 
-2.1) First, create a one bootstrap sample from `Depreciation` . You might use the functions `sample`.
+2.1) First, create a one bootstrap sample from ` HoursOnline` . You might use the functions `sample`.
 
 
 ```{r}
@@ -105,7 +99,7 @@ We will use  `CarDepreciation` data from ` Library(Lock5Data)` to create a boots
 #your code here
 ```
 
-2.3) Third, create a `histogram` for the bootstrap distribution of `depreciation` 
+2.3) Third, create a `histogram` for the bootstrap distribution of the variable ` HoursOnline` 
 
 ```{r}
 
@@ -113,7 +107,7 @@ We will use  `CarDepreciation` data from ` Library(Lock5Data)` to create a boots
 
 ```
 
-2.4) congrats!, you created bootstrap sampling distribution from one sample!
+2.4) congrats!, you created bootstrap sampling distribution from one sample of the data `GlobalInternet`!
 $\\$
 
 ## Part 3: Construct Bootstrap Confidence Interval
@@ -135,15 +129,15 @@ The distribution of these statistics is the bootstrap distribution.
 
 **Practice 3:**
 
-From the `CarDepreciation` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of the `Depreciation`.
+From the `GlobalInternet` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of the `HoursOnline`.
 
-1.) Calculate the mean of Car Depreciation from your original sample
+1.) Calculate the mean of `HoursOnline` from your original sample
 
 ```{r}
 #your code here
 ```
 
-2.) Calculate the standard error of our bootstrap sampling distribution of the `depreciation`:
+2.) Calculate the standard error of our bootstrap sampling distribution of the `HoursOnline`
 
 ```{r}
 #your code here
@@ -163,7 +157,7 @@ From the `CarDepreciation` bootstrap sampling distribution you have created in t
 
 **Practice 4:**
 
-Let create a $95\%$ , $90\%$ , $99\%$ CI of the mean `Depreciation` of the cars using **the quantiles** which they can be calculated using `quantile` function. 
+Let create a $95\%$ , $90\%$ , $99\%$ CI of the mean `HoursOnline` of users using **the quantiles** which they can be calculated using `qnorm` function. 
 
 ```{r}
 #your code here
@@ -183,16 +177,13 @@ A statistical test is used to determine whether results from a sample are convin
  
 State the null and alternative hypotheses for the statistical test described:
 
-1.) Testing to see if there is evidence that a mean
-is less than 50.
+1.) Testing to see if there is evidence that a mean is less than 50.
 
-2.) Testing to see if there is evidence that a proportion is greater than 0.3
+2.) Testing to see if there is evidence that a proportion is greater than 0.3.
 
-3.) Testing to see if there is evidence that the mean
-of group A is not the same as the mean of group B
+3.) Testing to see if there is evidence that the mean of group A is not the same as the mean of group B.
 
-4.) Testing to see if there is evidence that the
-correlation between two variables is negative.
+4.) Testing to see if there is evidence that the correlation between two variables is negative.
 
 **Answers:**
 
