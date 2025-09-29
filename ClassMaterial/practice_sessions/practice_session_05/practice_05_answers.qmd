@@ -6,29 +6,19 @@ editor_options:
   chunk_output_type: console
 ---
 
-
 In this practice section we will introduce the bootstrap distribution, bootstrap confidence interval, and hypothesis testing. You may use the functions: `sample()`, `do_it` to create the bootstrap distribution.
-
 
 # Part 1: Confidence interval concept
 
-**Practice 1.a:**
-
-True or False: Confidence interval interpretation
+**Practice 1.a:** True or False/ Confidence interval interpretation
 
 A catalog sales company promises to deliver orders placed on the Internet within 3 days. Follow-up calls to a few randomly selected customers show that a $95\%$ confidence interval for the proportion of all orders that arrive on time is $85 \% \pm 5 \%$.
-
 
 1.) Between $80\%$ and $90\%$ of all orders arrive on time.
 
 2.) Ninety five percent of all random samples of customers will show that $85\%$ of orders arrive on time.
 
-3.) One can be $95\%$ confident that the true population proportion of orders that arrive within 3 days is between $80\%$ and $90\%$
-
-4.) We are $95\%$  sure that between $80\%$ and $90\%$ of the orders placed by the sampled customers arrived on time.
-
-5.) There is a $95\%$ chance that on any given day, a customer has a $80\%$ to $90\%$ chance of receiving his package on time.
-
+3.) The interval between $80\%$ and $90\%$ gives a plausible range of values for where the true population parameter lies since 95% of intervals created will contain the population proportion.
 
 **Answers:**
 
@@ -36,15 +26,9 @@ A catalog sales company promises to deliver orders placed on the Internet within
 
 2.) Not correct. Different samples will give different results. Many fewer than $95\%$ of samples are expected to have exactly $88\%$ on-time orders.
 
-3.) Correct. A confidence interval should say something about the unknown population proportion, not the sample proportion in different samples.
+3.) Correct. 
 
-4.) Not correct. We know that $88\%$ of the orders arrived on time. There is no need to make an interval for the sample proportion.
-
-5.) Not correct. The interval should be about the proportion of on-time orders, not the days.
-
-**Practice 1.b: **
-
-True or False: confidence level, Sample size, confidence interval
+**Practice 1.b: ** True or False/ confidence level, Sample size, and confidence interval
 
 Several factors are involved in the creation of a confidence interval. Among them are the sample size, the level of confidence, and the margin of error. 
 
@@ -54,7 +38,6 @@ Several factors are involved in the creation of a confidence interval. Among the
 
 3.) For a fixed margin of error, larger samples provide greater confidence.
 
-4.) For a given confidence level, halving the margin of error requires a sample twice as large.
 
 **Answers:**
 
@@ -64,66 +47,80 @@ Several factors are involved in the creation of a confidence interval. Among the
 
 3.) True. Larger samples are less variable, which makes us more confident that a given confidence interval succeeds in catching the population proportion.
 
-4.) False. The margin of error decreases as the square root of the sample size increases. Halving the margin of error requires a sample four times as large as the original.
-
 $\\$
 
 ## Part 2: Construct Bootstrap Distribution 
 
-Here’s the clever idea: We don’t have the population, but we have a sample. Probably the sample is similar to the population in many ways.So let’s sample from our sample. We’ll call it `bootstrapping`. We want samples the same size as our original sample, so we will need to sample with replacement.This means that we may pick some members of the population more than once and others not at all. We’ll replicate this many times.
-
+Here’s the clever idea: We don’t have the population, but we have a sample. Probably the sample is similar to the population in many ways.So let’s sample from our sample. We’ll call it `bootstrapping`. We want samples **the same size** as our original sample, so we will need to **sample with replacement**.This means that we may pick some members of the population more than once and others not at all. We’ll replicate this many times.
 
 **Generating a Bootstrap Distribution:**
 
-* Generate bootstrap samples by sampling with replacement from the original sample, using the same sample size.
+* Generate bootstrap samples by **sampling with replacement** from the original sample, using the **same sample size**.
 
-* Compute the statistic of interest( called a bootstrap statistic), for each of the bootstrap samples.
+* Compute the **statistic of interest** (called a bootstrap statistic), for each of the bootstrap samples.
 
-* Collect the statistics for many bootstrap samples to create a bootstrap distribution.
+* Collect the **samples statistics** for many bootstrap samples to create a **bootstrap distribution**.
+
+**Example:**
+
+Using StatKey [link](https://www.lock5stat.com/StatKey/
+bootstrap_1_quant/bootstrap_1_quant.html), try to play with the creation of the bootstrap distribution from different data. The following picture shows the website and an example of bootstrap CI for the variable`tip` from the data `Resturant tips`.
+
+`https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html`
+
+
+![](resturant_tip.png){width=90%} 
+
+$\\$
 
 **Practice 2:**
 
-We will use  `CarDepreciation` data from ` Library(Lock5Data)` to create a bootstrap sampling distribution of the sample mean of the ` Depreciation`
 
+The `GeneticDiversity` data give a measure of genetic diversity for different populations and the geographic distance of each population from East Africa (Addis Ababa, Ethiopia), as one would travel over the surface of the earth by land (migration long ago is thought to have happened by land).
 
-* Load the data
+The variables in this study were : Population, Country, Continent,Genetic Diversity (a measure of genetic diversity in the population), Distance (distance by land to East Africa in km).
+
+1) First, create `histogram` of `Distance`. What is the `sample size` of the data ?
+
 ```{r}
+library(Lock5Data)
 library(SDS1000)
-data(CarDepreciation)
-```
+data(GeneticDiversity)
 
-
-2.1) First  Create a one bootstrap sample from `Depreciation` . You might use the functions `sample`.
-
-
-```{r}
-
-
-sample_one <- sample(CarDepreciation$Depreciation, 
-                    size = 20, replace = T)
+n <- length(GeneticDiversity$Distance)
+hist(GeneticDiversity$Distance)
 
 ```
 
-2.2) Second, you might replicate this one sample `10000` times `with replacement` using the functiopn ` do_it()` to create a `bootstrap sampling ditribution`
+
+2) Second, create a one bootstrap sample from `Distance` . You might use the functions `sample`.
+
 
 ```{r}
+one_sample <- sample(GeneticDiversity$Distance, 
+                    size = n, replace = T)
+```
 
-set.seed(1000)
+3) Third, you might replicate this one sample `10000` times `with replacement` using the function ` do_it()` to create a `bootstrap sampling ditribution`
 
+```{r}
 boot_dist <- do_it(10000) * {
-  sample_one = sample(CarDepreciation$Depreciation, size = 20, replace = T)
-  mean( sample_one)
+  one_sample = sample(GeneticDiversity$Distance, size = n, replace = T)
+  mean( one_sample)
   }
 ```
 
-2.3) Third, create a `histogram` for the bootstrap distribution of `depreciation` 
+4) Fourth, create a `histogram` for the bootstrap distribution of the variable ` Distance` 
 
 ```{r}
-hist(boot_dist, main ="Bootstrap Sampling Distribution of Car Depreciation ",
-                xlab = "Estimated Mean Car Depreciation")
+
+hist(boot_dist, main ="Bootstrap Sampling Distribution 
+            of Genetic Diversity by Distance from East Africa ",
+                xlab = "Estimated Mean of Distanceto East Africa in km ")
 
 ```
 
+5) congrats!, you created bootstrap sampling distribution from one sample !
 $\\$
 
 ## Part 3: Construct Bootstrap Confidence Interval
@@ -145,17 +142,17 @@ The distribution of these statistics is the bootstrap distribution.
 
 **Practice 3:**
 
-From the `CarDepreciation` bootstarap sampling distribution you have created in the previous practice, create a $95\%$  CI for the the sample mean of the `Depreciation`.
+From the `GeneticDiversity` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of `Distance`.
 
-1.) Calculate the mean of Car Depreciation from your original sample
+1.) Calculate the mean of `Distance` from your original sample
 
 ```{r}
-x_bar <- mean(CarDepreciation$Depreciation )
+x_bar <- mean(GeneticDiversity$Distance )
 
 x_bar
 ```
 
-2.) Calculate the standard error of our bootstrap sampling distribution of the `depreciation` :
+2.) Calculate the standard error of our bootstrap sampling distribution of the `Distance`
 
 ```{r}
 boot_se <- sd(boot_dist )
@@ -167,35 +164,49 @@ boot_se
 3.) Calculate the $95\%$ CI, which is based on the formula:$statistic\pm 2*SE$
 
 ```{r}
-
 #CI_lower <- x_bar - 2*boot_se
 #CI_upper <- x_bar + 2*boot_se
 
-CI_lower_upper <- x_bar+2*boot_se*c(1,-1)
+CI95_lower_upper <- x_bar+2*boot_se*c(-1,1)
 
-CI_lower_upper
-
+CI95_lower_upper
 
 ```
 
+2) Calculate the confidence interval of $99\%$ using the formula 
 
-$\\$
+```{r}
+# 99\% has different critical value than 95%
+
+cv_99 <- qnorm(0.995)
+
+CI99_lower_upper <- x_bar+(cv_99)*boot_se*c(-1,1)
+
+CI99_lower_upper
+
+```
 
 ## Part 4:Create Bootstrap Confidence Interval with Percentiles
 
 **Practice 4:**
 
-Let create a $95\%$ , $90\%$ , $99\%$ CI of the mean `Depreciation` of the cars using quantiles. 
+1) Let create a $95\%$ , $90\%$  CI of the mean `Distance` in `R`, using **the percentiles** which they can be calculated using `quantile` function. 
 
 ```{r}
-#CI_95_lower_upper <- qnorm(boot_dist, c(0.025, 0.975))
+CI_95_lower_upper <- quantile(boot_dist, c(0.025, 0.975))
+CI_95_lower_upper
 
-#CI_90_lower_upper<-  qnorm(boot_dist, c(0.05, 0.95))
+CI_90_lower_upper<-  quantile(boot_dist, c(0.05, 0.95))
+CI_90_lower_upper
 
-#CI_99_lower_upper <- qnorm(boot_dist, c(0.005, 0.995))
+CI_99_lower_upper <- quantile(boot_dist, c(0.005, 0.995))
+CI_99_lower_upper
 
 ```
 
+
+
+$\\$
 
 ## Part 5: Hypothesis testing 
 
@@ -203,19 +214,30 @@ Let create a $95\%$ , $90\%$ , $99\%$ CI of the mean `Depreciation` of the cars 
 
 A statistical test is used to determine whether results from a sample are convincing enough to allow us to conclude something about the population.
 
- We have two competing claims about the population, the `null hypothesis`, denoted by `H0`, and the `alternative hypothesis`, denoted by `Ha`.
+ We have two competing claims about the population, the **null hypothesis**, denoted by `H0`, and the **alternative hypothesis**, denoted by `Ha`.
  
 **Practice 5:**
  
 State the null and alternative hypotheses for the statistical test described:
 
-1.) Testing to see if there is evidence that a mean
-is less than 50.
+1.) Testing to see if there is evidence that a mean is less than 50.
 
-2.) Testing to see if there is evidence that a proportion is greater than 0.3
+2.) Testing to see if there is evidence that a proportion is greater than 0.3.
 
-3.) Testing to see if there is evidence that the mean
-of group A is not the same as the mean of group B
+3.) Testing to see if there is evidence that the mean of group A is not the same as the mean of group B.
 
-4.) Testing to see if there is evidence that the
-correlation between two variables is negative
+4.) Testing to see if there is evidence that the correlation between two variables is positive.
+
+**Answers:**
+
+1.)  $\ H_0:\mu=50 $           vs    $\ H_a:\mu <  50$
+
+
+2.) $\ H_0: p=0.3 $            vs      $\ H_a: p>0.3 $
+
+
+3.)  $\ H_0:\mu_{A}= \mu_{B}$  vs   $\ H_a: \mu_{A} \neq \mu_{B}$
+
+
+4.)  $\ H_0:\rho = 0 $         vs    $\ H_a:\rho > 0 $
+
