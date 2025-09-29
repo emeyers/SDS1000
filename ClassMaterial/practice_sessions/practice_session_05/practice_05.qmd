@@ -22,11 +22,12 @@ A catalog sales company promises to deliver orders placed on the Internet within
 
 **Answers:**
 
-1.) Not correct. This statement implies certainty. There is no level of confidence in the statement.
+1.
 
-2.) Not correct. Different samples will give different results. Many fewer than $95\%$ of samples are expected to have exactly $88\%$ on-time orders.
+2.
 
-3.) Correct. 
+3.
+
 
 **Practice 1.b: ** True or False/ confidence level, Sample size, and confidence interval
 
@@ -41,11 +42,12 @@ Several factors are involved in the creation of a confidence interval. Among the
 
 **Answers:**
 
-1.) True. For a given sample size, higher confidence means a larger margin of error.
+1.
 
-2.) False. Smaller samples lead to larger  standard errors, which lead to larger margins of error.
+2.
 
-3.) True. Larger samples are less variable, which makes us more confident that a given confidence interval succeeds in catching the population proportion.
+3.
+
 
 $\\$
 
@@ -71,7 +73,6 @@ bootstrap_1_quant/bootstrap_1_quant.html), try to play with the creation of the 
 
 ![](resturant_tip.png){width=90%} 
 
-$\\$
 
 **Practice 2:**
 
@@ -83,13 +84,7 @@ The variables in this study were : Population, Country, Continent,Genetic Divers
 1) First, create `histogram` of `Distance`. What is the `sample size` of the data ?
 
 ```{r}
-library(Lock5Data)
-library(SDS1000)
-data(GeneticDiversity)
-
-n <- length(GeneticDiversity$Distance)
-hist(GeneticDiversity$Distance)
-
+#your code here
 ```
 
 
@@ -97,31 +92,23 @@ hist(GeneticDiversity$Distance)
 
 
 ```{r}
-one_sample <- sample(GeneticDiversity$Distance, 
-                    size = n, replace = T)
+#your code here
 ```
 
 3) Third, you might replicate this one sample `10000` times `with replacement` using the function ` do_it()` to create a `bootstrap sampling ditribution`
 
 ```{r}
-boot_dist <- do_it(10000) * {
-  one_sample = sample(GeneticDiversity$Distance, size = n, replace = T)
-  mean( one_sample)
-  }
+#your code here
 ```
 
 4) Fourth, create a `histogram` for the bootstrap distribution of the variable ` Distance` 
 
 ```{r}
-
-hist(boot_dist, main ="Bootstrap Sampling Distribution 
-            of Genetic Diversity by Distance from East Africa ",
-                xlab = "Estimated Mean of Distanceto East Africa in km ")
-
+#your code here
 ```
 
 5) congrats!, you created bootstrap sampling distribution from one sample !
-$\\$
+
 
 ## Part 3: Construct Bootstrap Confidence Interval
 
@@ -147,63 +134,42 @@ From the `GeneticDiversity` bootstrap sampling distribution you have created in 
 1.) Calculate the mean of `Distance` from your original sample
 
 ```{r}
-x_bar <- mean(GeneticDiversity$Distance )
-
-x_bar
+#your code here
 ```
 
 2.) Calculate the standard error of our bootstrap sampling distribution of the `Distance`
 
 ```{r}
-boot_se <- sd(boot_dist )
-
-boot_se
+#your code here
 ```
 
 
 3.) Calculate the $95\%$ CI, which is based on the formula:$statistic\pm 2*SE$
 
 ```{r}
-#CI_lower <- x_bar - 2*boot_se
-#CI_upper <- x_bar + 2*boot_se
-
-CI95_lower_upper <- x_bar+2*boot_se*c(-1,1)
-
-CI95_lower_upper
+#your code here
 
 ```
 
-2) Calculate the confidence interval of $99\%$ using the formula 
+4) Calculate the confidence interval of $99\%$ using the formula 
 
 ```{r}
-# 99\% has different critical value than 95%
+# Note: 99\% CI has different critical value than 95% CI
 
-cv_99 <- qnorm(0.995)
-
-CI99_lower_upper <- x_bar+(cv_99)*boot_se*c(-1,1)
-
-CI99_lower_upper
+#your code here
 
 ```
 
-## Part 4:Create Bootstrap Confidence Interval with Percentiles
+## Part 4: Create Bootstrap Confidence Interval with Percentiles
 
 **Practice 4:**
 
 1) Let create a $95\%$ , $90\%$  CI of the mean `Distance` in `R`, using **the percentiles** which they can be calculated using `quantile` function. 
 
 ```{r}
-CI_95_lower_upper <- quantile(boot_dist, c(0.025, 0.975))
-CI_95_lower_upper
-
-CI_90_lower_upper<-  quantile(boot_dist, c(0.05, 0.95))
-CI_90_lower_upper
-
+#your code here
 ```
 
-
-
-$\\$
 
 ## Part 5: Hypothesis testing 
 
@@ -227,13 +193,10 @@ State the null and alternative hypotheses for the statistical test described:
 
 **Answers:**
 
-1.)  $\ H_0:\mu=50 $            vs   $\ H_a:\mu <  50$
+1. 
 
+2.  
 
-2.)  $\ H_0: p=0.3 $            vs   $\ H_a: p>0.3 $
+3. 
 
-
-3.)  $\ H_0:\mu_{A}= \mu_{B}$   vs   $\ H_a: \mu_{A} \neq \mu_{B}$
-
-
-4.)  $\ H_0:\rho = 0 $          vs   $\ H_a:\rho > 0 $
+4. 
