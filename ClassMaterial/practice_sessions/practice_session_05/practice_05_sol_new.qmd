@@ -69,8 +69,13 @@ Using StatKey [link](https://www.lock5stat.com/StatKey/
 bootstrap_1_quant/bootstrap_1_quant.html), try to play with the creation of the bootstrap distribution from different data. The following picture shows the website and an example of bootstrap CI for `GeneticDiversity` from the data `GeneticDiversity`.
 
 `https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html`
+genetic_diversity
 
-![](genetic_diversity.png){width=90%} 
+![](genetic_diversity.png){width=80%} 
+
+
+
+
 
 $\\$
 
@@ -79,20 +84,19 @@ $\\$
 The `GlobalInternet` data is from  Nielsen Company which has measured connection speeds on home computers in nine different countries. 
 Variables include the percent of internet users with a fast connection (defined as 2Mb/sec or faster)and the average amount of time spent online, defined as total hours connected to the web from a home computer during the month of February 2011.
 
- We can find `GlobalInternet` data in the `Library(Lock5Data)`, we will use it to create a bootstrap sampling distribution of the sample mean of the variable
-`HoursOnline` . 
+ We can find `GlobalInternet` data in the `Library(Lock5Data)`, we will use it to create a bootstrap sampling distribution of the sample mean of the variable `HoursOnline` . 
 
-* what is the `sample size` of the data and create `histogram` of `HoursOnline`
+1) First, create `histogram` of `HoursOnline`. What is the `sample size` of the data ?
 
 ```{r}
-library(SDS1000)
-data(GlobalInternet)
-n <- lenght(GlobalInternet$HoursOnline)
+#library(SDS1000)
+#data(GlobalInternet)
+n <- length(GlobalInternet$HoursOnline)
 hist(GlobalInternet$HoursOnline)
 ```
 
 
-2.1) First, create a one bootstrap sample from ` HoursOnline` . You might use the functions `sample`.
+2) Second, create a one bootstrap sample from ` HoursOnline` . You might use the functions `sample`.
 
 
 ```{r}
@@ -100,7 +104,7 @@ one_sample <- sample(GlobalInternet$HoursOnline,
                     size = n, replace = T)
 ```
 
-2.2) Second, you might replicate this one sample `10000` times `with replacement` using the function ` do_it()` to create a `bootstrap sampling ditribution`
+3) Third, you might replicate this one sample `10000` times `with replacement` using the function ` do_it()` to create a `bootstrap sampling ditribution`
 
 ```{r}
 boot_dist <- do_it(10000) * {
@@ -109,7 +113,7 @@ boot_dist <- do_it(10000) * {
   }
 ```
 
-2.3) Third, create a `histogram` for the bootstrap distribution of the variable ` HoursOnline` 
+4) Fourth, create a `histogram` for the bootstrap distribution of the variable ` HoursOnline` 
 
 ```{r}
 
@@ -118,7 +122,7 @@ hist(boot_dist, main ="Bootstrap Sampling Distribution of Global Internet Use  "
 
 ```
 
-2.4) congrats!, you created bootstrap sampling distribution from one sample of the data `GlobalInternet`!
+5) congrats!, you created bootstrap sampling distribution from one sample of the data `GlobalInternet`!
 $\\$
 
 ## Part 3: Construct Bootstrap Confidence Interval
@@ -181,11 +185,11 @@ CI_lower_upper
 Let create a $95\%$ , $90\%$ , $99\%$ CI of the mean `HoursOnline` of users using **the quantiles** which they can be calculated using `qnorm` function. 
 
 ```{r}
-#CI_95_lower_upper <- 
+#CI_95_lower_upper <- quantile(boot_dist, c(0.025, 0.975))
 
-#CI_90_lower_upper<-  
+#CI_90_lower_upper<-  quantile(boot_dist, c(0.05, 0.95))
 
-#CI_99_lower_upper <- 
+#CI_99_lower_upper <- quantile(boot_dist, c(0.005, 0.995))
 ```
 
 $\\$
