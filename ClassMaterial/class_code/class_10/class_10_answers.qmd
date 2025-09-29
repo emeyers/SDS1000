@@ -1,0 +1,388 @@
+---
+title: "Class 10 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+# Part 1: Normal quantiles
+
+We use quantiles from a standard normal distribution to create confidence
+intervals for different confidence levels.
+
+For a given confidence level *C*, we want to find the quentile value q* such
+that C percent of the area of a standard normal distribution is between -q* and
+q*.
+
+
+
+```{r}
+
+# install.packages("mosaic")
+
+quantile_values <- mosaic::xqnorm(c(.025, .975))
+
+
+quantile_values
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+#  Part 2: Simple example of sampling with replacement
+
+
+
+```{r}
+
+
+library(SDS1000)
+
+
+# simple vector
+my_sample <- c(3, 1, 4, 1, 5, 9)
+
+
+# resampling values in the vector with replacement
+boot_sample  <-  sample(my_sample,  6,  replace = TRUE)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+#  Part 3: Simple fake data bootstrap example
+
+
+```{r}
+
+# simple bootstrap example
+
+my_sample <- c(21, 29, 25, 19, 24, 22, 25, 26, 25, 29)
+
+
+# calculate the x-bar statistic
+obs_mean <- mean(my_sample)
+
+
+# create the bootstrap distribution
+bootstrap_dist <-  do_it(10000) * {    
+  
+  curr_boot <- sample(my_sample , 10, replace = TRUE)  
+  mean(curr_boot)  
+  
+}
+
+
+# visualize the bootstrap distribution
+hist(bootstrap_dist, 100)
+
+
+# calculate the standard error
+SE_boot <- sd(bootstrap_dist)
+
+
+# 95% confidence interval
+CI_lower <-  obs_mean  - 2 * SE_boot 
+CI_upper <-  obs_mean  + 2 * SE_boot 
+
+
+c(CI_lower, CI_upper)
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+#  Part 4: Confidence interval for Gettysburg mean word length
+
+
+```{r}
+
+
+# set the random seed
+set.seed(123)
+
+
+# load the gettysburg data
+load("gettysburg.Rda")
+
+
+# store the word lengths in a vector object called word_lengths
+word_lengths <- gettysburg$num_letters
+
+
+# get a random sample from the word lengths
+
+n <- 10
+
+my_sample <- sample(word_lengths, size = n)
+
+
+
+# calculate the x-bar statistic
+obs_mean <- mean(my_sample)
+
+
+# create the bootstrap distribution
+bootstrap_dist <-  do_it(10000) * {    
+  
+  curr_boot <- sample(my_sample, n, replace = TRUE)  
+  mean(curr_boot)  
+  
+}
+
+
+# visualize the bootstrap distribution
+hist(bootstrap_dist, 100)
+
+
+# calculate the standard error
+(SE_boot <- sd(bootstrap_dist))
+
+
+# 95% confidence interval
+CI_lower <-  obs_mean  - 2 * SE_boot 
+CI_upper <-  obs_mean  + 2 * SE_boot 
+
+
+c(CI_lower, CI_upper)
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+##  Confidence interval example 1: One true love? 
+
+
+A survey asked 2625 people whether they agreed with the statement: 
+"There is only one true love for each person"
+
+1812 of the respondents disagreed.
+
+Compute a 90% confidence interval for the proportion who disagreed.
+
+
+
+
+
+```{r}
+
+library(SDS1000)
+
+
+# Create the data set
+
+belives_in_true_love <- c(rep(FALSE, 1812), rep(TRUE, 2625 - 1812))
+
+
+# Calculate the proportion of people who believe in one true love
+# Note: if you use the get_proportion function the word "TRUE" needs to be in quotes
+
+(obs_prop <- get_proportion(belives_in_true_love, "TRUE"))
+
+
+
+
+# Get an example of a bootstrap statistics 
+
+# We can use the sample(data_vec, n) to get a sample of length n:
+
+boot_sample <- sample(belives_in_true_love, 2625, replace = TRUE)
+bootstrap_prop <- get_proportion(boot_sample, "TRUE")
+
+
+
+# Create a bootstrap distribution in R
+
+boot_dist <- do_it(10000)  *  {
+
+  boot_sample <- sample(belives_in_true_love, 2625, replace = TRUE)
+  
+  get_proportion(boot_sample, "TRUE")
+  
+}
+
+
+
+# Visualize the bootstrap distribution
+
+hist(boot_dist, 20)
+
+
+
+
+# Get the bootstrap standard error SE*
+
+SE_boot <- sd(boot_dist)
+
+
+
+
+
+# Create a 90% confidence interval
+
+CI_lower <-  obs_prop  - qnorm(.95) * SE_boot 
+CI_upper <-  obs_prop  + qnorm(.95) * SE_boot 
+
+c(CI_lower, CI_upper)
+
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Confidence interval example 2: Average body temperature
+
+
+Let's create a 95% confidence interval for the mean body temperatures of humans
+using a sample of 50 people from the data collected by Machowaik et al (1992). 
+
+The data is loaded below from the Lock5 package. Start by visualizing the data
+then please create a 95% confidence interval for the mean body temperature using
+the bootstrap!
+
+
+
+```{r bodytemp_viz}
+
+# Load the data 
+library(Lock5Data)
+
+body_temps <- BodyTemp50$BodyTemp
+
+
+
+
+# Start by visualizing the data
+
+hist(body_temps, main = "Body Temperatures", 
+     breaks = 20,
+     xlab = "Temperature (°F)", col = "lightblue", border = "black")
+
+
+```
+
+
+
+
+Now create a 95% confidence interval for the mean body temperature using the
+bootstrap!
+
+See if you can also create a 80% and 99% confidence interval as well!
+
+
+
+
+```{r bodytemp_CI}
+
+
+# Calculate the observed mean
+
+(obs_mean <- mean(body_temps))
+
+
+
+
+
+# Create a bootstrap distribution in R
+
+boot_dist <- do_it(10000)  *  {
+
+  boot_sample <- sample(body_temps, length(body_temps), replace = TRUE)
+  
+  mean(boot_sample)
+  
+}
+
+
+
+# Visualize the bootstrap distribution
+
+hist(boot_dist, 100)
+
+
+
+
+# Get the bootstrap standard error SE*
+
+SE_boot <- sd(boot_dist)
+
+
+
+
+# Create a 95% confidence interval
+
+CI_lower <-  obs_mean  - 2 * SE_boot 
+CI_upper <-  obs_mean  + 2 * SE_boot 
+
+c(CI_lower, CI_upper)
+
+
+
+# Create a 80% confidence interval
+
+(CI_80 <-  c(obs_mean - qnorm(.90) * SE_boot, obs_mean + qnorm(.90) * SE_boot))
+
+
+
+# Create a 99% confidence interval
+
+(CI_99 <-  c(obs_mean - qnorm(.995) * SE_boot, obs_mean + qnorm(.995) * SE_boot))
+
+
+
+
+```
+
+
+
