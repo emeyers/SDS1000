@@ -81,26 +81,26 @@ Variables include the percent of internet users with a fast connection (defined 
  We can find `GlobalInternet` data in the `Library(Lock5Data)`, we will use it to create a bootstrap sampling distribution of the sample mean of the variable
 `HoursOnline` . 
 
-* Load the data and create a histogram for the variable `HoursOnline`
+* First, create a histogram for the variable `HoursOnline`. What is the sample size of this data?
 ```{r}
 #your code here
 ```
 
 
-2.1) First, create a one bootstrap sample from ` HoursOnline` . You might use the functions `sample`.
+2) Second, create a one bootstrap sample from ` HoursOnline` . You might use the functions `sample`.
 
 
 ```{r}
 #your code here
 ```
 
-2.2) Second, you might replicate this one sample `10000` times `with replacement` using the function ` do_it()` to create a `bootstrap sampling ditribution`
+3) Third, you might replicate this one sample `10000` times `with replacement` using the function ` do_it()` to create a `bootstrap sampling ditribution`
 
 ```{r}
 #your code here
 ```
 
-2.3) Third, create a `histogram` for the bootstrap distribution of the variable ` HoursOnline` 
+4) Fourth, create a `histogram` for the bootstrap distribution of the variable ` HoursOnline` 
 
 ```{r}
 
@@ -108,7 +108,7 @@ Variables include the percent of internet users with a fast connection (defined 
 
 ```
 
-2.4) congrats!, you created bootstrap sampling distribution from one sample of the data `GlobalInternet`!
+5) congrats!, you created bootstrap sampling distribution from one sample of the data `GlobalInternet`!
 $\\$
 
 ## Part 3: Construct Bootstrap Confidence Interval
