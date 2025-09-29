@@ -1,0 +1,198 @@
+
+---
+title: "Practice Session 5"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+In this practice section we will introduce the bootstrap distribution, bootstrap confidence interval, and hypothesis testing. 
+
+You may use the functions: `sample()`, `do_it` to create the bootstrap distribution.
+
+# Part 1: Confidence interval concept
+
+**Practice 1.a:** True or False/ Confidence interval interpretation
+
+A catalog sales company promises to deliver orders placed on the Internet within 3 days. Follow-up calls to a few randomly selected customers show 
+that a $95\%$ confidence interval for the proportion of all orders that arrive on time is $85 \% \pm 5 \%$.
+
+1.) Between $80\%$ and $90\%$ of all orders arrive on time.
+
+2.) Ninety five percent of all random samples of customers will show that $85\%$ of orders arrive on time.
+
+3.)The interval between $80\%$ and $90\%$ gives a plausible range of values for where the true population parameter lies since 95% of intervals created will contain the population proportion.
+
+**Answers:**
+
+1.
+
+2.
+
+3.
+
+**Practice 1.b: ** True or False/ confidence level, Sample size, and confidence interval
+
+Several factors are involved in the creation of a confidence interval. Among them are the sample size, the level of confidence, and the margin of error. 
+
+1.) For a given sample size, higher confidence means a larger margin of error.
+
+2.) For a specified confidence level, smaller samples provide smaller margins of error.
+
+3.) For a fixed margin of error, larger samples provide greater confidence.
+
+
+**Answers:**
+
+1.
+
+2.
+
+3.
+
+
+## Part 2: Construct Bootstrap Distribution 
+
+Here’s the clever idea: We don’t have the population, but we have a sample. Probably the sample is similar to the population in many ways.So let’s sample from our sample. We’ll call it `bootstrapping`. We want samples **the same size** as our original sample, so we will need to **sample with replacement**.This means that we may pick some members of the population more than once and others not at all. We’ll replicate this many times.
+
+**Generating a Bootstrap Distribution:**
+
+* Generate bootstrap samples by **sampling with replacement** from the original sample, using the **same sample size**.
+
+* Compute the **statistic of interest** (called a bootstrap statistic), for each of the bootstrap samples.
+
+* Collect the **samples statistics** for many bootstrap samples to create a **bootstrap distribution**.
+
+**Example:**
+
+Using StatKey [link](https://www.lock5stat.com/StatKey/
+bootstrap_1_quant/bootstrap_1_quant.html), try to play with the creation of the bootstrap distribution from different data. The following picture shows the website and an example of bootstrap CI for `GeneticDiversity` from the data `GeneticDiversity`.
+
+`https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html`
+
+![](genetic_diversity.png){width=90%} 
+$\\$
+
+**Practice 2:**
+
+The `GlobalInternet` data is from  Nielsen Company which has measured connection speeds on home computers in nine different countries. 
+Variables include the percent of internet users with a fast connection (defined as 2Mb/sec or faster)and the average amount of time spent online, defined as total hours connected to the web from a home computer during the month of February 2011.
+
+ We can find `GlobalInternet` data in the `Library(Lock5Data)`, we will use it to create a bootstrap sampling distribution of the sample mean of the variable
+`HoursOnline` . 
+
+* Load the data and create a histogram for the variable `HoursOnline`
+```{r}
+#your code here
+```
+
+
+2.1) First, create a one bootstrap sample from ` HoursOnline` . You might use the functions `sample`.
+
+
+```{r}
+#your code here
+```
+
+2.2) Second, you might replicate this one sample `10000` times `with replacement` using the function ` do_it()` to create a `bootstrap sampling ditribution`
+
+```{r}
+#your code here
+```
+
+2.3) Third, create a `histogram` for the bootstrap distribution of the variable ` HoursOnline` 
+
+```{r}
+
+#your code here
+
+```
+
+2.4) congrats!, you created bootstrap sampling distribution from one sample of the data `GlobalInternet`!
+$\\$
+
+## Part 3: Construct Bootstrap Confidence Interval
+
+The steps to Construct Bootstrap Confidence Interval are: 
+
+1. Compute the statistic from the original sample.
+
+2. Create a bootstrap distribution by resampling from the sample.
+* same size samples as the original sample
+* with replacement
+* compute the statistic for each sample.
+The distribution of these statistics is the bootstrap distribution.
+
+3. Estimate the standard error SE by computing the standard deviation of the bootstrap distribution.
+
+4. $95\%$  CI is: $statistic\pm 2*SE$
+
+
+**Practice 3:**
+
+From the `GlobalInternet` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of the `HoursOnline`.
+
+1.) Calculate the mean of `HoursOnline` from your original sample
+
+```{r}
+#your code here
+```
+
+2.) Calculate the standard error of our bootstrap sampling distribution of the `HoursOnline`
+
+```{r}
+#your code here
+```
+
+
+3.) Calculate the $95\%$ CI, which is based on the formula:$statistic\pm 2*SE$
+
+```{r}
+#your code here
+
+
+```
+
+
+## Part 4:Create Bootstrap Confidence Interval with Percentiles
+
+**Practice 4:**
+
+Let create a $95\%$ , $90\%$ , $99\%$ CI of the mean `HoursOnline` of users using **the quantiles** which they can be calculated using `qnorm` function. 
+
+```{r}
+#your code here
+```
+
+$\\$
+
+## Part 5: Hypothesis testing 
+
+**Statistical Tests:**
+
+A statistical test is used to determine whether results from a sample are convincing enough to allow us to conclude something about the population.
+
+ We have two competing claims about the population, the **null hypothesis**, denoted by `H0`, and the **alternative hypothesis**, denoted by `Ha`.
+ 
+**Practice 5:**
+ 
+State the null and alternative hypotheses for the statistical test described:
+
+1.) Testing to see if there is evidence that a mean is less than 50.
+
+2.) Testing to see if there is evidence that a proportion is greater than 0.3.
+
+3.) Testing to see if there is evidence that the mean of group A is not the same as the mean of group B.
+
+4.) Testing to see if there is evidence that the correlation between two variables is negative.
+
+**Answers:**
+
+1.
+
+2.
+
+3.
+
+4.
