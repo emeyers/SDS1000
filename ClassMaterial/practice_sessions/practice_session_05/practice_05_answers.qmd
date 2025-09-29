@@ -176,7 +176,7 @@ Congrat!, you created a $95\%$ CI with bootstrap distribution !
 4.) Calculate the confidence interval of $99\%$ using the formula 
 
 ```{r}
-# 99\% has different critical value than 95%
+# Note:  99\% has different critical value than 95%
 # 0.99+(1-0.99)/2
 
 cv_99 <- qnorm(0.995)
