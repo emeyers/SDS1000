@@ -16,17 +16,18 @@ A catalog sales company promises to deliver orders placed on the Internet within
 
 1.) Between $80\%$ and $90\%$ of all orders arrive on time.
 
-2.) Ninety five percent of all random samples of customers will show that $85\%$ of orders arrive on time.
+2.) 95% of all random samples of customers will show that $85\%$ of orders arrive on time.
 
 3.) The interval between $80\%$ and $90\%$ gives a plausible range of values for where the true population parameter lies since 95% of intervals created will contain the population proportion.
 
 **Answers:**
 
-1.
+1.) 
+2.) 
 
-2.
+3.) 
 
-3.
+$\\$
 
 **Practice 1.b: ** True or False/ confidence level, Sample size, and confidence interval
 
@@ -41,12 +42,11 @@ Several factors are involved in the creation of a confidence interval. Among the
 
 **Answers:**
 
-1.
+1.) 
 
-2.
+2.) 
 
-3.
-
+3.) 
 
 $\\$
 
@@ -77,7 +77,7 @@ $\\$
 
 The data `GlobalInternet2019` provide the average number of hours spent online for  countries.
 
-1) First, create `histogram` of `HoursOnline`. What is the `sample size` of the data ?
+1.) First, create `histogram` of `HoursOnline`. What is the `sample size` of the data ?
 
 ```{r}
 library(Lock5Data)
@@ -89,29 +89,27 @@ data(GlobalInternet2019)
 ```
 
 
-2) Second, create a one bootstrap sample from `HoursOnline` . You might use the functions `sample`.
+2.) Second, create a one bootstrap sample from `HoursOnline` . You might use the functions `sample`.
 
 
 ```{r}
 #your code here
 ```
 
-3) Third, you might replicate this one sample `10000` times `with replacement` using the function ` do_it()` to create a `bootstrap sampling ditribution`
+3.) Third, you might replicate this one sample `10000` times `with replacement` using the function ` do_it()` to create a `bootstrap sampling ditribution`
 
 ```{r}
 #your code here
 ```
 
-4) Fourth, create a `histogram` for the bootstrap distribution of the variable 
+4.) Fourth, create a `histogram` for the bootstrap distribution of the variable 
 `HoursOnline`
 
 ```{r}
-
 #your code here
-
 ```
 
-5) congrats!, you created bootstrap sampling distribution from one sample !
+5.) congrats!, you created bootstrap sampling distribution from one sample !
 $\\$
 
 ## Part 3: Construct Bootstrap Confidence Interval
@@ -152,14 +150,14 @@ From the `GlobalInternet2019` bootstrap sampling distribution you have created i
 
 ```{r}
 #your code here
-
 ```
+
 Congrat!, you created a $95\%$ CI with bootstrap distribution !
 
 4.) Calculate the confidence interval of $99\%$ using the formula 
 
 ```{r}
-# 99\% has different critical value than 95%
+# Note: 99\% has different critical value than 95%
 #your code here
 
 ```
@@ -172,7 +170,6 @@ Congrat!, you created a $95\%$ CI with bootstrap distribution !
 
 ```{r}
 #your code here
-
 ```
 
 
@@ -201,13 +198,13 @@ State the null and alternative hypotheses for the statistical test described:
 
 **Answers:**
 
-1.
+1.  
 
-2.
+2.  
 
-3.
+3.  
 
 4.
 
 
-
+4.  $\ H_0:\rho = 0$            vs      $\ H_a:\rho > 0$
