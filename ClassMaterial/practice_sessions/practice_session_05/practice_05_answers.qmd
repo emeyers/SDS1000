@@ -76,7 +76,7 @@ $\\$
 
 The data `GlobalInternet2019` provide the average number of hours spent online for  countries.
 
-1) First, create `histogram` of `HoursOnline`. What is the `sample size` of the data ?
+1.) First, create `histogram` of `HoursOnline`. What is the `sample size` of the data ?
 
 ```{r}
 library(Lock5Data)
@@ -89,7 +89,7 @@ hist(GlobalInternet2019$HoursOnline)
 ```
 
 
-2) Second, create a one bootstrap sample from `HoursOnline` . You might use the functions `sample`.
+2.) Second, create a one bootstrap sample from `HoursOnline` . You might use the functions `sample`.
 
 
 ```{r}
@@ -97,7 +97,7 @@ one_sample <- sample(GlobalInternet2019$HoursOnline,
                     size = n, replace = T)
 ```
 
-3) Third, you might replicate this one sample `10000` times `with replacement` using the function ` do_it()` to create a `bootstrap sampling ditribution`
+3.) Third, you might replicate this one sample `10000` times `with replacement` using the function ` do_it()` to create a `bootstrap sampling ditribution`
 
 ```{r}
 boot_dist <- do_it(10000) * {
@@ -106,7 +106,7 @@ boot_dist <- do_it(10000) * {
   }
 ```
 
-4) Fourth, create a `histogram` for the bootstrap distribution of the variable 
+4.) Fourth, create a `histogram` for the bootstrap distribution of the variable 
 `HoursOnline`
 
 ```{r}
@@ -117,7 +117,7 @@ hist(boot_dist, main ="Bootstrap Sampling Distribution
 
 ```
 
-5) congrats!, you created bootstrap sampling distribution from one sample !
+5.) congrats!, you created bootstrap sampling distribution from one sample !
 $\\$
 
 ## Part 3: Construct Bootstrap Confidence Interval
@@ -171,7 +171,7 @@ CI95_lower_upper
 ```
 Congrat!, you created a $95\%$ CI with bootstrap distribution !
 
-4) Calculate the confidence interval of $99\%$ using the formula 
+4.) Calculate the confidence interval of $99\%$ using the formula 
 
 ```{r}
 # 99\% has different critical value than 95%
@@ -189,7 +189,7 @@ CI99_lower_upper
 
 **Practice 4:**
 
-1) Let create a $95\%$ , $90\%$  CI of the mean `HoursOnline` in `R`, using **the percentiles** which they can be calculated using `quantile` function. 
+1.) Let create a $95\%$ , $90\%$  CI of the mean `HoursOnline` in `R`, using **the percentiles** which they can be calculated using `quantile` function. 
 
 ```{r}
 CI_95_lower_upper <- quantile(boot_dist, c(0.025, 0.975))
