@@ -7,9 +7,8 @@ editor_options:
   chunk_output_type: console
 ---
 
-In this practice section we will introduce the bootstrap distribution, bootstrap confidence interval, and hypothesis testing. 
-
-You may use the functions: `sample()`, `do_it` to create the bootstrap distribution.
+In this practice section we will introduce the bootstrap distribution, bootstrap confidence interval, and hypothesis testing. You may use 
+the functions: `sample()`, `do_it` to create the bootstrap distribution.
 
 # Part 1: Confidence interval concept
 
@@ -45,12 +44,13 @@ Several factors are involved in the creation of a confidence interval. Among the
 
 **Answers:**
 
-1.
+1.) True. For a given sample size, higher confidence means a larger margin of error.
 
-2.
+2.) False. Smaller samples lead to larger  standard errors, which lead to larger margins of error.
 
-3.
+3.) True. Larger samples are less variable, which makes us more confident that a given confidence interval succeeds in catching the population proportion.
 
+$\\$
 
 ## Part 2: Construct Bootstrap Distribution 
 
@@ -72,6 +72,7 @@ bootstrap_1_quant/bootstrap_1_quant.html), try to play with the creation of the 
 `https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html`
 
 ![](genetic_diversity.png){width=90%} 
+
 $\\$
 
 **Practice 2:**
@@ -82,9 +83,13 @@ Variables include the percent of internet users with a fast connection (defined 
  We can find `GlobalInternet` data in the `Library(Lock5Data)`, we will use it to create a bootstrap sampling distribution of the sample mean of the variable
 `HoursOnline` . 
 
-* Load the data and create a histogram for the variable `HoursOnline`
+* what is the `sample size` of the data and create `histogram` of `HoursOnline`
+
 ```{r}
-#your code here
+library(SDS1000)
+data(GlobalInternet)
+n <- lenght(GlobalInternet$HoursOnline)
+hist(GlobalInternet$HoursOnline)
 ```
 
 
@@ -92,20 +97,25 @@ Variables include the percent of internet users with a fast connection (defined 
 
 
 ```{r}
-#your code here
+one_sample <- sample(GlobalInternet$HoursOnline, 
+                    size = n, replace = T)
 ```
 
 2.2) Second, you might replicate this one sample `10000` times `with replacement` using the function ` do_it()` to create a `bootstrap sampling ditribution`
 
 ```{r}
-#your code here
+boot_dist <- do_it(10000) * {
+  one_sample = sample(GlobalInternet$HoursOnline, size = n, replace = T)
+  mean( one_sample)
+  }
 ```
 
 2.3) Third, create a `histogram` for the bootstrap distribution of the variable ` HoursOnline` 
 
 ```{r}
 
-#your code here
+hist(boot_dist, main ="Bootstrap Sampling Distribution of Global Internet Use  ",
+                xlab = "Estimated Mean of Online Hours ")
 
 ```
 
@@ -131,25 +141,35 @@ The distribution of these statistics is the bootstrap distribution.
 
 **Practice 3:**
 
-From the `GlobalInternet` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of the `HoursOnline`.
+From the `GlobalInternet` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of 
+the `HoursOnline`.
 
 1.) Calculate the mean of `HoursOnline` from your original sample
 
 ```{r}
-#your code here
+x_bar <- mean(GlobalInternet$HoursOnline )
+
+x_bar
 ```
 
 2.) Calculate the standard error of our bootstrap sampling distribution of the `HoursOnline`
 
 ```{r}
-#your code here
+boot_se <- sd(boot_dist )
+
+boot_se
 ```
 
 
 3.) Calculate the $95\%$ CI, which is based on the formula:$statistic\pm 2*SE$
 
 ```{r}
-#your code here
+#CI_lower <- x_bar - 2*boot_se
+#CI_upper <- x_bar + 2*boot_se
+
+CI_lower_upper <- x_bar+2*boot_se*c(1,-1)
+
+CI_lower_upper
 
 
 ```
@@ -162,7 +182,11 @@ From the `GlobalInternet` bootstrap sampling distribution you have created in th
 Let create a $95\%$ , $90\%$ , $99\%$ CI of the mean `HoursOnline` of users using **the quantiles** which they can be calculated using `qnorm` function. 
 
 ```{r}
-#your code here
+#CI_95_lower_upper <- quantile(boot_dist, c(0.025, 0.975))
+
+#CI_90_lower_upper<-  quantile(boot_dist, c(0.05, 0.95))
+
+#CI_99_lower_upper <- quantile(boot_dist, c(0.005, 0.995))
 ```
 
 $\\$
