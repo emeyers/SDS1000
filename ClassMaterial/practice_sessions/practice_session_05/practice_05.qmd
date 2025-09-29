@@ -22,11 +22,11 @@ A catalog sales company promises to deliver orders placed on the Internet within
 
 **Answers:**
 
-1.) Not correct. This statement implies certainty. There is no level of confidence in the statement.
+1.
 
-2.) Not correct. Different samples will give different results. Many fewer than $95\%$ of samples are expected to have exactly $88\%$ on-time orders.
+2.
 
-3.) Correct. 
+3.
 
 **Practice 1.b: ** True or False/ confidence level, Sample size, and confidence interval
 
@@ -41,11 +41,12 @@ Several factors are involved in the creation of a confidence interval. Among the
 
 **Answers:**
 
-1.) True. For a given sample size, higher confidence means a larger margin of error.
+1.
 
-2.) False. Smaller samples lead to larger  standard errors, which lead to larger margins of error.
+2.
 
-3.) True. Larger samples are less variable, which makes us more confident that a given confidence interval succeeds in catching the population proportion.
+3.
+
 
 $\\$
 
@@ -82,6 +83,7 @@ The data `GlobalInternet2019` provide the average number of hours spent online f
 library(Lock5Data)
 library(SDS1000)
 data(GlobalInternet2019)
+
 #your code here
 
 ```
@@ -104,6 +106,7 @@ data(GlobalInternet2019)
 `HoursOnline`
 
 ```{r}
+
 #your code here
 
 ```
@@ -132,7 +135,7 @@ The distribution of these statistics is the bootstrap distribution.
 
 From the `GlobalInternet2019` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of `HoursOnline`.
 
-1.) First, calculate the mean of `HoursOnline` from your original sample
+1.)  First, calculate the mean of `HoursOnline` from your original sample
 
 ```{r}
 #your code here
@@ -151,13 +154,14 @@ From the `GlobalInternet2019` bootstrap sampling distribution you have created i
 #your code here
 
 ```
- Congrat!, you created a CI with bootstrap distribution !
+Congrat!, you created a $95\%$ CI with bootstrap distribution !
 
 4) Calculate the confidence interval of $99\%$ using the formula 
 
 ```{r}
 # 99\% has different critical value than 95%
 #your code here
+
 ```
 
 ## Part 4:Create Bootstrap Confidence Interval with Percentiles
@@ -201,3 +205,6 @@ State the null and alternative hypotheses for the statistical test described:
 2.
 3.
 4.
+
+
+4.  $\ H_0:\rho = 0$            vs      $\ H_a:\rho > 0$
