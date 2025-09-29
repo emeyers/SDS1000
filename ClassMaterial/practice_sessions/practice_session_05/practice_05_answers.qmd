@@ -115,7 +115,7 @@ one_sample <- sample(ExerciseHours$Exercise,
 ```{r}
 
 boot_dist<- do_it(1000)*{
-  one_sample = sample(ExerciseHours$Exercise, size = 50, replace = T)
+  one_sample = sample(ExerciseHours$Exercise, size = n, replace = T)
   mean( one_sample)
 }
 
@@ -179,7 +179,7 @@ boot_se
 #CI_lower <- x_bar - 2*boot_se
 #CI_upper <- x_bar + 2*boot_se
 
-CI95_lower_upper <- x_bar+2*boot_se*c(-1,1)
+CI95_lower_upper <- x_bar + 2*boot_se*c(-1,1)
 
 CI95_lower_upper
 
