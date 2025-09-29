@@ -16,17 +16,19 @@ A catalog sales company promises to deliver orders placed on the Internet within
 
 1.) Between $80\%$ and $90\%$ of all orders arrive on time.
 
-2.) Ninety five percent of all random samples of customers will show that $85\%$ of orders arrive on time.
+2.) 95% of all random samples of customers will show that $85\%$ of orders arrive on time.
 
 3.) The interval between $80\%$ and $90\%$ gives a plausible range of values for where the true population parameter lies since 95% of intervals created will contain the population proportion.
 
 **Answers:**
 
-1.) Not correct. This statement implies certainty. There is no level of confidence in the statement.
+1.) False. This statement implies certainty. There is no level of confidence in the statement.
 
-2.) Not correct. Different samples will give different results. Many fewer than $95\%$ of samples are expected to have exactly $88\%$ on-time orders.
+2.) False. Different samples will give different results. Many fewer than $95\%$ of samples are expected to have exactly $88\%$ on-time orders.
 
-3.) Correct. 
+3.) True. 
+
+$\\$
 
 **Practice 1.b: ** True or False/ confidence level, Sample size, and confidence interval
 
@@ -236,4 +238,3 @@ State the null and alternative hypotheses for the statistical test described:
 
 
 4.  $\ H_0:\rho = 0$            vs      $\ H_a:\rho > 0$
-
