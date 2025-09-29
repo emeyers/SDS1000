@@ -1,3 +1,4 @@
+
 ---
 title: "Practice Session 5"
 format: pdf
@@ -10,7 +11,9 @@ In this practice section we will introduce the bootstrap distribution, bootstrap
 
 # Part 1: Confidence interval concept
 
-**Practice 1.a:** True or False/ Confidence interval interpretation
+**Practice 1.a:** 
+
+True or False/ Confidence interval interpretation
 
 A catalog sales company promises to deliver orders placed on the Internet within 3 days. Follow-up calls to a few randomly selected customers show that a $95\%$ confidence interval for the proportion of all orders that arrive on time is $85 \% \pm 5 \%$.
 
@@ -20,7 +23,9 @@ A catalog sales company promises to deliver orders placed on the Internet within
 
 3.) The interval between $80\%$ and $90\%$ gives a plausible range of values for where the true population parameter lies since 95% of intervals created will contain the population proportion.
 
+
 **Answers:**
+
 
 1.) False. This statement implies certainty. There is no level of confidence in the statement.
 
@@ -28,9 +33,12 @@ A catalog sales company promises to deliver orders placed on the Internet within
 
 3.) True. 
 
+
 $\\$
 
-**Practice 1.b: ** True or False/ confidence level, Sample size, and confidence interval
+
+**Practice 1.b: ** 
+True or False/ confidence level, Sample size, and confidence interval
 
 Several factors are involved in the creation of a confidence interval. Among them are the sample size, the level of confidence, and the margin of error. 
 
@@ -55,6 +63,7 @@ $\\$
 
 Here’s the clever idea: We don’t have the population, but we have a sample. Probably the sample is similar to the population in many ways.So let’s sample from our sample. We’ll call it `bootstrapping`. We want samples **the same size** as our original sample, so we will need to **sample with replacement**.This means that we may pick some members of the population more than once and others not at all. We’ll replicate this many times.
 
+
 **Generating a Bootstrap Distribution:**
 
 * Generate bootstrap samples by **sampling with replacement** from the original sample, using the **same sample size**.
@@ -62,6 +71,7 @@ Here’s the clever idea: We don’t have the population, but we have a sample. 
 * Compute the **statistic of interest** (called a bootstrap statistic), for each of the bootstrap samples.
 
 * Collect the **samples statistics** for many bootstrap samples to create a **bootstrap distribution**.
+
 
 **Example:**
 
@@ -74,52 +84,55 @@ Using `StatKey`website [link](https://www.lock5stat.com/StatKey/bootstrap_1_quan
 
 $\\$
 
+
 **Practice 2:**
 
-The data `GlobalInternet2019` provide the average number of hours spent online for  countries.
+The data `ExerciseHours` provide an in-class survey of statistics students asking them about amount of exercise per week.  
 
-1.) First, create `histogram` of `HoursOnline`. What is the `sample size` of the data ?
+1.) First, create `histogram` of `Exercise`. What is the `sample size` of the data ?
 
 ```{r}
 library(Lock5Data)
 library(SDS1000)
-data(GlobalInternet2019)
+data(ExerciseHours)
 
-n <- length(GlobalInternet2019$HoursOnline)
-hist(GlobalInternet2019$HoursOnline)
+n <- length(ExerciseHours$Exercise)
+hist(ExerciseHours$Exercise)
 
 ```
 
 
-2.) Second, create a one bootstrap sample from `HoursOnline` . You might use the functions `sample()`.
+2.) Second, create a one bootstrap sample from `Exercise` . You might use the functions `sample()`.
 
 
 ```{r}
-one_sample <- sample(GlobalInternet2019$HoursOnline, 
+one_sample <- sample(ExerciseHours$Exercise, 
                     size = n, replace = T)
 ```
 
 3.) Third, you might replicate this one sample `10000` times `with replacement` using the function ` do_it()` to create a `bootstrap sampling ditribution`
 
 ```{r}
-boot_dist <- do_it(10000) * {
-  one_sample = sample(GlobalInternet2019$HoursOnline, size = n, replace = T)
+
+boot_dist<- do_it(1000)*{
+  one_sample = sample(ExerciseHours$Exercise, size = 50, replace = T)
   mean( one_sample)
-  }
+}
+
 ```
 
-4.) Fourth, create a `histogram` for the bootstrap distribution of the variable 
-`HoursOnline`
+4.) Fourth, create a `histogram` for the bootstrap distribution of the variable `Exercise`
 
 ```{r}
 
 hist(boot_dist, main ="Bootstrap Sampling Distribution 
-            of Global Internet Usage  ",
-                xlab = "Estimated Mean of Internet Usage per Hours ")
+            of Exercise Hours for Stats Students  ",
+                xlab = "Estimated Mean of Exercise Hours ")
 
 ```
 
 5.) Congrats! you created bootstrap sampling distribution from one sample !
+
 $\\$
 
 ## Part 3: Construct Bootstrap Confidence Interval
@@ -141,17 +154,17 @@ The distribution of these statistics is the bootstrap distribution.
 
 **Practice 3:**
 
-From the `GlobalInternet2019` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of `HoursOnline`.
+From the `ExerciseHours` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of `Exercise`.
 
-1.)  First, calculate the mean of `HoursOnline` from your original sample
+1.)  First, calculate the mean of `Exercise` from your original sample
 
 ```{r}
-x_bar <- mean(GlobalInternet2019$HoursOnline )
+x_bar <- mean(ExerciseHours$Exercise )
 
 x_bar
 ```
 
-2.) Second, calculate the standard error of our bootstrap sampling distribution of the `HoursOnline`
+2.) Second, calculate the standard error of our bootstrap sampling distribution of the `Exercise`
 
 ```{r}
 boot_se <- sd(boot_dist )
@@ -171,6 +184,7 @@ CI95_lower_upper <- x_bar+2*boot_se*c(-1,1)
 CI95_lower_upper
 
 ```
+
 Congrats! you created a $95\%$ CI with bootstrap distribution !
 
 $\\$
@@ -179,7 +193,7 @@ $\\$
 
 **Practice 4:**
 
-1.) Let create a $95\%$ , $90\%$  CI of the mean `HoursOnline` in `R`, using **Percentiles** which can be calculated using `quantile()` function. 
+1.) Let create a $95\%$ , $90\%$  CI of the mean `Exercise` in `R`, using **Percentiles** which can be calculated using `quantile()` function. 
 
 ```{r}
 CI_95_lower_upper <- quantile(boot_dist, c(0.025, 0.975))
