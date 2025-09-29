@@ -6,9 +6,8 @@ editor_options:
   chunk_output_type: console
 ---
 
-In this practice section we will introduce the bootstrap distribution, bootstrap confidence interval, and hypothesis testing. 
-
-You may use the functions: `sample()`, `do_it` to create the bootstrap distribution.
+In this practice section we will introduce the bootstrap distribution, bootstrap confidence interval, and hypothesis testing. You may use 
+the functions: `sample()`, `do_it` to create the bootstrap distribution.
 
 # Part 1: Confidence interval concept
 
