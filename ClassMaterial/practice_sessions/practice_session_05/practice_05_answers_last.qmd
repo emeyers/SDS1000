@@ -139,9 +139,9 @@ The distribution of these statistics is the bootstrap distribution.
 
 **Practice 3:**
 
-From the `GlobalInternet2019` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of `Distance`.
+From the `GlobalInternet2019` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of `HoursOnline`.
 
-1.) Calculate the mean of `HoursOnline` from your original sample
+1.)  First, calculate the mean of `HoursOnline` from your original sample
 
 ```{r}
 x_bar <- mean(GlobalInternet2019$HoursOnline )
@@ -149,7 +149,7 @@ x_bar <- mean(GlobalInternet2019$HoursOnline )
 x_bar
 ```
 
-2.) Calculate the standard error of our bootstrap sampling distribution of the `HoursOnline`
+2.) Second, calculate the standard error of our bootstrap sampling distribution of the `HoursOnline`
 
 ```{r}
 boot_se <- sd(boot_dist )
@@ -158,7 +158,7 @@ boot_se
 ```
 
 
-3.) Calculate the $95\%$ CI, which is based on the formula:$statistic\pm 2*SE$
+3.) Third, calculate the $95\%$ CI, which is based on the formula:$statistic\pm 2*SE$
 
 ```{r}
 #CI_lower <- x_bar - 2*boot_se
@@ -169,6 +169,7 @@ CI95_lower_upper <- x_bar+2*boot_se*c(-1,1)
 CI95_lower_upper
 
 ```
+Congrat!, you created a $95\%$ CI with bootstrap distribution !
 
 4) Calculate the confidence interval of $99\%$ using the formula 
 
