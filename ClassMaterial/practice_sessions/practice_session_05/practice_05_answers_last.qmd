@@ -63,10 +63,10 @@ Here’s the clever idea: We don’t have the population, but we have a sample. 
 
 **Example:**
 
-Using StatKey [link](https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html)
-bootstrap_1_quant/bootstrap_1_quant.html), try to play with the creation of the bootstrap distribution from different data. The following picture shows the website and an example of bootstrap CI for the variable`tip` from the data `Resturant tips`.
+Using StatKey [link](https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html),  try to play with the creation of the bootstrap distribution from different data. The following picture shows the website and an example of bootstrap CI for the variable`tip` from the data `Resturant tips`.
 
 `https://www.lock5stat.com/StatKey/bootstrap_1_quant/bootstrap_1_quant.html`
+
 
 ![](resturant_tip.png){width=90%} 
 
@@ -74,29 +74,26 @@ $\\$
 
 **Practice 2:**
 
+The data `GlobalInternet2019` provide the average number of hours spent online for  countries.
 
-The `GeneticDiversity` data give a measure of genetic diversity for different populations and the geographic distance of each population from East Africa (Addis Ababa, Ethiopia), as one would travel over the surface of the earth by land (migration long ago is thought to have happened by land).
-
-The variables in this study were : Population, Country, Continent,Genetic Diversity (a measure of genetic diversity in the population), Distance (distance by land to East Africa in km).
-
-1) First, create `histogram` of `Distance`. What is the `sample size` of the data ?
+1) First, create `histogram` of `HoursOnline`. What is the `sample size` of the data ?
 
 ```{r}
 library(Lock5Data)
 library(SDS1000)
-data(GeneticDiversity)
+data(GlobalInternet2019)
 
-n <- length(GeneticDiversity$Distance)
-hist(GeneticDiversity$Distance)
+n <- length(GlobalInternet2019$HoursOnline)
+hist(GlobalInternet2019$HoursOnline)
 
 ```
 
 
-2) Second, create a one bootstrap sample from `Distance` . You might use the functions `sample`.
+2) Second, create a one bootstrap sample from `HoursOnline` . You might use the functions `sample`.
 
 
 ```{r}
-one_sample <- sample(GeneticDiversity$Distance, 
+one_sample <- sample(GlobalInternet2019$HoursOnline, 
                     size = n, replace = T)
 ```
 
@@ -104,18 +101,19 @@ one_sample <- sample(GeneticDiversity$Distance,
 
 ```{r}
 boot_dist <- do_it(10000) * {
-  one_sample = sample(GeneticDiversity$Distance, size = n, replace = T)
+  one_sample = sample(GlobalInternet2019$HoursOnline, size = n, replace = T)
   mean( one_sample)
   }
 ```
 
-4) Fourth, create a `histogram` for the bootstrap distribution of the variable ` Distance` 
+4) Fourth, create a `histogram` for the bootstrap distribution of the variable 
+`HoursOnline`
 
 ```{r}
 
 hist(boot_dist, main ="Bootstrap Sampling Distribution 
-            of Genetic Diversity by Distance from East Africa ",
-                xlab = "Estimated Mean of Distanceto East Africa in km ")
+            of Global Internet Usage  ",
+                xlab = "Estimated Mean of Internet Usage per Hours ")
 
 ```
 
@@ -141,17 +139,17 @@ The distribution of these statistics is the bootstrap distribution.
 
 **Practice 3:**
 
-From the `GeneticDiversity` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of `Distance`.
+From the `GlobalInternet2019` bootstrap sampling distribution you have created in the previous question, create a $95\%$  CI for the the sample mean of `Distance`.
 
-1.) Calculate the mean of `Distance` from your original sample
+1.) Calculate the mean of `HoursOnline` from your original sample
 
 ```{r}
-x_bar <- mean(GeneticDiversity$Distance )
+x_bar <- mean(GlobalInternet2019$HoursOnline )
 
 x_bar
 ```
 
-2.) Calculate the standard error of our bootstrap sampling distribution of the `Distance`
+2.) Calculate the standard error of our bootstrap sampling distribution of the `HoursOnline`
 
 ```{r}
 boot_se <- sd(boot_dist )
@@ -176,6 +174,7 @@ CI95_lower_upper
 
 ```{r}
 # 99\% has different critical value than 95%
+# 0.99+(1-0.99)/2
 
 cv_99 <- qnorm(0.995)
 
@@ -189,7 +188,7 @@ CI99_lower_upper
 
 **Practice 4:**
 
-1) Let create a $95\%$ , $90\%$  CI of the mean `Distance` in `R`, using **the percentiles** which they can be calculated using `quantile` function. 
+1) Let create a $95\%$ , $90\%$  CI of the mean `HoursOnline` in `R`, using **the percentiles** which they can be calculated using `quantile` function. 
 
 ```{r}
 CI_95_lower_upper <- quantile(boot_dist, c(0.025, 0.975))
@@ -197,9 +196,6 @@ CI_95_lower_upper
 
 CI_90_lower_upper<-  quantile(boot_dist, c(0.05, 0.95))
 CI_90_lower_upper
-
-CI_99_lower_upper <- quantile(boot_dist, c(0.005, 0.995))
-CI_99_lower_upper
 
 ```
 
@@ -229,14 +225,14 @@ State the null and alternative hypotheses for the statistical test described:
 
 **Answers:**
 
-1.  $\ H_0: \mu=50$            vs      $\ H_a: \mu < 50$
+1.  $\ H_0: \mu=50$             vs      $\ H_a: \mu < 50$
 
 
-2.  $\ H_0: p=0.3$            vs      $\ H_a: p> 0.3$
+2.  $\ H_0: \pi=0.3$            vs      $\ H_a: \pi> 0.3$
 
 
-3.  $\ H_0:\mu_{A}= \mu_{B}$   vs      $\ H_a: \mu_{A} \neq \mu_{B}$
+3.  $\ H_0:\mu_{A}= \mu_{B}$    vs      $\ H_a: \mu_{A} \neq \mu_{B}$
 
 
-4.  $\ H_0:\rho = 0$          vs      $\ H_a:\rho > 0$
+4.  $\ H_0:\rho = 0$            vs      $\ H_a:\rho > 0$
 
