@@ -230,14 +230,14 @@ State the null and alternative hypotheses for the statistical test described:
 
 **Answers:**
 
-1.)  $\ H_0:\mu=50 $            vs      $\ H_a:\mu <  50$
+1.  $\ H_0: \mu=50$            vs      $\ H_a: \mu < 50$
 
 
-2.)  $\ H_0: p=0.3 $            vs      $\ H_a: p>0.3 $
+2.  $\ H_0: p=0.3$            vs      $\ H_a: p> 0.3$
 
 
-3.)  $\ H_0:\mu_{A}= \mu_{B}$   vs      $\ H_a: \mu_{A} \neq \mu_{B}$
+3.  $\ H_0:\mu_{A}= \mu_{B}$   vs      $\ H_a: \mu_{A} \neq \mu_{B}$
 
 
-4.)  $\ H_0:\rho = 0 $          vs      $\ H_a:\rho > 0 $
+4.  $\ H_0:\rho = 0$          vs      $\ H_a:\rho > 0$
 
