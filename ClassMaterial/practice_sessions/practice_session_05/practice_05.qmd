@@ -1,4 +1,3 @@
-
 ---
 title: "Practice Session 5"
 format: pdf
