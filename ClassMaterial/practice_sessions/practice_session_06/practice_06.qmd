@@ -123,8 +123,35 @@ In this exercise, we will practice using some basic R coding to calculate a p-va
 # Your code here
 ```
 
-# Hypothesis Testing for the Difference of Means
+# Hypothesis Testing for Difference Between Two Means
+
+# Practice: 
+
+A study is interested to check if the mean excercise hours for female are less than the mean excercise hours for male students. Use data `ExerciseHours` and the two variables `Exercise` and `Sex`
+
+1.) Plot a boxplot to describe the female and male exercise hours.
+
+2.) Find some favorites statistics of `Exercise` hours in female and male. You can find the function: `mosaic::favstats` usful. *Note*: you can find this function arguments online.
+
+3.) Subset the data `ExerciseHours` in two groups of `Female` and `Male`.
+
+4.)Compute the observed statistic (mean difference of exercise hours between Female and Male)
+
+5.) Shuffle the two groups of `female` and `Male`, and find the mean difference of the suffled sample.
+
+6.) Create the Null hypothesis Distribution.  
+
+7.) Plot histogram of the null distribution and show the line of the observed mean difference.
+
+8.) Calculate the p-value
+
+9.) What is your decision
 
 
+```{r}
+library(Lock5Data)
+library(SDS1000)
+data(ExerciseHours)
+```
 
 
