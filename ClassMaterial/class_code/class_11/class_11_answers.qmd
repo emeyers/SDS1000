@@ -137,8 +137,10 @@ SE_boot <- sd(boot_dist)
 
 # Create a 90% confidence interval
 
-CI_lower <-  obs_prop  - qnorm(.95) * SE_boot 
-CI_upper <-  obs_prop  + qnorm(.95) * SE_boot 
+z_star <- mosaic::cnorm(.90, side = "upper")
+
+CI_lower <-  obs_prop  - z_star * SE_boot 
+CI_upper <-  obs_prop  + z_star * SE_boot 
 
 c(CI_lower, CI_upper)
 
@@ -249,13 +251,18 @@ c(CI_lower, CI_upper)
 
 # Create a 80% confidence interval
 
-(CI_80 <-  c(obs_mean - qnorm(.90) * SE_boot, obs_mean + qnorm(.90) * SE_boot))
+z_star <- mosaic::cnorm(.80, side = "upper")
+
+(CI_80 <-  c(obs_mean - z_star * SE_boot, obs_mean + z_star * SE_boot))
 
 
 
 # Create a 99% confidence interval
 
-(CI_99 <-  c(obs_mean - qnorm(.995) * SE_boot, obs_mean + qnorm(.995) * SE_boot))
+z_star <- mosaic::cnorm(.99, side = "upper")
+
+
+(CI_99 <-  c(obs_mean - z_star * SE_boot, obs_mean + z_star * SE_boot))
 
 
 
@@ -334,7 +341,7 @@ null_dist <- do_it(10000) * {
 }
 
 # Visualize the null distribution
-hist(null_dist, brekas = 50, main = "Null Distribution of Heads in 16 Flips", 
+hist(null_dist, breaks = 50, main = "Null Distribution of Heads in 16 Flips", 
      xlab = "Number of Heads", xlim = c(0, 16))
 
 abline(v = 15, col = "red")
