@@ -1,3 +1,22 @@
+---
+title: "Practice Session 7_answers"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+
+
+
+
+
+
+
 ## Practice: Hypothesis test for the difference of two means
 
 
