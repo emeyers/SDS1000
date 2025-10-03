@@ -1,0 +1,173 @@
+## Practice: Hypothesis test for the difference of two means
+
+
+A study is interested to check if the mean exercise hours for female are less than the mean exercise hours for male students. Use data `ExerciseHours` and the two variables `Exercise` and `Sex`.
+
+1.) **Step 1**:  Write the `null hypothesis`  and `alternative hypothesis`  in words and in symbols.
+
+*a.)* Create a boxplot to describe hours of exercise for `female` versus `male`.
+
+```{r}
+# your code here
+```
+
+*b.)* Find some favorites statistics of `Exercise hours` for female and male students. You might find the function: `mosaic::favstats` useful.
+*Note*: you can search online for this function arguments.
+
+```{r}
+#your code here
+```
+ 
+*c.)* Subset the data `ExerciseHours` to two groups: `F` and `M`.
+
+$\\$
+
+```{r}
+#your code here
+```
+
+2.) **Step 2**: Compute the observed statistic (mean difference of exercise hours for Female and Male).
+
+```{r}
+#your code here
+```
+
+$\\$
+
+3.) **Step 3**: Create null hypothesis distribution
+
+*a.)* Shuffle the two groups of `female` and `Male` into two samples, and find the mean difference of the two shuffled samples.
+
+*b.)* Create the Null hypothesis Distribution using `do_it()` function.  
+
+*c.)* Plot a `histogram' of the null distribution and show the `line` of the `observed mean difference` using the `abline()` function.
+
+```{r}
+# your code here
+```
+
+$\\$
+
+4.) **Step 4:** Calculate p-value 
+
+```{r}
+# your code here
+```
+
+$\\$
+
+**Step 5:**  Make decision/Judgment
+
+```{r}
+#your code here
+```
+
+$\\$
+
+**Answers:**
+
+```{r}
+library(Lock5Data)
+library(SDS1000)
+data(ExerciseHours)
+```
+
+1.) **Step 1**:  Write the `null hypothesis`  and `alternative hypothesis`  in words and in symbols.
+
+$\ H_0:\mu_{f}= \mu_{m}$   vs    $\ H_a: \mu_{f} < \mu_{m}$
+
+
+*a.)* Create a boxplot to describe hours of exercise for `female` versus `male`.
+
+
+```{r}
+
+boxplot(Exercise ~ Sex , data = ExerciseHours)
+
+```
+
+*b.)* Find some favorites statistics of `Exercise hours` for female and male students. You might find the function: `mosaic::favstats` useful.
+
+*Note*: you can search online for this function arguments.
+
+```{r}
+
+mosaic::favstats( Exercise ~ Sex, data = ExerciseHours)
+```
+
+*c.)* Subset the data `ExerciseHours` to two groups: `F` and `M` using `subset()` function.
+
+```{r}
+# we will use the function `subset`
+excercise_fem<- subset(  ExerciseHours$Exercise, ExerciseHours$Sex == "F")
+excercise_fem
+excercise_mal<- subset(  ExerciseHours$Exercise, ExerciseHours$Sex == "M")
+excercise_mal
+
+length(excercise_fem)
+length(excercise_mal)
+## 30
+## 20
+```
+
+2.) **Step 2**: Compute the observed statistic (mean difference of exercise hours for Female and Male).
+
+```{r}
+
+obs_stat <- mean(excercise_fem) - mean(excercise_mal)
+obs_stat
+## -3
+```
+
+3.) **Step 3:** Create null hypothesis distribution
+
+*a.)* Shuffle the two groups of `female` and `Male` into two samples, and find the mean difference of the two shuffled samples.
+
+```{r}
+combined_sample <- c(excercise_fem, excercise_mal)
+shuffled_sample <- sample(combined_sample )
+
+shuff_fem <- shuffled_sample[1:30]
+shuff_mal <- shuffled_sample[31:50]
+
+shuff_stat <- mean(shuff_fem) - mean(shuff_mal)
+shuff_stat
+# answers may vary
+```
+
+*b.)* Create the Null hypothesis Distribution  
+
+```{r}
+
+null_dist <- do_it(10000) * {
+shuffled_sample <- sample(combined_sample )
+
+shuff_fem <- shuffled_sample[1:30]
+shuff_mal <- shuffled_sample[31:50]
+
+shuff_stat <- mean(shuff_fem) - mean(shuff_mal)
+}
+```
+
+*c.)* Plot histogram of the null distribution and show the line of the observed mean difference
+
+```{r}
+hist(null_dist , xlab = "Difference in means of Exercise hous bewteen Female and Male", main = "Null distribution")
+
+abline(v = obs_stat, col = "blue")
+```
+
+4.) **Step 4:** Calculate p-value 
+
+```{r}
+
+p_value <- pnull(obs_stat, null_dist, lower.tail = T) 
+p_value
+#0.1038 (# answers may vary)
+```
+
+5.) **Step 5:**  Make decision/Judgment
+
+```{r}
+#There are no enough evidence to conclude that there is  a mean difference in Exercise Hours between Female and Male.
+```
