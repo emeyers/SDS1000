@@ -28,27 +28,27 @@ Hypothesis testing can be used to answer questions about a single sample, or to 
 * A statement of interest that represents the *status quo*, or that there is no effect or difference.
 * A statement of interest that proposes there is an effect or difference.
 
-# Hypothesis Testing for the Proportion
+# Hypothesis Testing for a Single Proportion
 
 ## Example 1: AP Multiple Choice
 
-Does the answer choice "C" occur more frequently than expected? Answer this question with a hypothesis test. Use
+Does the answer choice "C" occur **less** frequently than expected? Answer this question with a hypothesis test. Use
 the `APMultipleChoice` data set from the `Lock5Data` library. Make sure to follow all 5 steps of
 hypothesis testing. *Hint:* when defining the null hypothesis, consider how likely each answer choice
 would be if answers were selected at random.
 
 1.) State the null and alternative hypothesis in words:
 
-* [Null]
-* [Alternative]
+* [Null Hypothesis]
+* [Alternative Hypothesis]
 
-2.) Calculate the observed statistic of interest (obs_stat)
+2.) Calculate the observed statistic of interest
 
 ```{r}
 # Your code here
 ```
 
-3.) Create a null distribution in R using `do_it()` and `rflip_count()`. Plot the null distribution, and add a vertical red line at your point estimate.
+3.) Create a null distribution in R using `do_it()` and `rflip_count()`. Plot the null distribution, and add a vertical red line at the observed number of questions that had 'C' as the answer. Note that there were 400 multiple-choice questions in the data set.
 
 ```{r}
 # Your code here
@@ -62,18 +62,13 @@ would be if answers were selected at random.
 
 5.) Report the p-value. Make a decision on whether the results are statistically significant, and state your conclusion.
 
-## Example 2: Compassionate Rats
+## Example 2: Preferred Water Brand
 
-Would a rat attempt to free a trapped rat? In a recent study, some rats showed compassion by freeing another trapped rat, even when chocolate served as a distraction and even when the rats would then have to share the chocolate with their freed companion.\ 
-
-Conduct a hypothesis test to see if more than 50% of female rats are compassionate. 
+A national sales bureau believes that 30% of consumers prefer Fiji water as their first choice for water. Specifically, they choose it over Aquafina, Sam's Choice, and tap water. The Fiji company claims that this proportion is greater than 30%. Using the `WaterTaste` data set from the Lock5Data library, run a hypothesis test to check this claim. Look at the `help` page for the data set to see which variable is appropriate to use.
 
 1.) State the null and alternative hypothesis in words:
 
-* [Null]
-* [Alternative]
-
-2.) Calculate the observed statistic of interest (obs_stat)
+2.) Calculate the observed statistic of interest 
 
 ```{r}
 # Your code here
@@ -93,17 +88,43 @@ Conduct a hypothesis test to see if more than 50% of female rats are compassiona
 
 5.) Report the p-value. Make a decision on whether the results are statistically significant, and state your conclusion.
 
-# Exploring the `pnull()` Function
+# Example 3: UFO Shapes
 
-In this exercise, we will practice using some basic R coding to calculate a p-value without using the `pnull()` function. 
+UFOs, or Unidentified Flying Objects have become commonplace in media and popular culture. Some witnesses claim that the objects have a cylindrical shape, while others believe they are more spherical. Load the `ufo.csv` data set, and run a hypothesis test to check if over 75% of UFOs are believed to be spherical.
 
-1.) Consider null distribution and point estimate from the previous exercise. Using the `>` operator, write a single line of code that will show which values in the null distribution are greater than the point estimate. Run this code and observe what the values look like. Save this result to a vector. *Hint:* don't over think this part. Just write the inequality as you would in math class.
+1.) State the null and alternative hypothesis in words:
+
+2.) Calculate the observed statistic of interest (obs_stat)
 
 ```{r}
 # Your code here
 ```
 
-2.) Using your vector from above, count how many values from the null distribution are greater than the point estimate. Use the `sum()` function for this. *Hint:* the `==` operator can be used within the `sum()` function to compare values.
+3.) Create a null distribution in R using `do_it()` and `rflip_count()`. Plot the null distribution, and add a vertical red line at your observed total number of spheres.
+
+```{r}
+# Your code here
+```
+
+4.) Calculate the p-value (probability of obtaining a result as or more extreme than what we observed) using the `pnull()` function.
+
+```{r}
+# Your code here
+```
+
+5.) Report the p-value. Make a decision on whether the results are statistically significant, and state your conclusion.
+
+# Exploring the `pnull()` Function
+
+In this exercise, we will practice using some basic R coding to calculate a p-value without using the `pnull()` function. 
+
+1.) Consider null distribution and point estimate from the `AP Multiple Choice` exercise. Using the `<=` operator, write a single line of code that will show which values in the null distribution are **less than** the point estimate. Run this code and observe what the values look like. Save this result to a vector. *Hint:* don't over think this part. Just write the inequality as you would in math class.
+
+```{r}
+# Your code here
+```
+
+2.) Using your vector from above, count how many values from the null distribution are **less than** the point estimate. Use the `sum()` function for this. *Hint:* the `==` operator can be used within the `sum()` function to compare values.
 
 ```{r}
 # Your code here
@@ -120,74 +141,5 @@ In this exercise, we will practice using some basic R coding to calculate a p-va
 ```{r}
 # Your code here
 ```
-
-
-## Practice: Hypothesis test for difference of two means
-
-
-A study is interested to check if the mean exercise hours for female are less than the mean exercise hours for male students. Use data `ExerciseHours` and the two variables `Exercise` and `Sex`.
-
-1.) **Step 1**:  Write the `null hypothesis`  and `alternative hypothesis`  in words and in symbols.
-
-*a.)* Create a boxplot to describe hours of exercise for `female` versus `male`.
-
-```{r}
-# your code here
-```
-
-*b.)* Find some favorites statistics of `Exercise hours` for female and male students. You might find the function: `mosaic::favstats` useful.
-*Note*: you can search online for this function arguments.
-
-```{r}
-#your code here
-```
- 
-*c.)* Subset the data `ExerciseHours` to two groups: `F` and `M`.
-
-$\\$
-
-```{r}
-#your code here
-```
-
-2.) **Step 2**: Compute the observed statistic (mean difference of exercise hours for Female and Male).
-
-```{r}
-#your code here
-```
-
-$\\$
-
-3.) **Step 3**: Create null hypothesis distribution
-
-*a.)* Shuffle the two groups of `female` and `Male` into two samples, and find the mean difference of the two shuffled samples.
-
-*b.)* Create the Null hypothesis Distribution using `do_it()` function.  
-
-*c.)* Plot a `histogram' of the null distribution and show the `line` of the `observed mean difference` using the `abline()` function.
-
-```{r}
-# your code here
-```
-
-$\\$
-
-4.) **Step 4:** Calculate p-value 
-
-```{r}
-# your code here
-```
-
-$\\$
-
-**Step 5:**  Make decision/Judgment
-
-```{r}
-#your code here
-```
-
-$\\$
-
-**Answers:**
 
 
