@@ -1,0 +1,530 @@
+---
+title: "Class 14 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+## Part 1: Hypothesis tests for two means
+
+
+A randomized controlled trial by Lyle et al (1987) investigated whether calcium
+lowered blood pressure.
+
+ - A treatment group of 10 men received a calcium supplement for 12 weeks.  
+ - A control group of 11 men received a placebo during the same period.  
+
+The blood pressure of these men was taken before and after the 12 weeks of the study.
+
+Let's run a hypothesis test to see if there was a larger decrease in blood
+pressure for participants that received calcium compared to those that received
+a placebo.
+
+
+
+
+$\\$
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+Words:
+
+* Null hypothesis: 
+* Alternative hypothesis: 
+ 
+ 
+Symbols:
+
+
+ 
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 2: Calculate the observed statistic
+
+
+```{r calcium_obs_stat}
+
+
+# the data from the calcium study
+treat <- c(7, -4, 18, 17, -3, -5,  1, 10, 11, -2)
+control <- c(-1,  12,  -1,  -3,   3,  -5,   5,   2, -11,  -1,  -3)
+
+
+
+# observed statistic
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 3: create the null distribution
+
+
+```{r calcium_null_distribution}
+
+library(SDS1000)
+
+
+#  Combine data from both groups
+
+
+# Create the null distribution
+
+
+       # shuffle data
+
+
+
+       # create fake treatment and control groups
+
+
+
+       # calculate the shuffled statistic of interest
+
+
+
+
+
+
+
+# plot the null distribution
+
+
+
+
+# add a red vertical line at the observed statistic
+
+
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Step 4: calculate the p-value
+
+
+```{r calcium_p_value}
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### 5. Step 5: Make decision
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 2: Hypothesis tests for two means (Husbands and Wives data)
+
+
+Let's look at another example to test if the mean average of husbands tends to be
+greater than the mean average of wives.
+
+To address this qeuestion, we will use a data from a sample of 100 marriage
+licences from St. Lawrence County, NY that gives the ages of husbands and wives
+for newly married couples.
+
+But before we look at the data, let's start with step 1 by stating the null and
+alternative hypotheses, and then go from there...
+
+
+
+$\\$
+
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+
+Words:
+
+* Null hypothesis:  
+* Alternative hypothesis: 
+
+
+Symbols:  
+
+
+
+
+
+
+$\\$
+
+
+
+### Step 2a: Visualize the data
+
+Before we calculate our observed statistic let's visualize the data. 
+
+Please use an appropriate method we discussed in class to visualize the data.
+
+
+```{r husbands_and_wives_viz}
+
+# load the data
+library(Lock5Data)
+
+husbands <- MarriageAges$Husband
+wives <- MarriageAges$Wife
+
+
+
+# visualize the data using side-by-side box plots
+
+
+
+
+
+```
+
+
+**Question**: From looking at the visualization you created, does it appear that 
+husbands tend to be older than wives?
+
+
+**Answer**: 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 2b: Calculate the observed statistic
+
+Now let's do actual step 2 and calculate the observed statistic.
+
+
+```{r husbands_and_wives_obs_stat}
+
+# calculate the observed statistic
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 3: Create the null distribution
+
+
+```{r husbands_and_wives_null_distribution}
+
+library(SDS1000)
+
+# combine the data into a single vector
+
+
+# create the null distribution
+
+
+
+
+
+
+
+
+
+
+# plot the null distribution
+
+
+
+
+
+
+# add a red vertical line at the observed statistic
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+```{r husbands_and_wives_p_value}
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+### Step 5: Make decision
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 3: Hypothesis tests for more than two means
+
+
+A group of Hope College students wanted to see if there was an association
+between a student’s major and the time it takes to complete a small Sudoku-like
+puzzle
+
+
+They grouped majors into four categories
+
+* Applied science (as)
+* Natural science (ns)
+* Social science  (ss)
+* Arts/humanities  (ah)
+
+Let's run a hypothesis test to see if there is an association between a student's
+major and the time it takes to complete the puzzle.
+
+
+
+$\\$
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+
+
+Words:
+
+* Null hypothesis: 
+
+* Alternative hypothesis: 
+
+
+
+Symbols:  
+
+
+
+
+
+
+$\\$
+
+
+
+
+### Step 2a: Visualize the data
+
+```{r sudoku_viz}
+
+# load the data
+sudoku_data <- read.table("MajorPuzzle.txt", header = TRUE)
+
+completion_times <- sudoku_data$time
+majors <- sudoku_data$major
+
+
+
+# visualize the data using side-by-side box plots
+
+
+
+
+
+
+```
+
+
+
+**Question**: From looking at the visualization you created, does it appear that
+the mean time to complete the puzzle is different for at least one of the four
+groups?
+
+
+**Answer**: 
+
+
+
+
+
+
+$\\$
+
+
+
+
+### Step 2b: Calculate the observed statistic
+
+
+```{r sudoku_obs_stat}
+
+# calculate the observed statistic
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+### Step 3: Create the null distribution
+
+
+```{r sudoku_null_distribution}
+
+library(SDS1000)
+
+
+# Create the null distribution
+
+
+
+
+
+
+
+
+# plot the null distribution
+
+
+
+
+# add a red vertical line at the observed statistic
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+```{r sudoku_p_value}
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 5: Make decision
+
+
+
+
+
+
+
+
