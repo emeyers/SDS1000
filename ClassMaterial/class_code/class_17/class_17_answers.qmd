@@ -1,0 +1,367 @@
+---
+title: "Class 17 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+## Part 1: Hypothesis tests for more than two means
+
+
+A group of Hope College students wanted to see if there was an association
+between a student’s major and the time it takes to complete a small Sudoku-like
+puzzle
+
+
+They grouped majors into four categories
+
+* Applied science (as)
+* Natural science (ns)
+* Social science  (ss)
+* Arts/humanities  (ah)
+
+Let's run a hypothesis test to see if there is an association between a student's
+major and the time it takes to complete the puzzle.
+
+
+
+$\\$
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+
+
+Words:
+
+* Null hypothesis: The mean time to complete the puzzle is the same for all four groups  
+
+* Alternative hypothesis: The mean time to complete the puzzle is not the same 
+for all four groups  
+
+
+Symbols:  
+
+* $H_0: \mu_{as} = \mu_{ns} = \mu_{ss} = \mu_{ah}$   
+* $H_A$: At least one of the means is different  
+
+
+
+
+$\\$
+
+
+
+
+### Step 2a: Visualize the data
+
+```{r sudoku_viz}
+
+# load the data
+sudoku_data <- read.table("MajorPuzzle.txt", header = TRUE)
+
+completion_times <- sudoku_data$time
+majors <- sudoku_data$major
+
+# visualize the data using side-by-side box plots
+boxplot(completion_times ~ majors, 
+        main = "Time to complete puzzle by major",
+        xlab = "Major",
+        ylab = "Time (seconds)",
+        col = c("lightblue", "lightgreen", "lightpink", "lightyellow"))
+
+```
+
+
+
+**Question**: From looking at the visualization you created, does it appear that
+the mean time to complete the puzzle is different for at least one of the four
+groups?
+
+
+**Answer**: From my visualization it appears that the mean time to complete the
+puzzle is different for at least one of the four groups. The box plot is showing
+that the median time for the natural science group is lower than the median times
+for the other three groups. However, there is also a lot of overlap in the times
+for the four groups. So, it is hard to tell just by looking at the box plot if
+the mean time to complete the puzzle is actually different for at least one of
+the four groups.
+
+
+
+
+$\\$
+
+
+
+
+### Step 2b: Calculate the observed statistic
+
+
+```{r sudoku_obs_stat}
+
+library(SDS1000)
+
+
+# calculate the observed statistic
+
+obs_stat <- get_MAD_stat(completion_times, majors)
+
+obs_stat
+
+```
+
+
+
+$\\$
+
+
+
+### Step 3: Create the null distribution
+
+
+```{r sudoku_null_distribution}
+
+library(SDS1000)
+
+
+# Create the null distribution
+
+null_dist <- do_it(10000) * {
+
+  # shuffle the completion times
+  shuffled_majors <- shuffle(majors)
+
+  # calculate the simulated statistic
+  get_MAD_stat(completion_times, shuffled_majors)
+
+}
+
+# plot the null distribution
+hist(null_dist, breaks = 200,
+     main = "Null distribution",
+     xlab = "Mean absolute deviation of group means")
+
+
+# add a red vertical line at the observed statistic
+abline(v = obs_stat, col = "red")
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+```{r sudoku_p_value}
+
+p_value <- pnull(obs_stat, null_dist, lower.tail = FALSE)
+
+p_value
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 5: Make decision
+
+Since the p-value is greater than the typical cutoff of 0.05, we fail to reject
+the null hypothesis. Thus we can't conclude that the mean time to complete the
+puzzle is different for the different majors.
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 2: Hypothesis tests for correlation 
+
+
+Let's now look at hypothesis tests for correlation by examining whether cereals
+with more sugar tend to have more calories.
+
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+
+
+Words:
+
+* Null hypothesis: There is no correlation between sugar content and calorie content in cereals
+
+* Alternative hypothesis: There is a positive correlation between sugar content and calorie content in cereals.  
+
+
+Symbols:  
+
+* $H_0: \rho = 0$
+* $H_A$: $\rho > 0$
+
+
+
+$\\$
+
+
+
+
+### Step 2a: Visualize the data
+
+```{r cereal_viz}
+
+# load the data
+load("cereal.Rda")
+
+
+sugar <- cereal$Sugars
+calories <- cereal$Calories
+
+
+# visualize the data using a scatter plot
+plot(sugar, calories, 
+     main = "Calories vs Sugar in Cereals",
+     xlab = "Sugar (grams)",
+     ylab = "Calories")
+
+
+
+```
+
+
+
+**Question**: From looking at the visualization you created, does it appear that
+there is a positive correlation between sugar content and calorie content in cereals?
+
+
+
+
+**Answer**: From my visualization it appears that there is a positive correlation between
+ sugar content and calorie content in cereals. The scatter plot shows an upward trend,
+indicating that as the sugar content increases, the calorie content also tends to increase.
+
+
+
+
+
+$\\$
+
+
+
+
+### Step 2b: Calculate the observed statistic
+
+
+```{r cereal_obs_stat}
+
+# calculate the observed statistic
+
+obs_stat <- cor(sugar, calories)
+
+obs_stat
+
+
+```
+
+
+
+$\\$
+
+
+
+### Step 3: Create the null distribution
+
+
+```{r cereal_null_distribution}
+
+library(SDS1000)
+
+
+null_dist <- do_it(10000) * {
+
+  # shuffle the sugar content
+  shuffled_sugar <- shuffle(sugar)
+
+  # calculate the simulated statistic
+  cor(shuffled_sugar, calories)
+
+}
+
+
+# plot the null distribution
+hist(null_dist, breaks = 200,
+     main = "Null distribution",
+     xlab = "Correlation between sugar and calories")
+
+# add a red vertical line at the observed statistic
+abline(v = obs_stat, col = "red")
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+```{r cereal_p_value}
+
+p_value <- pnull(obs_stat, null_dist, lower.tail = FALSE)
+
+p_value
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 5: Make decision
+
+Since the p-value is much less than the typical cutoff of 0.05, we reject the
+null hypothesis, and we conclude that there is a positive correlation between
+sugar content and calorie content in cereals.
+
+
+
+
+$\\$
+
+
+
+
+
+
