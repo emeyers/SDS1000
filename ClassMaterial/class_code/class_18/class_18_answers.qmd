@@ -1,0 +1,234 @@
+---
+title: "Class 18 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+
+
+## Part 1: Generating random data from a normal distribution
+
+
+IQ scores are normally distributed with a mean of 100 and a standard deviation of 15.
+
+Let's generate/simulate some random IQ scores and visualize the distribution.
+
+
+
+```{r normal_data}
+
+set.seed(123)  # for reproducibility
+n <- 1000
+
+# Generate random IQ scores
+iq_scores <- rnorm(n, mean = 100, sd = 15)
+
+
+# Visualize the distribution
+hist(iq_scores, 
+     breaks = 30, 
+     main = "Histogram of Simulated IQ Scores", 
+     xlab = "IQ Score")
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 2: Visualzing the distribution of IQ scores with a density plot
+
+
+We can visualize the distribution of IQ scores using a density plot.
+
+
+```{r density_plot}
+
+# Get a range of x values
+x_values <- seq(50, 150, length.out = 1000)
+
+                
+# Calculate the density values for the normal distribution
+density_values <- dnorm(x_values, mean = 100, sd = 15)
+
+
+# Plot the density
+plot(x_values, density_values,
+     type = "l",
+     main = "Density Plot of IQ Scores",
+     xlab = "IQ Score",
+     ylab = "Density")
+
+```
+
+
+We can also overlay the density plot on the histogram of the simulated IQ scores by normalizing the histogram so that the area sums to 1.
+
+
+```{r overlay_density}
+
+# Plot the histogram with density
+hist(iq_scores,
+     breaks = 50,
+     probability = TRUE,  # normalize the histogram
+     main = "Histogram of Simulated IQ Scores with Density Overlay",
+     xlab = "IQ Score")
+
+
+# Overlay the density plot - lines() adds to the previous plot
+lines(x_values, density_values, col = "red")
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 3: Calculating probabilities using the normal distribution
+
+We can calculate probabilities using the normal distribution. For example, what is the probability that a randomly selected individual has an IQ score less than 120?
+
+
+```{r calculate_probability}
+
+# Calculate the probability
+probability <- pnorm(120, mean = 100, sd = 15)
+
+probability
+
+
+# we can viaulize this using the mosaic package xpnorm function
+# mosaic::xpnorm(120, mean = 100, sd = 15)
+
+
+```
+
+
+We can also get probability ranges by subtracting cumulative probabilities.
+
+What is the probability that a randomly selected individual has an IQ score between 85 and 115?
+
+
+```{r calculate_probability_range}
+
+# Calculate the probability
+
+probability_range <- pnorm(115, mean = 100, sd = 15) - pnorm(85, mean = 100, sd = 15)
+
+probability_range
+
+
+
+
+# we can viaulize this on a density plot 
+plot(x_values, density_values,
+     type = "l",
+     xlab = "IQ Score",
+     ylab = "Density")
+
+abline(v = c(85, 115), col = "red")
+abline(h = 0, col = "black")
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 4: Finding IQ score cutoffs using quantiles
+
+
+Before we get quantiles from a theoretical normal distribution, let's get
+quantiles from our simulated IQ scores.
+
+Recall that quantiles divide the data into equal parts. For example, the 0.25
+quantile (or 25th percentile) is the value below which 25% of the data falls.
+
+Also, recall that we can get quantiles in R using the `quantile()` function.
+Let's try this now...
+
+
+```{r quantiles_simulated}
+
+# Let's get the 25th percentile for our simulated IQ scores
+quantiles_simulated <- quantile(iq_scores, .25)
+
+quantiles_simulated
+
+
+
+# get the quantiles for the middle 95% of our simulated IQ scores
+quantiles_95_simulated <- quantile(iq_scores, probs = c(0.025, 0.975))
+quantiles_95_simulated
+
+
+```
+
+
+Let's now get quantiles from the theoretical normal distribution of IQ scores.
+
+
+
+```{r find_cutoff}
+
+# Calculate the quantiles
+quantiles_theoretical <- qnorm(.25, mean = 100, sd = 15)
+quantiles_theoretical
+
+
+
+# we can visualize this using the mosaic package xqnorm function
+# mosaic::xqnorm(c(0.25, .5, 0.75), mean = 100, sd = 15)
+
+```
+
+
+Can you get the range of IQ scores that the middle 95% of the population falls within?
+
+
+Also, try it using the `mosaic::cnorm()` function.
+
+
+```{r find_95_cutoff}
+
+# Calculate the quantiles
+qnorm(c(0.025, .975), mean = 100, sd = 15)
+
+
+# mosaic::xqnorm(c(0.025, .975), mean = 100, sd = 15)
+# mosaic::xcnorm(.95, mean = 100, sd = 15)
+
+
+```
+
+
+
+
+

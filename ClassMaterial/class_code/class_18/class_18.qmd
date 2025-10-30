@@ -1,0 +1,212 @@
+---
+title: "Class 18 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+
+
+## Part 1: Generating random data from a normal distribution
+
+
+IQ scores are normally distributed with a mean of 100 and a standard deviation of 15.
+
+Let's generate/simulate 1,000 random IQ scores and visualize the distribution.
+
+
+
+```{r normal_data}
+
+set.seed(123)  # for reproducibility
+
+
+
+# Generate random IQ scores
+
+
+
+# Visualize the distribution
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 2: Visualzing the distribution of IQ scores with a density plot
+
+
+We can visualize the distribution of IQ scores using a density plot.
+
+
+```{r density_plot}
+
+# Get a range of x values
+
+
+                
+# Calculate the density values for the normal distribution
+
+
+
+
+# Plot the density
+
+
+
+
+
+```
+
+
+
+We can also overlay the density plot on the histogram of the simulated IQ scores by normalizing the histogram so that the area sums to 1.
+
+
+
+
+```{r overlay_density}
+
+# Plot the histogram with density
+
+
+
+
+# Overlay the density plot - lines() adds to the previous plot
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 3: Calculating probabilities using the normal distribution
+
+We can calculate probabilities using the normal distribution. For example, what is the probability that a randomly selected individual has an IQ score less than 120?
+
+
+```{r calculate_probability}
+
+# Calculate the probability
+
+
+
+
+
+
+
+
+
+```
+
+
+We can also get probability ranges by subtracting cumulative probabilities.
+
+What is the probability that a randomly selected individual has an IQ score between 85 and 115?
+
+
+```{r calculate_probability_range}
+
+# Calculate the probability
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 4: Finding IQ score cutoffs using quantiles
+
+
+Before we get quantiles from a theoretical normal distribution, let's get
+quantiles from our simulated IQ scores.
+
+Recall that quantiles divide the data into equal parts. For example, the 0.25
+quantile (or 25th percentile) is the value below which 25% of the data falls.
+
+Also, recall that we can get quantiles in R using the `quantile()` function.
+Let's try this now...
+
+
+```{r quantiles_simulated}
+
+# Let's get the 25th percentile for our simulated IQ scores
+
+
+
+
+
+# get the quantiles for the middle 95% of our simulated IQ scores
+
+
+
+```
+
+
+Let's now get quantiles from the theoretical normal distribution of IQ scores.
+
+
+
+```{r find_cutoff}
+
+# Calculate the quantiles
+
+
+
+
+# we can visualize this using the mosaic package xqnorm function
+
+
+```
+
+
+Can you get the range of IQ scores that the middle 95% of the population falls within?
+
+Also, try it using the `mosaic::xcnorm()` function.
+
+
+```{r find_95_cutoff}
+
+
+
+
+```
