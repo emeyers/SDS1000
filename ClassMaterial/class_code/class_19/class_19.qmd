@@ -1,0 +1,439 @@
+---
+title: "Class 19 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+
+
+## Part 1: Review of rnorm(), dnorm(), and pnorm()
+
+
+IQ scores are normally distributed with a mean of 100 and a standard deviation of 15.
+
+Let's review using:
+
+1. `rnorm()` to generate some random IQ scores
+
+2. `dnorm()` to visualize the distribution of IQ scores with a density plot
+
+3. `pnorm()` to calculate probabilities associated with IQ scores
+
+
+
+
+```{r normal_data}
+
+set.seed(123)  # for reproducibility
+
+
+# 1. Generate 10,000 random IQ scores
+
+
+
+# Visualize the distribution
+
+
+
+
+
+
+
+
+
+# 2. Create a plot of the normal density function 
+
+
+# Get a range of x values
+x_values <- seq(50, 150, length.out = 1000)
+
+                
+# Calculate the density values for the normal distribution
+
+
+
+# Overlay the density plot - lines() adds to the previous plot
+# If we were not overlaying this on a histogram, we would use plot() instead
+
+
+
+
+
+
+# 3. Calculate the probability of having an IQ score greater than 130
+
+# Calculate the probability
+
+
+
+
+
+
+# Calculate the probability of having an IQ score between 85 and 115
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 2: Finding IQ score cutoffs using quantiles
+
+
+Before we get quantiles from a theoretical normal distribution, let's get
+quantiles from our simulated IQ scores.
+
+Recall that quantiles divide the data into equal parts. For example, the 0.25
+quantile (or 25th percentile) is the value below which 25% of the data falls.
+
+Also, recall that we can get quantiles in R using the `quantile()` function.
+Let's try this now...
+
+
+```{r quantiles_simulated}
+
+# Let's get the 25th percentile for our simulated IQ scores
+
+
+
+
+
+# get the quantiles for the middle 95% of our simulated IQ scores
+
+
+
+
+```
+
+
+Let's now get quantiles from the theoretical normal distribution of IQ scores.
+
+
+
+```{r find_cutoff}
+
+# Calculate the quantiles
+
+
+
+
+# we can visualize this using the mosaic package xqnorm function
+
+
+
+```
+
+
+Can you get the range of IQ scores that the middle 95% of the population falls within?
+
+
+Also, try it using the `mosaic::cnorm()` function.
+
+
+```{r find_95_cutoff}
+
+# Calculate the quantiles
+
+
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+## Part 3: The standard normal distribution
+
+The standard normal distribution is a special case of the normal distribution 
+where the mean is 0 and the standard deviation is 1.
+
+We can convert any normal distribution to the standard normal distribution using
+the z-score formula: $$ z = \frac{x - \mu}{\sigma} $$
+
+Where: 
+- `z` is the z-score
+- `x` is the value from the original normal distribution
+- $\mu$ is the mean of the original normal distribution
+- $sigma$ is the standard deviation of the original normal distribution
+
+Let's say we have an IQ score of 112. What is the corresponding z-score?
+
+```{r z_score}
+
+
+# Given IQ score
+
+
+
+# Mean and standard deviation of the IQ distribution
+
+
+
+
+# Calculate the z-score
+
+
+
+
+
+
+# Now, let's find the probability of having an IQ score greater than 130 using the z-score
+
+
+
+
+```
+
+
+We can also convert z-scores back to the original normal distribution using the formula:
+$$ X = z \cdot \sigma + \mu $$
+Let's say we have a z-score of 2.2. What is the corresponding IQ score?
+
+```{r z_to_x}
+
+# Given z-score
+
+
+
+
+
+# Convert z-score back to IQ score
+
+
+
+
+
+```
+
+
+$\\$
+
+
+
+
+## Part 4: The Central Limit Theorem (CLT)
+
+The Central Limit Theorem states that the sampling distribution of the sample
+mean will be approximately normally distributed, regardless of the shape of the
+population distribution, provided the sample size is sufficiently large.
+
+Let's illustrate the CLT by taking random samples from a uniform distribution and
+examining the distribution of the sample means.
+
+
+
+```{r clt_simulation}
+
+library(SDS1000)
+
+set.seed(123)  # for reproducibility
+
+
+# Visualize the uniform distribution
+x_values_uniform <- seq(-.2, 1.2, length.out = 1000)
+density_values_uniform <- dunif(x_values_uniform, min = 0, max = 1)
+
+plot(x_values_uniform, density_values_uniform, type = "l",
+     main = "Uniform Distribution (0,1)",
+     xlab = "x", 
+     ylab = "Density", 
+     col = "red")
+
+
+
+
+# Let's draw random points from a uniform distribution
+sample_size <- 30   # size of each sample
+
+
+# Simulate the sampling distribution of the sample mean
+sampling_dist <- do_it(10000) * {
+  
+  curr_sample <- runif(sample_size)
+  mean(curr_sample)
+  
+}
+
+
+
+
+# Visualize the sampling distribution of the sample mean
+hist(sampling_dist,
+     breaks = 30,
+     probability = TRUE,
+     main = "Sampling Distribution of the Sample Mean (n=30)",
+     xlab = "Sample Mean")
+
+
+# Overlay a normal distribution for comparison
+mean_sample_means <- 
+sd_sample_means <- 
+
+x_values_clt <- seq(0, 1, length.out = 1000)
+density_values_clt <- dnorm(x_values_clt, mean = mean(sampling_dist),
+                            sd = sd(sampling_dist))
+
+lines(x_values_clt, density_values_clt, col = "blue", lwd =2)
+
+```
+
+
+As you can see, even though the original population distribution is a uniform
+distribution, the sampling distribution of the sample mean is approximately
+normal, demonstrating the Central Limit Theorem.
+
+We have seen this several times already with when we looked a the sampling
+distribution of means and proportions using the web based application on the
+homework.
+
+For a reminder please see these web apps:
+
+- https://ethan-meyers-test.shinyapps.io/gettysburg_sampling_distribution/
+- https://emeyers.shinyapps.io/sampling_bootstrap_distribution_app/
+
+
+
+
+$\\$
+
+
+
+# Part 5: Inference using the normal distribution
+
+We can use the normal distribution to perform inference about population parameters
+based on sample statistics.
+
+
+
+
+$\\$
+
+
+
+
+
+## Example: Hypothesis test for a single proportion with a known SE
+
+
+Do goalies guess the direction of a penalty shot less than 50% of the time? 
+
+
+From 1982 to 1994 there were 128 penalty shots in the World Cup.  
+Goal keepers correctly guessed the direction 41% of the time With SE* = 0.043                             
+
+
+
+### Step 1: 
+
+
+
+
+
+
+$\\$
+
+
+
+
+### Step 2-5: 
+
+2. Calculate the z-statistic using the formula: $$z = \frac{\hat{p} - \pi_0}{SE^*} $$
+
+3. Visualize the null distribution using `dnorm()` function.
+
+4. Calculate the p-value using the standard normal distribution (`pnorm()` function)
+
+5. Make a decision based on the p-value and significance level (e.g., $\alpha$ = 0.05)
+
+
+
+```{r}
+
+
+# step 2: calculate the z-statistic
+
+
+
+# step 3: visualize the null distribution
+
+
+
+
+
+# step 4: use the pnorm function to get the p-value
+
+
+
+
+```
+
+
+5. Make a decision!
+
+
+
+
+
+$\\$
+
+
+
+
+Can you also create a 99% confidence interval for the proportion of correct
+guesses by goalies during penalty shots using the known SE?
+
+```{r ci_proportion}
+
+# Given data
+
+
+
+
+
+# Calculate the margin of error
+
+
+
+
+
+# Calculate the confidence interval
+
+
+
+
+
+
+```
+
+
+
+
+
