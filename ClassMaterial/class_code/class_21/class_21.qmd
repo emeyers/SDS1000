@@ -1,0 +1,362 @@
+---
+title: "Class 21 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+# Part 1: Warm-up - Parametric hypothesis test for a proportion
+
+Background:
+
+Most people are right handed, right eye dominant, etc.  Biologists have
+suggested that human embryos tend to turn their heads to the right as
+well.German bio-psychologist Onur Güntürkün conjectured that this tendency
+manifests itself in other ways, so he studies which ways people turn their heads
+when they kiss.
+
+In a study of 124 couples kissing, 80 of the couples turned their heads to the
+right.  Is there evidence that more than half of all couples turn their heads to
+the right when they kiss? Let's run a parametric hypothesis test for a
+proportion to find out!
+
+
+
+
+$\\$
+
+
+Step 1: State the null and alternative hypotheses
+
+In words: 
+
+- Null hypothesis: 
+
+- Alternative hypothesis: 
+
+
+
+In symbols:
+
+
+
+
+
+
+
+```{r hypothesis_test_proportion}
+
+
+
+# Step 2: Calculate the z-statistic
+
+# first assess that np and n(1-p) are both at least 10
+
+
+
+# calculate the z-statistic
+
+
+
+
+
+
+# Step 3: Visualize the null distribution (optional)
+
+
+
+
+
+
+
+
+# Step 4: Calculate the p-value
+
+
+
+
+
+
+
+```
+
+
+
+Step 5: Make a decision
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+Note: we could also get a p-value without converting to a z-statistic (and if
+you take additional statistics/probability courses, you will learn you could
+also use a binomial distribution as the null distribution too).
+
+```{r hypothesis_test_proportion_alternative}
+
+
+
+
+
+
+```
+
+
+
+  
+
+
+
+
+$\\$
+
+
+
+
+
+
+# Part 2: Calculating quantities from a t-distribution
+
+
+Suppose we have a sample size is n = 16, please calculate the following values: 
+
+1. The 2.5th and 97.5th percentiles from a t-distribution
+
+2. The probability that a t-statistic is more than 1.5
+
+3. Also, calculate these same values for the standard normal distribution
+
+
+```{r t_distribution_calculations, message = FALSE}
+
+
+# Calculate the degrees of freedom
+
+
+
+
+# 1. Calculate the 2.5th and 97.5th percentiles from a t-distribution
+
+
+
+
+
+# We can also use the mosaic::ct() function to do this calculation
+
+
+
+
+
+
+
+
+# 2. Calculate the probability that a t-statistic is more than 1.5
+
+
+
+
+
+
+
+
+
+
+# 3. Calculate the same values for the standard normal distribution
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+# Part 3: Parametric confidence interval for a single mean
+
+
+
+A study by Loyd et al (2013) in Biological Conservation, used KittyCams to
+record all activity of n = 55 domestic cats that hunt outdoors.
+
+The video footage showed that the mean number of kills per week for these cats
+was 2.4 with a standard deviation of 1.51.
+
+Find and interpret a 99% confidence interval for the mean number of kills per
+week by US household cats that hunt outdoors.
+
+
+$$CI ~ = ~ \bar{x} ~ \pm ~ t^* \cdot \frac{s}{\sqrt{n}}$$
+
+
+
+```{r confidence_interval_mean}
+
+# Given data
+n <- 55
+x_bar <- 2.4
+s <- 1.51
+
+
+# Degrees of freedom
+
+
+
+
+# Calculate the standard error (SE)
+
+
+
+
+
+# Find the critical t-value for the desired confidence level
+
+
+
+
+
+
+
+# Calculate the margin of error (ME)
+
+
+
+
+
+
+# Construct the confidence interval
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+# Part 4: Parametric hypothesis test for a single mean
+
+
+In the mid-1990s a Nabisco marking campaign claimed that there were at least
+1000 chips in every bag of Chips Ahoy! cookies.
+
+A group of Air Force cadets tested this claim by dissolving the cookies from 42
+bags in water and counting the number of chips.
+
+They found the average number of chips per bag was 1261.6, with a standard
+deviation of 117.6 chips
+
+Test whether the average (mean) number of chips per bag is greater than 1000.  
+
+Do the results confirm Nabisco’s claim?  
+
+
+
+$\\$
+
+Step 1: State the null and alternative hypotheses
+
+
+In words: 
+
+- Null hypothesis: 
+- Alternative hypothesis: The average number of chips per bag is greater than 1000.
+
+
+In symbols:  
+
+
+
+
+
+
+```{r hypothesis_test_mean}
+
+
+
+# Step 2: Calculate the t-statistic
+
+
+
+
+
+
+
+# Step 3: Visualize the null distribution
+
+
+
+
+
+
+
+
+# Step 4: Calculate the p-value
+
+
+
+
+
+
+```
+
+
+
+Step 5: Make a decision
+
+
+
+
+
+
+Does this confirm Nabisco's claim? 
+
+
+
+
+
+
+
+
+
+
+
