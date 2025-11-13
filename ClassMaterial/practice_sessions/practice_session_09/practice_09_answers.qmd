@@ -6,220 +6,179 @@ editor_options:
   chunk_output_type: console
 ---
 
-# *Part 1*
-
-# Introduction to Type I and Type II Errors
-
-In hypothesis testing, we need to decide whether we are going to reject the null hypothesis, or fail to reject the null hypothesis. We sometimes, however, make the wrong decision. A **Type I** error occurs when we reject the null hypothesis, but the null hypothesis is actually true. A **Type II** error occurs when we fail to reject the null hypothesis, but the null hypothesis is actually false. The probability that we make a Type I error is also known as the significance level. Typically, we set our significance level to be 0.05 in hypothesis testing.
 
 # Question 1: Type I, Type II, or Neither?
 
-For each of the following statements, decide whether a Type I or a Type II Error was made. If no error was made, indicate that no error was committed.
+a) Type I Error
 
-a) Shiba ran a hypothesis test with the following hypotheses:
+b) No error
 
-* $H_0: \mu = 50$
-* $H_A: \mu > 50$
+c) 
 
-She rejected the null hypothesis; the true mean is actually 50.
+* No error
+* Type I Error
+* Type II Error
+* No error
 
-b) Joe wanted to test if the mean bag weight of Lays Potato chips is less than 5 oz.
+**If the disease is dangerous, then a Type II error (saying a patient doesn't have the disease when they really do) can be a big issue. We would want to make the Type II error lower. However, this may make the Type I error larger as a result.**
 
-* $H_0: \mu = 5$
-* $H_A: \mu < 5$
+# Question 2: Single Sample T Test
 
-He failed to reject the null; the true mean is actually 5 oz.
-
-c) A test for an infectious disease gives a positive result if a patient is believed to have the disease, and a negative result otherwise. However, the test can sometimes be wrong. Label the following statements as a Type I error, Type II error, or neither. Assume the null hypothesis is that the patient doesn't have the disease.
-
-* A positive test result; the patient actually has the disease 
-* A positive test result; the patient doesn't actually have the disease
-* A negative test result; the patient actually has the disease
-* A negative test result; the patient doesn't actually have the disease
-
-In the context of this question, which error (Type I or Type II) would be more problematic? If you could make one of these errors less likely to occur, which one would it be, and why?
-
-# Introduction to the One Sample t-test
-
-When our population standard deviation sigma is unknown, we can do inference on population means mu using a t-distribution. Let $n$ be the sample size, $\bar{x}$ be the sample mean, and $s$ be the sample standard deviation. The formula for the estimated standard error (SE) of the sample mean, and the t statistic are below. 
-
-$$\text{SE} = \frac{s}{\sqrt{n}}$$
-
-$$\text{t Statistic} = \frac{\bar{x} - \mu_0}{\frac{s}{\sqrt{n}}} \sim t(df = n - 1)$$
-
-Where $df = n - 1$ is the degrees of freedom of the test. This formula is for the one sample t-test. 
-
-# Question 2: One Sample t-test
-
-According to a local statistics instructor, the average score on his first exam of the semester (`Exam1`) is historically around 80%. The data is available in the `StatsGrades` data set from the `Lock5Data` library. 
-
-a) First visualize the data using a boxplot and a histogram. Do you see any outliers?
+a)
 
 ```{r}
-# Your code here
+library(Lock5Data)
+par(mfrow = c(1, 2))
+boxplot(StatGrades$Exam1, main = "", ylab = "Exam 1 Scores")
+hist(StatGrades$Exam1, main = "", xlab = "Exam 1 Scores")
 ```
 
-Run a one sample t-test to see if this year's students performed significantly better than the historic average.
+**There appears to be one outlier. We might want to investigate this score further.**
 
-b) State the null and alternative hypotheses using symbols
+b)
 
-c) Calculate the t-statistic
+* $H_0: \mu = 80$
+* $H_A: \mu \neq 80$
+
+c)
 
 ```{r}
-# Your code here
+n1 = length(StatGrades$Exam1) # get sample size (n = 50)
+
+mean_exam1 = mean(StatGrades$Exam1) # compute sample mean
+sd_exam1 = sd(StatGrades$Exam1)
+se_exam1 = sd_exam1 / sqrt(n1) # compute standard error
+
+T_stat_exam1 = (mean_exam1 - 80) / se_exam1
+T_stat_exam1
 ```
 
-d) Calculate the p-value of the test, and state your conclusion.
+d)
 
 ```{r}
-# Your code here
+# df = 50 - 1 = 49
+pt(T_stat_exam1, df = n1 - 1, lower.tail = F)
 ```
 
-e) Use the `dt()` function and `plot()` to visualize the t-distribution. The degrees of freedom will be the same as for the test. Add a vertical red line to the plot at the observed sample mean.
+**Since our p-value is greater than 0.05, we will fail to reject the null hypothesis. We therefore do not have evidence that this year's exam scores are significantly higher than 80.**
+
+e)
 
 ```{r}
-# Your code here
+# Create sequence of t-values
+t_values = seq(-4, 4, length.out = 1000)
+dt_values = dt(t_values, df = 49) # convert to density values
+
+# plot and make line plot with type = "l"
+plot(t_values, dt_values, type = "l") 
+abline(v = T_stat_exam1, col = "red") # add vertical red line
 ```
 
-# Introduction to the Two Sample t-test
+**It seems that the sample mean wasn't very far from the null value of 80, which supports the lack of significance in our test.**
 
-Similar to the one sample case, we can compute a standard error and t-statistic to perform a two sample test. Suppose we have two samples, sample 1 and sample 2. To conduct the test, we need the following information:
+# Question 3: Two Sample T Test
 
-* $n_1$ = sample size for sample 1
-* $n_2$ = sample size for sample 2
-* $\bar{x}_1$ = sample mean for sample 1
-* $\bar{x}_2$ = sample mean for sample 2
-* $s_1$ = sample standard deviation for sample 1
-* $s_2$ = sample standard deviation for sample 2
-
-$$\text{SE} = \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}$$
-
-$$\text{t Statistic} = \frac{\bar{x}_2 - \bar{x}_1}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} \sim t(df = \min\{n_1 - 1, n_2 - 1\})$$
-Where $df = \min\{n_1 - 1, n_2 - 1\}$ is the degrees of freedom for the test.
-
-# Question 3: Two Sample t-test
-
-The same local statistics instructor believes that students perform the same on the first exam (`Exam1`) and the second exam (`Exam2`). Again, the data is available in the `StatsGrades` data set from the `Lock5Data` library. 
-
-a) First visualize both sets of exam scores using side-by-side boxplots. Comment on what you notice. 
+a)
 
 ```{r}
-# Your code here
+boxplot(StatGrades$Exam1, StatGrades$Exam2,
+        names = c("Exam 1", "Exam 2"),
+        main = "Exam Scores",
+        ylab = "Score")
 ```
 
-Run a two sample t-test to see if this year's students performed differently on the two exams. Use the formulas learned in class to perform the test, and do the calculations using R. 
+**The median scores appear to be similar for both exams. Exam 1 scores appear to have more variability than exam 2 scores. There are two outliers in the exam 2 scores.**
 
-b) State the null and alternative hypotheses using symbols
+b)
 
-c) Calculate the t-statistic
+* $H_0: \mu_1 = \mu_2$
+* $H_A: \mu_1 \neq \mu_2$
+
+c)
 
 ```{r}
-# Your code here
+n2 = length(StatGrades$Exam2) # get sample size (n = 50)
+
+mean_exam2 = mean(StatGrades$Exam2) # compute sample mean
+sd_exam2 = sd(StatGrades$Exam2)
+
+# Compute standard error for two means
+se_two_means = sqrt(sd_exam1^2/n1 + sd_exam2^2/n2)
+T_stat_two_means = (mean_exam2 - mean_exam1) / se_two_means
+T_stat_two_means
 ```
 
-d) Calculate the p-value of the test, and state your conclusion.
+d) 
+
+**Since we are doing a two-sided test, we need to multiply the p-value by 2.**
 
 ```{r}
-# Your code here
+2 * pt(T_stat_two_means, df = 50 - 1, lower.tail = F)
 ```
 
-e) Suppose you were more interested in how students do on the first exam compared to the `Final`. Run a hypothesis test to see if student scores improved on the final compared to the first exam. 
+**Since our p-value is greater than 0.05, we will fail to reject the null hypothesis. We therefore do not have evidence that this year's students performed differently on the two exams.**
+
+e)
+
+* $H_0: \mu_1 = \mu_{final}$
+* $H_A: \mu_1 < \mu_{final}$
+
+**Note that we are doing a one-sided test, with the alternative being improvement on the final compared to the first exam.**
 
 ```{r}
-# Your code here
+n_final = length(StatGrades$Final) # get sample size (n = 50)
+
+mean_final = mean(StatGrades$Final) # compute sample mean
+sd_final = sd(StatGrades$Final)
+
+# Compute standard error for two means
+se_one_final = sqrt(sd_exam1^2/n1 + sd_final^2/n_final)
+T_stat_one_final = (mean_final - mean_exam1) / se_one_final
+T_stat_one_final
 ```
-
-# Question 4: Paired t-test
-
-Rerun the two sample t-test that compares Exam 1 to Exam 2, but this time do a paired t-test. Note any differences in the results. What do you conclude about student performance on the two exams? Why does it make sense to do a paired t-test in this case?
-
-a) State the null and alternative hypotheses using symbols.
-
-b) Calculate the difference vector by subtracting the Exam 1 scores from the Exam 2 scores.
 
 ```{r}
-# Your code here
+pt(T_stat_one_final, df = 50 - 1, lower.tail = F)
 ```
 
-c) Calculate the mean of the difference vector, save this as `D_bar`.
+**Since our p-value is less than 0.05, we will reject the null hypothesis. We therefore have evidence that student scores improved on the final compared to the first exam.**
+
+# Question 4: Paired T Test
+
+a)
+
+**Let $D$ be the true difference between the exam 1 and exam 2 scores. We will perform the following two-sided test:**
+
+* $H_0: D = 0$
+* $H_A: D \neq 0$
+
+b)
 
 ```{r}
-# Your code here
+diff_exams = StatGrades$Exam2 - StatGrades$Exam1
 ```
 
-d) Calculate the t-statistic
+c)
 
 ```{r}
+n_diff = length(diff_exams)
 
+mean_diff = mean(diff_exams)
+se_diff = sd(diff_exams) / sqrt(n_diff)
 ```
 
-e) Calculate the p-value of the test, and state your conclusion.
+d)
 
 ```{r}
-# Your code here
+T_stat_diff = mean_diff / se_diff
 ```
 
-
-# *Part 2*  Permutations tests for one mean and diffrence between two means:
-
-## Test for the diffrence between two means with permuations:
-
-
-The same local statistics instructor believes that students perform the same on the first exam (`Exam1`) and the second exam (`Exam2`). Again, the data is available in the `StatsGrades` data set from the `Lock5Data` library. 
-
-1.) Create a null distribution and create its histogram.
+e)
 
 ```{r}
-# Your code here
+2 * pt(T_stat_diff, df = n_diff - 1, lower.tail = F)
 ```
 
-
-2.) Calculate the p-value
-
-```{r}
-# Your code here
-```
+**Since our p-value is less than 0.05, we will reject the null hypothesis. We therefore have evidence that this year's students performed differently on the two exams.**
 
 
-
-## Test for one mean:
-
-**(Let go back to he the question of testing one mean)**.
-
-According to a local statistics instructor, the average score on his first exam of the semester (`Exam1`) is historically around 80%. The data is available in the `StatsGrades` data set from the `Lock5Data` library. let Create a bootstrap distribution with a mean of the hypothesised value
-
-1.) Calculate the mean of the data.
-
-
-```{r}
-# Your code here
-```
-
-
-2.) Subtract this mean from the data.
-
-
-```{r}
-# Your code here
-```
-
-
-3.) Add the hypothesized value to the data.
-
-```{r}
-# Your code here
-```
-
-
-4.)Now create a bootstrap distribution with the last modified data you have created in the previous step.
-
-
-```{r}
-# Your code here
-```
-
-5.) Calculate the p-value
-
-```{r}
-# Your code here
-```
