@@ -182,3 +182,106 @@ e)
 **Since our p-value is less than 0.05, we will reject the null hypothesis. We therefore have evidence that this year's students performed differently on the two exams.**
 
 
+# *Part 2*  Permutations tests for one mean and diffrence between two means:
+
+## Test for the diffrence between two means with permuations:
+
+
+The same local statistics instructor believes that students perform the same on the first exam (`Exam1`) and the second exam (`Exam2`). Again, the data is available in the `StatsGrades` data set from the `Lock5Data` library. 
+
+1.) Create a null distribution and create its histogram.
+
+2.) Calculate the p-value
+
+
+```{r}
+n=50 
+library(SDS1000)
+combined_data <- c(StatGrades$Exam1, StatGrades$Exam2)
+null_dist <- do_it (10000) * {
+shuff_data <- shuffle(combined_data)
+shuff_grp1 <- shuff_data[1:50]
+shuff_grp2 <- shuff_data[51:100]
+mean(shuff_grp2) - mean(shuff_grp1)
+}
+```
+
+
+
+```{r}
+hist(null_dist)
+
+obs_stat <- mean_exam1 -mean_exam2
+
+abline(v = obs_stat, col = "blue")
+```
+
+
+4.)  Calculate p-value 
+
+```{r}
+
+p_value <- pnull(obs_stat, null_dist, lower.tail = T) 
+p_value
+
+2*p_value 
+# 0.3072
+```
+
+
+## Test for one mean:
+
+**(Let go back to he the question of testing one mean)**.
+
+According to a local statistics instructor, the average score on his first exam of the semester (`Exam1`) is historically around 80%. The data is available in the `StatsGrades` data set from the `Lock5Data` library. let Create a bootstrap distribution with a mean of the hypothesised value
+
+1.) Calculate the mean of the data.
+
+```{r}
+mean_exam1 <-  mean(StatGrades$Exam1) # compute sample mean
+```
+
+2.) Subtract this mean from the data.
+
+```{r}
+subtract_mean <- StatGrades$Exam1- mean_exam1
+```
+
+3.) Add the hypothesized value to the data.
+
+```{r}
+
+modified_data <- subtract_mean + 80
+
+mean(modified_data )
+```
+
+4.)Now create a bootstrap distribution with the last modified data you have created in the previous step.
+
+
+```{r}
+n=50
+my_sample <- modified_data
+
+boot_sample <- sample(my_sample, n, replace = TRUE) #sample with replacement
+null_dist  <- do_it(10000) * {
+curr_boot <- sample(my_sample, n, replace = TRUE)
+mean(curr_boot)
+} 
+
+
+hist( null_dist )
+
+obs_stat <- mean_exam1
+
+abline(v = obs_stat, col = "blue")
+```
+
+5.) Calculate the p-value
+```{r}
+p_value <- pnull(obs_stat, null_dist, lower.tail = F ) 
+p_value
+
+
+```
+
