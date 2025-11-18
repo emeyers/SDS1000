@@ -513,3 +513,8 @@ f) Calculate the p-value by seeing the proportion of null values that are more e
 ```{r}
 pnull(obs_beta1, null_dist_triples, lower.tail = F)
 ```
+
+g) State your conclusion.
+
+**Since our p-value is greater than 0.05, we will fail to reject the null hypothesis. We therefore do not have evidence that hitting more triples is linearly associated with earning more wins.**
+
