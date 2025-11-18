@@ -459,3 +459,57 @@ abline(v = F_stat, col = "red2")
 ```
 
 $\\$
+
+# *Part 3*
+
+# Inference for Linear Regression
+
+Hypothesis testing can be done for more than sample means and proportions. We can also test hypotheses relating to regression parameters, like $\beta_1$, the slope, and $\beta_0$, the y-intercept. The hypotheses typically test whether the parameter is greater than zero, less than zero, or not equal to zero.
+
+# Question 5: Hypothesis Testing for Regression Slope $\beta_1$
+
+Do triples lead to more wins? A "triple" in baseman occurs when a batter hits a ball in play, and is able to advance three bases (i.e., make it to third base). However, triples have become less common due to improvements in defensive positioning and outfielder speed. Perform a hypothesis test to see if hitting more triples is linearly associated with earning more wins. The data is available in the `BaseballHits2014` data set from the `Lock5Data` library.
+
+a) Create a scattersplot to visualize the relationship between `Wins` and `Triples`
+
+```{r}
+library(Lock5Data)
+library(SDS1000)
+plot(BaseballHits2014$Triples, BaseballHits2014$Wins, xlab = "Number of Triples",
+     ylab = "Number of Wins", main = "Wins vs Triples in the 2014 MLB Season")
+```
+
+b) State the null and alternative hypotheses using symbols
+
+* $H_0: \beta_1 = 0$
+* $H_A: \beta_1 > 0$
+
+c) Fit the regression model with `Wins` as the outcome, and `Triples` as the predictor. Extract the slope coefficient by using the `coef()` function, and selecting the second value (e.g., `coef(my_model)[2]`).
+
+```{r}
+triple_mod = lm(data = BaseballHits2014, Wins ~ Triples)
+obs_beta1 = coef(triple_mod)[2]
+obs_beta1
+```
+
+d) Create a null distribution by using the `do_it` function. The approach you will want to take is to fit a regression model inside the `do_it` call (maybe call it `curr_model`), and you will use `Wins` as the outcome, and a shuffled `Triples` as the predictor. You can shuffle the `Triples` variable using the `shuffle()` function. Extract the slope coefficient after fitting each model.
+
+```{r}
+null_dist_triples = do_it(10000) * {
+  curr_mod = lm(data = BaseballHits2014, Wins ~ shuffle(Triples))
+  coef(curr_mod)[2]
+}
+```
+
+e) Plot a histogram of your null distribution, and add a red vertical line at the observed slope
+
+```{r}
+hist(null_dist_triples, main = "Null Distribution of Slope")
+abline(v = obs_beta1, col = "red")
+```
+
+f) Calculate the p-value by seeing the proportion of null values that are more extreme than the one you observed.
+
+```{r}
+pnull(obs_beta1, null_dist_triples, lower.tail = F)
+```
