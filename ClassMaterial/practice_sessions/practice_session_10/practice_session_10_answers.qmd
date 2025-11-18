@@ -73,8 +73,7 @@ $\\$
 **Answers**:
 
 
-1.) The null hypothesis is that the flavors are equally likely to be preferred, while the alternative
-hypothesis is that the flavors are not equally likely to be selected.
+1.) The null hypothesis is that the flavors are equally likely to be preferred, while the alternative hypothesis is that the flavors are not equally likely to be selected.
 
 In symbols:
 
@@ -316,29 +315,35 @@ $\\$
 
 **Answers:**
 
-1.) The explanatory variable is amount of pressure felt from schoolwork, which is categorical. The response variable is number of hours per week hanging out with friends, which is quantitative.
+1.) prepare the data.
 
 
-
-2). The highest mean ( 15.91 hours per week hanging with friends) is for the group feeling 'Very little' pressure from schoolwork. The lowest mean ( 9.866 hours per week hanging out with friends) is for the group feeling 'A lot' of pressure from schoolwork.
+2.) The explanatory variable is amount of pressure felt from schoolwork, which is categorical. The response variable is number of hours per week hanging out with friends, which is quantitative.
 
 
 
 3.) Find the summary statistics for the groups of `SchoolPressure`, using function `mosaic::favstats( Response ~ grouping, data= )`. Which group has the largest mean and sd of the `HangHours` ?
 
+The highest mean ( 15.91 hours per week hanging with friends) is for the group feeling 'Very little' pressure from schoolwork. The lowest mean ( 9.866 hours per week hanging out with friends) is for the group feeling 'A lot' of pressure from schoolwork.
+
 
 ```{r}
 
+#create boxplot for the data
 boxplot(HangHours ~ SchoolPressure, data= cPASeniors)
 
+
+# find the statistics for the groups
 mosaic::favstats(HangHours ~ SchoolPressure, data= cPASeniors)
+
 
 # create the ANOVA model
 anova_model<- aov( HangHours ~ SchoolPressure, data= cPASeniors)
 
-# summary statistics of the ANOVA model
 
+# summary statistics of the ANOVA model
 summary(anova_model)
+
 ```
 
 
@@ -458,11 +463,12 @@ abline(v = F_stat, col = "red2")
 
 ```
 
+
 $\\$
 
-# *Part 3*
 
-# Inference for Linear Regression
+# *Part 3*
+ Inference for Linear Regression
 
 Hypothesis testing can be done for more than sample means and proportions. We can also test hypotheses relating to regression parameters, like $\beta_1$, the slope, and $\beta_0$, the y-intercept. The hypotheses typically test whether the parameter is greater than zero, less than zero, or not equal to zero.
 
@@ -512,9 +518,10 @@ f) Calculate the p-value by seeing the proportion of null values that are more e
 
 ```{r}
 pnull(obs_beta1, null_dist_triples, lower.tail = F)
+
+
 ```
 
 g) State your conclusion.
 
 **Since our p-value is greater than 0.05, we will fail to reject the null hypothesis. We therefore do not have evidence that hitting more triples is linearly associated with earning more wins.**
-
