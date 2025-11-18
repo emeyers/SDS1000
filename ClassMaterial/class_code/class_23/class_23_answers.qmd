@@ -1,0 +1,552 @@
+---
+title: "Class 23 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+
+# Part 1: Warm-up problems
+
+
+Let's start by doing a couple of warm-up problems doing inferences on means. 
+
+
+
+$\\$
+
+
+
+## Warm-up 1: Parametric hypothesis test for a single mean
+
+
+It is recommended that adults sleep at least 8 hours a night.
+
+A Statistics professor asked 12 undergraduate students how much sleep they were
+getting and found the average was 6.2 hours with a standard deviation of 1.7
+hours.
+
+Assuming this sample is representative of all students in a Statistics class
+(and that the data is reasonably normal) does this provide evidence that
+students in the class are not getting enough sleep on average?
+
+
+
+
+$\\$
+
+
+Step 1: State the null and alternative hypotheses
+
+
+In words: 
+
+- Null hypothesis: Students get an average of 8 hours of sleep per night.
+- Alternative hypothesis: Students get less than 8 hours of sleep per night.
+
+
+In symbols:  
+
+- $H_0: \mu = 8$
+- $H_A: \mu < 9$
+
+
+
+```{r hypothesis_test_mean}
+
+
+
+# Step 2: Calculate the t-statistic
+
+n <- 12
+x_bar <- 6.2
+s <- 1.7
+mu_0 <- 8
+
+SE <- s / sqrt(n)
+t_stat <- (x_bar - mu_0) / SE
+t_stat
+
+
+
+# Step 3: Visualize the null distribution
+
+df <- n - 1
+
+x_values_null <- seq(-5, 5, length.out = 1000)
+density_values_null <- dt(x_values_null, df)
+
+plot(x_values_null, density_values_null, type = "l",
+     main = "Null Distribution of T-statistic",
+     xlab = "T-score",
+     ylab = "Density",
+     col = "blue")
+
+abline(v = t_stat, col = "red", lwd = 2)
+
+
+
+# Step 4: Calculate the p-value
+p_value <- pt(t_stat, df, lower.tail = TRUE)
+p_value
+
+
+```
+
+
+
+Step 5: Make a decision
+
+Since our p-value is very small, we reject the null hypothesis and conclude that
+there is strong evidence to suggest that students in the class are not getting
+enough sleep on average (i.e,. are getting less than 8 hours of sleep per night).
+
+
+![](sleep.png)
+
+
+
+
+
+$\\$
+
+
+
+
+## Warm-up 2: Confidence interval for the difference of two means
+
+A study by Nierenberg et al (1989) investigated the relationship between dietary
+factors, and plasma concentrations of carotenoids.
+
+Let’s use the data they collected, but this time let's create a 95% confidence
+interval for the differences in the number of grams of fiber eaten in a day
+between males and females.
+
+
+$$CI ~ = ~ (\bar{x}_1 - \bar{x}_2) ~ \pm ~ t^* \cdot \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}$$
+
+```{r confidence_interval_difference_means}
+
+
+# Given data
+nutrition_df <- read.csv("NutritionStudy.csv")
+
+fiber_males  <- subset(nutrition_df, Sex == "Male")$Fiber
+fiber_females <- subset(nutrition_df, Sex == "Female")$Fiber
+
+
+
+
+# Get basic descriptive statistics for males
+n1 <- length(fiber_males)          
+x_bar1 <- mean(fiber_males)      
+var1 <- var(fiber_males)            
+
+# Get basic descriptive statistics for females
+n2 <- length(fiber_females)            
+x_bar2 <- mean(fiber_females)         
+var2 <- var(fiber_females)            
+
+
+# Degrees of freedom (using the smaller of n1-1 and n2-1)
+df <- min(n1 - 1, n2 - 1)
+
+# Calculate the standard error (SE)
+SE_diff <- sqrt((var1 / n1) + (var2 / n2))
+SE_diff
+
+# Find the critical t-value for the desired confidence level
+t_critical <- qt(.975, df)
+t_critical
+
+# Calculate the margin of error (ME)
+ME_diff <- t_critical * SE_diff
+ME_diff
+
+
+# Construct the confidence interval
+lower_bound_diff <- (x_bar1 - x_bar2) - ME_diff
+upper_bound_diff <- (x_bar1 - x_bar2) + ME_diff
+c(lower_bound_diff, upper_bound_diff)
+
+```
+
+
+Question: Does it seem that there is a difference in the amount of fiber males
+and females eat in a day?
+
+
+Answer: The confidence interval does includes zero, so we do not have strong
+evidence to suggest a difference in the amount of fiber consumed by males and
+females in a day.
+
+
+
+
+
+$\\$
+
+
+
+
+
+# Part 2: Inferences for a difference of proportions
+
+
+The table below gives the flight arrival numbers from a random sample of flights
+for two airlines. Let’s run a hypothesis test to assess whether there is a
+difference between the two airlines in the percent of flights that arrive late.
+
+| Airline   | Early | On-time | Late  | Total |
+|-----------|-------|---------|-------|-------|
+| Airline A |  133  |   416   |  151  |  700  |
+| Airline B |   58  |   355   |  87   |  500  |
+| Total     |  191  |   771   |  238  | 1200  |
+
+
+Using a t-statistic could be helpful here:
+
+$$t ~ = ~ \frac{\hat{p}_1 - \hat{p}_2}{\sqrt{\frac{\hat{p}(1 - \hat{p})}{n_1} + \frac{\hat{p}(1 - \hat{p})}{n_2}}}$$
+
+where $\hat{p}$ is the pooled proportion of late flights. 
+
+
+
+
+$\\$
+
+
+Step 1: State the null and alternative hypotheses
+
+In words:
+
+- Null hypothesis: There is no difference in the proportion of late flights
+  between Airline A and Airline B.
+  
+- Alternative hypothesis: There is a difference in the proportion of late flights 
+  between Airline A and Airline B.
+
+In symbols:
+
+- $H_0: \pi_1 - \pi_2 = 0$
+- $H_A: \pi_1 - \pi_2 \ne 0$
+
+
+```{r hypothesis_test_difference_proportions}
+
+
+# Given data
+late_A <- 151
+total_A <- 700
+late_B <- 87
+total_B <- 500
+
+
+# Step 2: Calculate the t-statistic
+
+# Sample proportions
+p_hat1 <- late_A / total_A
+p_hat2 <- late_B / total_B
+
+# Pooled proportion
+p_hat <- (late_A + late_B) / (total_A + total_B)
+
+# Standard error
+SE <- sqrt((p_hat * (1 - p_hat) / total_A) + (p_hat * (1 - p_hat) / total_B))
+
+# T-statistic
+t_stat <- (p_hat1 - p_hat2) / SE
+t_stat
+
+
+# Step 3: Visualize the null distribution
+
+x_values_null <- seq(-5, 5, length.out = 1000)
+density_values_null <- dnorm(x_values_null)   
+
+plot(x_values_null, density_values_null, type = "l",
+     main = "Null Distribution of T-statistic",
+     xlab = "T-score",
+     ylab = "Density",
+     col = "blue")
+
+abline(v = t_stat, col = "red", lwd = 2)
+abline(v = -t_stat, col = "red", lwd = 2)
+
+
+# Step 4: Calculate the p-value
+p_val <- 2 * pnorm(t_stat, lower.tail = FALSE)
+p_val
+
+
+```
+
+
+Step 5: Make a decision
+
+
+Since our p-value is larger than the conventional significance level of 0.05, we
+do not have sufficient evidence to reject the null hypothesis. We conclude that
+there is not enough evidence to suggest a difference in the proportion of late
+flights between Airline A and Airline B
+
+
+
+
+$\\$
+
+
+
+
+# Part 3: Hypothesis test for multiple proportions using randomization methods
+
+
+A Yale professor was interesting in examining whether Yale students were equally
+likely to be born in each month. To test this he gathered data on the birth
+months of 198 randomly selected Yale students. The data is loaded in the R chunk
+below.
+
+Please help him test whether the birth months are uniformly distributed across
+the 12 months of the year using randomization methods to create the null 
+distribution.
+
+
+
+$\\$
+
+
+
+Step 1: State the null and alternative hypotheses
+
+$H_0: \pi_{Jan} = \pi_{Feb} = ... = \pi_{Dec} = 1/12$
+$H_A:$ At least one of the monthly proportions is different from 1/12
+
+
+
+
+```{r chi_squared_test_multiple_proportions}
+
+library(SDS1000)
+
+yale_births <- read.csv("yale_birth_data.csv")
+birth_months <- yale_births$birth_month
+
+# Observed counts
+observed_counts <- table(birth_months)
+
+# Expected counts (assuming uniform distribution)
+expected_counts <- rep(sum(observed_counts) / length(observed_counts), 
+                       length(observed_counts))  
+
+
+# Step 2: Calculate the chi-squared test statistic
+
+# Calculate the chi-squared test statistic
+chi_squared_stat <- sum((observed_counts - expected_counts)^2 / expected_counts)
+chi_squared_stat
+
+
+
+# Step 3: Create a null distribution using randomization methods
+
+null_dist <- do_it(10000) * {
+  
+  simulated_sample <- rmultinom(n = 1, size = sum(observed_counts), 
+                                   prob = rep(1/12, 12))
+  simulated_chi_squared <- sum((simulated_sample - expected_counts)^2 / expected_counts)
+  
+}
+
+
+# Visualize the null distribution
+hist(null_dist, breaks = 30, 
+     main = "Null distribution of chi-squared statistic",
+     xlab = "Chi-squared value")
+
+abline(v = chi_squared_stat, col = "red", lwd = 2)
+
+
+
+
+# Step 4: Calculate the p-value
+p_value <- pnull(chi_squared_stat, null_dist, lower.tail = FALSE)
+p_value
+
+
+
+```
+
+
+
+Step 5: Make a decision
+
+
+Since our p-value is very large, we do not reject the null hypothesis. We
+conclude that there is not enough evidence to suggest that the birth months of
+Yale students are not uniformly distributed across the 12 months of the year.
+
+
+
+$\\$
+
+
+
+
+
+# Part 4: Chi-squared test for comparing multiple proportions 
+
+Let's rerun the hypothesis test from Part 3, but this time using a parametric
+chi-squared test.
+
+Our null and alternative hypotheses are the same as in Part 3. So is the observed
+statistic we calculated earlier. So let's jump in at step 3 and start by 
+visualizing the null distribution, and then go from there...
+
+
+
+```{r chi_squared_test_multiple_proportions_parametric}
+
+
+# reminder of our chi-squared statistic
+chi_squared_stat
+                       
+
+
+
+# Step 3: Visualize the null distribution
+
+# Degrees of freedom
+df <- length(observed_counts) - 1
+
+x_values_null <- seq(0, 30, length.out = 1000)
+density_values_null <- dchisq(x_values_null, df)
+
+plot(x_values_null, density_values_null, type = "l",
+     main = "Null Distribution of Chi-squared statistic",
+     xlab = "Chi-squared value",
+     ylab = "Density",
+     col = "blue")
+
+abline(v = chi_squared_stat, col = "red", lwd = 2)
+
+
+
+# Step 4: Calculate the p-value
+p_value <- pchisq(chi_squared_stat, df, lower.tail = FALSE)
+p_value
+
+```
+
+
+
+Step 5: Make a decision
+
+Since our p-value is very large again, we still do not reject the null hypothesis. 
+We conclude that there is not enough evidence to suggest that the birth months of
+Yale students are not uniformly distributed across the 12 months of the year.
+
+
+
+
+$\\$
+
+
+
+
+# Part 5: Jury selection in Alameda county 
+
+Section 197 of California's Code of Civil Procedure says: 
+
+"All persons selected for jury service shall be selected at random, from a
+source or sources inclusive of a representative cross section of the population
+of the area served by the court."
+
+
+In 2010, the American Civil Liberties Union (ACLU) of Northern California
+presented a report that concluded that certain racial and ethnic groups are
+underrepresented among jury panelists in Alameda County.
+
+The table below summarizes the ACLU's findings, comparing the racial/ethnic
+composition of the jury panelists to that of the eligible population from which
+they were drawn, based on 1453 people who were on jury panels. 
+
+| Group    | Asian | Black | Latino | White | Other |
+|----------|:-----:|:-----:|:------:|:-----:|:-----:|
+| Eligible | 0.15  | 0.18  | 0.12   | 0.54  | 0.01  |
+| Panel    | 0.26  | 0.08  | 0.08   | 0.54  | 0.04  |
+
+
+Using a chi-squared test, assess whether there is evidence that the
+racial/ethnic composition of the jury panelists differs from that of the
+eligible population.
+
+
+```{r chi_squared_test_jury_selection}
+
+# Given data
+total_jury <- 1453
+eligible_population <- c(.15, .08, .08, .54, .04) 
+jury_panelists  <- c(.26, .18, .12, .54, .01) 
+
+
+# Expected counts based on eligible population proportions
+expected_counts <- eligible_population  * total_jury
+
+# Observed counts
+observed_counts <- jury_panelists * total_jury
+
+
+# Step 2: Calculate the chi-squared test statistic
+chi_squared_stat <- sum((observed_counts - expected_counts)^2 / expected_counts)
+chi_squared_stat
+
+
+
+# Step 3: Visualize the null distribution
+df <- length(observed_counts) - 1
+
+x_values_null <- seq(0, 50, length.out = 1000)
+density_values_null <- dchisq(x_values_null, df)
+
+plot(x_values_null, density_values_null, type = "l",
+     main = "Null Distribution of Chi-squared statistic",
+     xlab = "Chi-squared value",
+     ylab = "Density",
+     col = "blue")
+abline(v = chi_squared_stat, col = "red", lwd = 2)
+
+
+
+# Step 4: Calculate the p-value
+p_value <- pchisq(chi_squared_stat, df, lower.tail = FALSE)
+p_value
+
+
+```
+
+
+
+Step 5: Make a decision
+
+Since our p-value is very small, we reject the null hypothesis. We conclude that
+there is strong evidence to suggest that the racial/ethnic composition of the jury
+panelists differs from that of the eligible population.
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
