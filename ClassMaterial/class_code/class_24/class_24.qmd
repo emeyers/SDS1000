@@ -1,0 +1,364 @@
+---
+title: "Class 24 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+# Part 1: Hypothesis test for multiple proportions using randomization methods
+
+
+A Yale professor was interesting in examining whether Yale students were equally
+likely to be born in each month. To test this he gathered data on the birth
+months of 198 randomly selected Yale students. The data is loaded in the R chunk
+below.
+
+Please help him test whether the birth months are uniformly distributed across
+the 12 months of the year using randomization methods to create the null 
+distribution.
+
+
+
+$\\$
+
+
+
+Step 1: State the null and alternative hypotheses
+
+
+
+
+
+
+
+```{r chi_squared_test_multiple_proportions}
+
+library(SDS1000)
+
+yale_births <- read.csv("yale_birth_data.csv")
+birth_months <- yale_births$birth_month
+
+
+
+# Observed counts
+
+
+
+# Expected counts (assuming uniform distribution)
+
+
+
+
+# Step 2: Calculate the chi-squared test statistic
+
+# Calculate the chi-squared test statistic
+
+
+
+
+
+# Step 3: Create a null distribution using randomization methods
+
+
+
+
+
+# Visualize the null distribution
+
+
+
+
+
+
+# Step 4: Calculate the p-value
+
+
+
+
+
+```
+
+
+
+Step 5: Make a decision
+
+
+
+
+
+$\\$
+
+
+
+
+
+# Part 2: Chi-squared test for comparing multiple proportions 
+
+Let's rerun the hypothesis test from Part 3, but this time using a parametric
+chi-squared test.
+
+Our null and alternative hypotheses are the same as in Part 3. So is the observed
+statistic we calculated earlier. So let's jump in at step 3 and start by 
+visualizing the null distribution, and then go from there...
+
+
+
+```{r chi_squared_test_multiple_proportions_parametric}
+
+
+# reminder of our chi-squared statistic
+
+
+
+
+# Step 3: Visualize the null distribution
+
+# Degrees of freedom
+
+
+
+
+
+
+
+
+# Step 4: Calculate the p-value
+
+
+
+
+
+```
+
+
+
+Step 5: Make a decision
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+# Part 3: Jury selection in Alameda county 
+
+Section 197 of California's Code of Civil Procedure says: 
+
+"All persons selected for jury service shall be selected at random, from a
+source or sources inclusive of a representative cross section of the population
+of the area served by the court."
+
+
+In 2010, the American Civil Liberties Union (ACLU) of Northern California
+presented a report that concluded that certain racial and ethnic groups are
+underrepresented among jury panelists in Alameda County.
+
+The table below summarizes the ACLU's findings, comparing the racial/ethnic
+composition of the jury panelists to that of the eligible population from which
+they were drawn, based on 1453 people who were on jury panels. 
+
+| Group    | Asian | Black | Latino | White | Other |
+|----------|:-----:|:-----:|:------:|:-----:|:-----:|
+| Eligible | 0.15  | 0.18  | 0.12   | 0.54  | 0.01  |
+| Panel    | 0.26  | 0.08  | 0.08   | 0.54  | 0.04  |
+
+
+Using a chi-squared test, assess whether there is evidence that the
+racial/ethnic composition of the jury panelists differs from that of the
+eligible population.
+
+
+```{r chi_squared_test_jury_selection}
+
+# Given data
+total_jury <- 1453
+eligible_population <- c(.15, .08, .08, .54, .04) 
+jury_panelists  <- c(.26, .18, .12, .54, .01) 
+
+
+# Expected counts based on eligible population proportions
+expected_counts <- eligible_population  * total_jury
+
+# Observed counts
+observed_counts <- jury_panelists * total_jury
+
+
+
+# Step 2: Calculate the chi-squared test statistic
+
+
+
+
+
+# Step 3: Visualize the null distribution
+
+
+
+
+
+
+
+# Step 4: Calculate the p-value
+
+
+
+
+
+
+```
+
+
+
+
+Step 5: Make a decision
+
+
+
+
+
+$\\$
+
+
+
+
+ 
+# Part 4: One-way Analysis of Variance (ANOVA)
+
+
+A group of Hope College students wanted to see if there was an association
+between a student’s major and the time it takes to complete a small Sudoku-like
+puzzle
+
+
+They grouped majors into four categories
+
+* Applied science (as)
+* Natural science (ns)
+* Social science  (ss)
+* Arts/humanities  (ah)
+
+Let's run an ANOVA hypothesis test to see if there is an association between a
+student's major and the time it takes to complete the puzzle.
+
+
+
+$\\$
+
+
+
+Step 1: State the null and alternative hypotheses
+
+
+
+Words:
+
+
+
+
+Symbols:  
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+```{r sudoku_viz}
+
+library(SDS1000)
+
+
+# load the data
+sudoku_data <- read.table("MajorPuzzle.txt", header = TRUE)
+
+completion_times <- sudoku_data$time
+majors <- sudoku_data$major
+
+
+
+
+# Step 2: visualize the data and calculate the F-statistic
+
+
+
+
+
+
+
+
+
+# Step 3: Visualize the null distribution
+
+
+
+
+
+
+
+
+# Step 4: Calculate the p-value
+
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+Step 5: Make decision
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+Exercise for home: Try rerunning the analysis using randomization methods to create
+the null distribution instead of the parametric F-distribution (see class 14
+code if you get stuck). Do you get the same conclusion?
+
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
