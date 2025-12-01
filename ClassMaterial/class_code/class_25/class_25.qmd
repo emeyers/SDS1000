@@ -1,0 +1,492 @@
+---
+title: "Class 25 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+ 
+ 
+# Part 1: Warm-up: Practice with one-way analysis of variance (ANOVA)
+
+
+To see how much of a difference time of day made on the speed at which he could
+download files, a college sophomore performed an experiment:
+
+- He placed a file on a remote server and then proceeded to download it at three 
+different time periods of the day (7AM, 5PM, 12AM)
+
+- He downloaded the file 48 times in all, 16 times at each time of day, and 
+recorded the time in seconds that the download took
+
+
+Let's run an ANOVA hypothesis test to see if download time differs by time of day.
+
+
+
+$\\$
+
+
+
+Step 1: State the null and alternative hypotheses
+
+
+
+Words:
+
+* Null hypothesis: 
+
+* Alternative hypothesis: 
+
+
+
+Symbols:  
+
+* $H_0:$   
+* $H_A$:  
+
+
+
+
+$\\$
+
+
+
+
+```{r sudoku_viz}
+
+library(SDS1000)
+
+
+# load the data
+download_data <- read.csv("downloading.csv")
+
+download_times <- download_data$Time_Sec
+time_of_day <- download_data$Time_of_Day
+
+
+
+
+
+# Check the ANOVA conditions - let's use the mosaic favstats() function 
+
+
+
+
+
+# roughly equal spread?
+
+
+
+
+
+
+
+# Step 2: visualize the data and calculate the F-statistic
+
+
+
+
+
+
+# calculate the observed statistic
+
+
+
+
+
+
+# Step 3: Visualize the null distribution
+
+
+
+
+
+# plot the null distribution
+
+
+
+
+
+# add a red vertical line at the observed statistic
+
+
+
+
+
+# Step 4: Calculate the p-value
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+Step 5: Make decision
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+Let's also look at the ANOVA table
+
+
+```{r anova_table}
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+# Part 2: Inference on simple linear regression using randomization methods
+
+
+We can run inference on the slope of a simple linear regression model using
+randomization methods. We will use the `states_smoking.rda` dataset that contains
+data on cigarette consumption and lung cancer rates for each of the 50 states in
+the US.
+
+
+
+$\\$
+
+
+
+
+### Part 2.1: Bootstrap confidence interval for the slope in simple linear regression
+
+
+
+Let's create confidence interval for the slope of a simple linear regression
+model that predicts the lung cancer rate as a function of the number of
+cigarettes smoked per capita.
+
+
+
+
+```{r lung_cancer_ci}
+
+# load the data
+load("states_smoking.rda")
+
+cigs_per_capita <- smoking$CIG
+cancer_rate <- smoking$LUNG
+
+
+# visualize the data 
+
+
+
+
+
+# fit the linear model
+
+
+
+# get the slope b
+
+
+
+
+
+
+
+
+
+
+
+# visualize the bootstrap distribution
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 2.2: Randomization hypothesis test for the slope in simple linear regression
+
+
+We can also use randomization methods to run a hypothesis test for the slope of the
+linear regression model. Let's test the hypotheses:
+
+- Null hypothesis: 
+
+
+- Alternative hypothesis: 
+
+
+
+In symbols: 
+
+- $H_0:$
+- $H_A:$
+
+
+```{r lung_cancer_hypothesis_test}
+
+
+# Step 2: get the observed slope
+
+
+# fit the linear model again
+
+
+
+
+
+
+# Step 3: create null distribution
+
+
+
+
+
+
+
+
+
+
+
+# visualize the null distribution
+
+
+
+
+
+
+
+# Step 4: calculate the p-value
+
+
+
+
+
+```
+
+
+
+# Step 5: Make decision
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+# Part 3: Parametric confidence intervals for the slope in simple linear regression
+
+
+We can also use parametric methods to create confidence intervals for the slope
+in simple linear regression. To do this we can use the standard error of the
+slope and the t-distribution to create a confidence interval.
+
+The formula for the confidence interval is:
+$$b \pm t^* \cdot SE_{b}$$
+
+Where:
+- $b$ is the slope of the regression line
+- $t^*$ is the critical value from the t-distribution with $n - 2$ degrees of freedom
+- $SE_{b}$ is the standard error of the slope
+
+
+The formula for the standard error of the slope is:
+
+$$SE_{b} = \frac{\sigma_e}{\sqrt{\sum{(x_i - \bar{x})^2}}}$$
+
+Where:
+- $\sigma_e$ is the standard deviation of the residuals
+- $x_i$ are the values of the explanatory variable
+- $\bar{x}$ is the mean of the explanatory variable
+
+
+We will mainly rely on built in functions in R to do these calculations for us. 
+
+
+
+$\\$
+
+
+
+### Part 3.1: Parametric confidence interval for the slope in simple linear regression
+
+
+
+We can extract this information from the `summary()` of the linear model object.
+
+Alternatively, we can use the `confint()` function to get the confidence interval 
+directly.
+
+
+
+```{r lung_cancer_ci_parametric}
+
+
+# fit our model again
+
+
+
+
+# summarize the model
+
+
+
+
+
+# get the slope
+
+
+
+
+
+# get the standard error of the slope
+
+
+
+
+
+# get the critical value for 95% confidence interval
+
+
+
+
+
+# calculate the margin of error
+
+
+
+
+# calculate the confidence interval
+
+
+
+
+
+# Alternatively, we can use the confint() function to get the confidence interval
+
+
+
+
+```
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 3.2: Parametric hypothesis test for the slope in simple linear regression
+
+
+We can also use parametric methods to run a hypothesis test for the slope of the
+linear regression model. We can use the t-statistic and the t-distribution to
+calculate the p-value.
+
+
+```{r lung_cancer_hypothesis_test_parametric}
+
+# fit our model again
+
+
+
+# summarize the model
+
+
+
+# get the slope
+
+
+
+
+# get the standard error of the slope
+
+
+
+
+# calculate the t-statistic
+
+
+
+# get the degrees of freedom
+
+
+
+
+# calculate the p-value
+
+
+
+
+```
+
+
+
+
+
+
+
