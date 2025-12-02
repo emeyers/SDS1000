@@ -266,13 +266,5 @@ d) Both the smaller standard deviation of error in (b) and the larger $R^2$. In 
 # your code here
 ```
 
-
  
-a) The fitted model is Armspan $=8.52+0.7356 \cdot$ Height $+1.4477 \cdot$ Foot. For a student with Height $=180$ and Foot $=26$ the predicted arm span is
 
-
-
-b) The p-values for the individual t-tests for both predictors are essentially zero, so we have strong evidence that both Height and Foot are effective in this model to predict Armspan.
-
-
-c) The output shows $R^2=61.75 \%$, so the model based on Height and Foot explains $61.75 \%$ of the variability of the Armspan measurements for these students.
