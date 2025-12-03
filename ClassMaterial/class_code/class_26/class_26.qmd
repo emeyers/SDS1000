@@ -1,0 +1,337 @@
+---
+title: "Class 26 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+# Part 1: Inference on simple linear regression using randomization methods
+
+
+We can run inference on the slope of a simple linear regression model using
+randomization methods. We will use the `states_smoking.rda` dataset that contains
+data on cigarette consumption and lung cancer rates for each of the 50 states in
+the US.
+
+
+
+$\\$
+
+
+
+
+
+### Part 1.1: Randomization hypothesis test for the slope in simple linear regression
+
+
+We can also use randomization methods to run a hypothesis test for the slope of the
+linear regression model. Let's test the hypotheses:
+
+- Null hypothesis: 
+
+
+- Alternative hypothesis: 
+
+
+
+In symbols: 
+
+- $H_0:$
+- $H_A:$
+
+
+```{r lung_cancer_hypothesis_test}
+
+
+library(SDS1000)
+
+
+# load the data
+load("states_smoking.rda")
+
+cigs_per_capita <- smoking$CIG
+cancer_rate <- smoking$LUNG
+
+
+
+# Step 2: get the observed slope
+
+
+# fit the linear model again
+
+
+
+
+
+
+# Step 3: create null distribution
+
+
+
+
+
+
+
+
+
+
+
+# visualize the null distribution
+
+
+
+
+
+
+
+# Step 4: calculate the p-value
+
+
+
+
+
+```
+
+
+
+# Step 5: Make decision
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+# Part 2: Parametric confidence intervals for the slope in simple linear regression
+
+
+We can also use parametric methods to create confidence intervals for the slope
+in simple linear regression. To do this we can use the standard error of the
+slope and the t-distribution to create a confidence interval.
+
+The formula for the confidence interval is:
+$$b \pm t^* \cdot SE_{b}$$
+
+Where:
+- $b$ is the slope of the regression line
+- $t^*$ is the critical value from the t-distribution with $n - 2$ degrees of freedom
+- $SE_{b}$ is the standard error of the slope
+
+
+The formula for the standard error of the slope is:
+
+$$SE_{b} = \frac{\sigma_e}{\sqrt{\sum{(x_i - \bar{x})^2}}}$$
+
+Where:
+- $\sigma_e$ is the standard deviation of the residuals
+- $x_i$ are the values of the explanatory variable
+- $\bar{x}$ is the mean of the explanatory variable
+
+
+We will mainly rely on built in functions in R to do these calculations for us. 
+
+
+
+$\\$
+
+
+
+### Part 2.1: Parametric confidence interval for the slope in simple linear regression
+
+
+
+We can extract this information from the `summary()` of the linear model object.
+
+Alternatively, we can use the `confint()` function to get the confidence interval 
+directly.
+
+
+
+```{r lung_cancer_ci_parametric}
+
+
+# fit our model again
+
+
+
+
+# summarize the model
+
+
+
+
+
+# get the slope
+
+
+
+
+
+# get the standard error of the slope
+
+
+
+
+
+# get the critical value for 95% confidence interval
+
+
+
+
+
+# calculate the margin of error
+
+
+
+
+# calculate the confidence interval
+
+
+
+
+
+# Alternatively, we can use the confint() function to get the confidence interval
+
+
+
+
+```
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Part 2.2: Parametric hypothesis test for the slope in simple linear regression
+
+
+We can also use parametric methods to run a hypothesis test for the slope of the
+linear regression model. We can use the t-statistic and the t-distribution to
+calculate the p-value.
+
+
+```{r lung_cancer_hypothesis_test_parametric}
+
+# fit our model again
+
+
+
+# summarize the model
+
+
+
+# get the slope
+
+
+
+
+# get the standard error of the slope
+
+
+
+
+# calculate the t-statistic
+
+
+
+# get the degrees of freedom
+
+
+
+
+# calculate the p-value
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+# Part 3: Multiple linear regression 
+
+
+In multiple linear regression, we have more than one explanatory variable. The
+model can be written as:
+$$y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... + \beta_p x_p + \epsilon$$
+
+Where:
+- $y$ is the response variable
+- $x_1, x_2, ..., x_p$ are the explanatory variables
+- $\beta_0$ is the intercept
+- $\beta_1, \beta_2, ..., \beta_p$ are the coefficients
+- $\epsilon$ is the error term
+
+
+We can fit multiple linear regression models in R using the `lm()` function,
+just like we did for simple linear regression. We just need to include multiple
+explanatory variables in the formula.
+
+
+Let's use the `FirstYearGPA.rda` dataset that contains data on first year college
+students. We will try to predict their GPA from the following variables: 
+
+- High school GPA (HSGPA)
+- SAT verbal scores (SATV)
+- Number of humanities credits (HU)
+
+
+
+```{r multiple_linear_regression}
+
+# load the data
+load("FirstYearGPA.rda")
+
+
+# fit the multiple linear regression model
+
+
+
+
+
+# summarize the model
+
+
+
+
+```
+
+
+The summary output will show us the coefficients for each explanatory variable,
+along with their standard errors, t-values, and p-values. We can use this
+information to assess the significance of each variable in the model.
+
+
+To learn more about multiple regression, take additional statistics classes (e.g.
+S&DS 2300: Data Exploration and Analysis)!
+
+
+
