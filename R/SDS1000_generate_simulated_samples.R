@@ -47,13 +47,13 @@ get_approval_sample <- function(n, degree_of_approval = FALSE) {
   if (degree_of_approval == FALSE) {
 
     approval_categories <- ordered(c("disapprove",  "approve"), levels = c("disapprove",  "approve"))
-    the_proportions <- c(0.41,   0.59)
+    the_proportions <- c(0.56,   0.44)
 
   } else {
 
     level_names <- c("strongly disapprove", "disapprove",  "approve", "strongly approve")
     approval_categories <- ordered(level_names, levels = level_names)
-    the_proportions <- c(0.24,   0.17,   0.23,   0.36)
+    the_proportions <-  c(0.36,   0.20,   0.18,   0.26) 
 
   }
 
@@ -126,7 +126,6 @@ rflip_sequence <- function(num_flips = 1, prob = .5, output_type = "name"){
 
 
 
-
 #' Gives a count/proportion from simulating n coin flips
 #'
 #'   
@@ -140,11 +139,11 @@ rflip_sequence <- function(num_flips = 1, prob = .5, output_type = "name"){
 #'   
 #' @examples
 #'  set.seed(100)
-#'  rflip_count(10)
+#'  rflip(10)
 #'
 #'
 #' @export
-rflip_count <- function(num_flips = 1, prob = .5, report_proportion = FALSE) {
+rflip <- function(num_flips = 1, prob = .5, report_proportion = FALSE) {
   
   # do some sanity checking of the arguments
   if (num_flips < 1) {
@@ -169,6 +168,30 @@ rflip_count <- function(num_flips = 1, prob = .5, report_proportion = FALSE) {
   
 }
 
+
+
+
+
+# For backward compatibility (in case there is a mistake in my class code)
+
+#' Gives a count/proportion from simulating n coin flips
+#' 
+#'   
+#' @param num_flips The number of times to flip the coin.
+#' 
+#' @param prob The probability of generated a "heads" on each flip.
+#' 
+#' @param report_proportion A Boolean that if set to TRUE will return the
+#'   proportion of coin flips that were "heads" otherwise it returns the number
+#'   of coin flips that were "heads".
+#'   
+#' @examples
+#'  set.seed(100)
+#'  rflip_count(10)
+#'
+#'
+#' @export
+rflip_count <- rflip
 
 
 
@@ -207,5 +230,97 @@ rroll <- function(num_rolls, prob = rep(1/6, 6), outcome_names = NULL) {
   the_rolls
   
 }
+
+
+
+
+#' Returns the critical value(s) from the normal distribution
+#'
+#' This function returns the critical value(s) from the normal distribution
+#' given a central probability. This is particular useful for creating confidence
+#' intervals.
+#' 
+#' @param p The probability associated with the critical value(s).
+#' 
+#' @param mean The mean of the normal distribution. Default is 0.
+#' 
+#' @param sd The standard deviation of the normal distribution. Default is 1.
+#' 
+#' @param side A string that must be either "upper", "both", or "lower" indicating whether the
+#''   area associated with the probability p is in the upper tail, both tails, or lower tail.
+#'
+#' @examples
+#'  # Get the critical value for a 95% confidence interval from the standard normal distribution
+#'  cnorm(0.95, side = "both")
+#'' @export
+cnorm <- function(p, mean = 0, sd = 1, side = c("upper", "both", "lower")) {
+  
+  side <- match.arg(side)
+
+  qnorm_lower <- (1 - p)/2
+  qnorm_upper <-  1 - (1 - p)/2
+  
+  if (side == "upper") {
+    qnorm_val <- qnorm_upper
+    
+  } else if (side == "both") {
+    qnorm_val <- c(qnorm_lower, qnorm_upper)
+    
+  } else if (side == "lower") {
+    qnorm_val <- qnorm_lower 
+    
+  }
+  
+  
+  # could add an argument to visualize the area under the curve using ggplot...
+  
+  
+  qnorm(qnorm_val, mean = mean, sd = sd)
+  
+}
+
+
+
+
+
+#' Returns the critical value(s) from a t-distribution
+#' 
+#' This function returns the critical value(s) from a t-distribution
+#' given a central probability and degrees of freedom. This is particular useful for creating confidence
+#' intervals.
+#' 
+#' @param p The probability associated with the critical value(s).
+#' 
+#' @param df The degrees of freedom of the t-distribution.
+#' 
+#' @param side A string that must be either "upper", "both", or "lower" indicating whether the
+#''   area associated with the probability p is in the upper tail, both tails, or lower tail.
+#' 
+#' @examples
+#'  # Get the critical value for a 95% confidence interval from the t-distribution with 10 degrees of freedom
+#'  ct(0.95, df = 10, side = "both")
+#' @export
+ct <- function(p, df, side = c("upper", "both", "lower")) {
+  
+  side <- match.arg(side)
+
+  qt_lower <- (1 - p)/2
+  qt_upper <-  1 - (1 - p)/2
+  
+  if (side == "upper") {
+    qt_val <- qt_upper
+    
+  } else if (side == "both") {
+    qt_val <- c(qt_lower, qt_upper)
+    
+  } else if (side == "lower") {
+    qt_val <- qt_lower 
+    
+  }
+  
+  qt(qt_val, df = df)
+  
+}
+
 
 
