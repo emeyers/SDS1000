@@ -82,8 +82,19 @@ get_MAD_stat <- function(data, grouping) {
 #'  get_F_stat(the_data, grouping)
 #'
 #' @export
-get_F_stat <- function(data, grouping) {
+get_F_stat <- function(data, grouping, keep_grouping_numeric = FALSE) {
 
+  if (is.numeric(grouping)) {
+    
+    if (!keep_grouping_numeric) {
+      message("converting numeric grouping to factor for F-statistic calculation.")
+      grouping <- as.factor(grouping)
+    } else {
+      message("grouping is numeric. This may lead to incorrect F-statistic calculation.")
+    }
+    
+  }
+  
   fit <- aov(data ~ grouping)
   fit_summary <- summary.aov(fit)
   fit_summary[[1]]$`F value`[1]
@@ -118,3 +129,35 @@ get_chisqr_stat <- function(observed_counts, expected_proportions) {
 }
 
 
+
+
+
+#' Statistics by group
+#' 
+#' This function computes a summary statistic by group for a given vector of data.
+#' 
+#' @param data_vector A numeric vector of data.
+#'  
+#' @param group_vector A factor vector indicating the group membership for each
+#'  observation in data_vector.
+#'  
+#'  @param stat A statistic function to compute separately for each group.
+#'
+#' @examples
+#' # Generate some fictional data
+#' set.seed(100)
+#' data_vector <- rnorm(100)
+#' group_vector <- as.factor(sample(c("A", "B", "C"), size = 100, replace = TRUE))
+#' # Compute the mean of data_vector for each group in group_vector
+#' stats_by_group(data_vector, group_vector, stat = mean)
+#'                                     
+#' @export
+stats_by_group <- function(data_vector, group_vector, stat = mean) {
+  
+  if (length(data_vector) != length(group_vector)) {
+    stop("data_vector and group_vector must be the same length")
+  }
+  
+  tapply(data_vector, group_vector, stat)
+  
+}
