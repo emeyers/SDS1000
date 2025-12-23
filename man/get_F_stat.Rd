@@ -4,7 +4,7 @@
 \alias{get_F_stat}
 \title{Calculates the F statistic}
 \usage{
-get_F_stat(data, grouping)
+get_F_stat(data, grouping, keep_grouping_numeric = FALSE)
 }
 \arguments{
 \item{data}{A vector of quantitative data.}
