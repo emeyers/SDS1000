@@ -1,0 +1,71 @@
+---
+title: "Class 1 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+## Example Quarto Document
+
+
+This is an example of a Quarto document. Quarto enables you to weave together
+content and executable code into a finished document. To learn more about Quarto
+see <https://quarto.org>.
+
+
+All the class code that we use will be in Quarto documents and you will also use
+Quarto documents for your homework. 
+
+
+
+
+
+$\\$
+
+
+
+
+## Text and LaTeX
+
+Any text (outside an R chunk) will be rendered as regular text when you click
+the **Render** button to convert your Quarto document into a pdf document. 
+
+We can also include LaTeX symbols in our text sections using specific Markdown
+syntax. For example, we can:
+
+a. Create Greek letters such as: 
+
+b. We can also put accents above characters such as: 
+
+
+
+
+$\\$
+
+
+
+
+
+## Running Code
+
+
+We can include R code in our Quarto document using R chunks, such as the R chunk
+shown below. When you click the **Render** button a document will be generated
+that includes both content and the output of embedded code. You can embed code
+like this:
+
+
+
+```{r}
+
+
+
+
+
+```
+
+
+
+
