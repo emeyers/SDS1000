@@ -40,6 +40,10 @@ a. Create Greek letters such as: $pi$, $\mu$, and $\rho$
 b. We can also put accents above characters such as: $\hat{p}$ and $\bar{x}$
 
 
+We can also include images
+
+![](plato.jpg)
+
 
 
 $\\$
