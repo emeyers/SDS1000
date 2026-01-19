@@ -1,0 +1,678 @@
+---
+title: "Homework 1"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+$\\$
+
+
+
+
+
+Welcome to the first homework. In this homework you will explore descriptive 
+statistics and visualizations of categorical and quantitative data. Please render 
+this Quarto document and submit the compiled pdf document with your answers to 
+Gradescope *by 11pm on Sunday January 25th*. Please also make sure to mark the 
+correct pages to each question's answers on Gradescope to allow the TAs to grade 
+each problem.
+
+
+Some functions that could be useful for completing this worksheet are: `dim()`,
+`length()`, `table()`, `prop.table()`, `get_proportion()`, `barplot()`,
+`hist()`, `mean()`, `median()`, `max()`. You might also find the following
+symbols useful: $\mu$, $\bar{x}$, $\pi$, $\hat{p}$
+
+
+If you need help with any of the homework assignments, please attend the TA
+office hours which are listed on Canvas and/or ask questions on [Ed Discussions
+forum](https://edstem.org/us/courses/89382/discussion). Also, please help
+members of the class by answering questions on Ed Discussions. Finally, if you
+have conceptual questions, reviewing the class slides and videos will be
+helpful.
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+# Part 1:  Lock 5 questions
+
+
+
+Please answer the following questions that are based on questions from the Lock5
+textbook. Some symbols that might be useful for answering these questions
+include $\hat{p}$, $\bar{x}$, $\pi$, and $\mu$. You can also write subscripts in
+LaTeX by using an underscore, e.g., $\beta_{treatment}$.
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Exercise 1.1 (6 points)**:  A study by Hamscher et al. (Environmental Health
+Perspectives, 2003) shows that antibiotics added to animal feed to accelerate
+growth can become airborne. Some of these drugs can be toxic if inhaled and may
+increase the evolution of antibiotic-resistant bacteria. The researchers
+analyzed 20 samples of dust particles from animal farms. Tylosin, an antibiotic
+used in animal feed that is chemically related to erythromycin, showed up in 16
+samples. Based on this study please report:
+
+a. What are the individual cases in this study?
+
+b. What is the variable of interest in this study? 
+
+c. What is the statistic of interest in this study, what symbol should be used
+for this statistic, and what is the value of this statistic? Your choice of
+statistic and symbol should be one of the statistics/symbol we used in class.
+
+
+
+
+**Answers:**  
+
+a. 
+
+
+b. 
+
+
+c. 
+
+
+
+
+
+$\\$
+
+
+**Exercise 1.2 (6 points)**: A study by Valasek and Walter (Pediatric and 
+Adolescent Concussions, Springer, 2012) examined all sports-related concussions
+reported to an emergency room for children ages 5 to 18 in the United States
+over the course of one year. The table below displays the number of concussions
+in each of the major activity categories.
+
+
+| Activity              | Number of concussions |
+|-----------------------|-----------------------|
+| Bicycles              |      23,405           |
+| Football              |      20,293           |
+| Basketball            |      11,507           |
+| Playground            |      10,414           |
+| Soccer                |       7,667           |
+| Baseball              |       7,433           |
+| All-Terrain Vehicles  |       5,220           |
+| Hockey                |       4,111           |
+| Skateboarding         |       4,408           |
+| Swimming              |       3,846           |
+| Horseback Riding      |       2,648           |
+|-----------------------|-----------------------|
+| Total                 |      100,952          |
+
+
+
+Based on this study please report:
+
+a. Are these results from a population or a sample? In 1-3 sentences please
+explain your answer.
+
+b. What proportion of concussions came from playing football? Please write down
+your answer and denote it with the appropriate symbol (e.g., symbol = value). 
+
+c. What proportion of concussions came from riding bicycles? Please write down
+your answer and denote it with the appropriate symbol.
+
+d. Can we conclude that, at least in terms of concussions, riding bicycles is
+more dangerous to children in the US than playing football? Why or why not?
+
+
+
+
+**Answers:**
+
+a.  
+
+
+
+b.  
+
+
+
+c.  
+
+
+
+d. 
+
+
+
+
+
+
+$\\$
+
+
+
+
+**Exercise 1.3 (6 points)**:  The plasma beta-carotene level (concentration of
+beta-carotene in the blood), in ng/ml was measured for a sample of n = 315
+individuals. A histogram of this sample is shown in image below. Please do the
+following:
+
+a. Describe the shape of this distribution using terms we have discussed in
+class, and state whether there are any obvious outliers.
+
+b. Estimate the median of this sample.
+
+c. Estimate the mean of this sample.
+
+
+Note, you might need to knit the document and look at the pdf to see the image
+of the beta carotene levels.
+
+
+
+$\\$
+
+
+
+![concentration of beta-carotene in blood](beta_carotene_hist.png){width=50%, height=50%}
+
+
+
+
+**Answers:**  
+
+
+a. 
+
+
+b. 
+
+
+c. 
+  
+
+
+
+
+
+$\\$
+
+
+
+
+
+# Part 2: Analyzing categorical data from cars sold on Edmunds.com
+
+
+Let's get practice analyzing data in R by examining information about cars that
+were sold on [Edmunds.com](http://edmunds.com) which is a website that helps
+people shop for cars. This data was used in the 2015
+[DataFest](http://www.science.smith.edu/datafest/). Edmunds has made this data
+available for education purposes only, so please do not distribute this data.
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 2.1 (6 points):** The code below loads data on 5 different brands of
+cars (Toyota Corollas, Subaru Imprezas, Honda Civics, Hyundai Elantras and the
+Mazda 3's) in a data frame called `car_data`.
+
+The `dim()` function in R works on a data frame and returns the number of rows and
+columns in the data frame. Use the `dim()` function on the `car_data` data frame
+to answer the following questions in the answer section below: 
+
+a. How many cases are in the data frame? 
+
+b. Report what the variables are and whether each one is categorical or quantitative.
+
+c. Report what the population for this data set is.
+
+
+Hint: to view the data frame you can load the data on the console and then use
+the `View()` on the console as well. Remember that you can't use the `View()`
+function in a Quarto document and also that your Quarto document does
+not have access to the objects in your R environment. Instead, R can only access
+objects that are created inside the Quarto document itself.
+
+
+
+```{r num_cars}
+    
+
+# load the car data (don't change this line)
+load("cars_small.Rda")
+
+
+
+# Calculate how many rows and columns there are in the data
+
+
+
+
+```
+
+
+**Answer:** 
+
+a. 
+
+b. The variables are:
+ 
+
+ 
+ 
+ 
+
+
+c. 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Exercise 2.2 (6 points):** Let's now get a little practice exploring
+categorical data. Let's start by extracting a vector that has the names of the
+car brands for each car sold and assigning this data to an object called
+`brands` (hint use the $ symbol). Then use the `table()` function on the brands
+vector to create a count of the number of different cars sold for each brand and
+assign the results to an object called `brand_counts`. Report which car brand
+sold the most cars.
+
+
+
+```{r brand_counts}
+
+
+
+
+
+```
+
+**Answer:**
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+**Exercise 2.3 (5 points):** Now create a relative frequency table showing how many
+cars of each brand sold from the `brand_counts` table.  What proportion of cars 
+listed were from the brand that sold the most cars?  What proportion of the cars
+sold were Mazdas?
+
+
+```{r prop_brands}
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer:** 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 2.4 (5 points):** Next create a bar chart of the brand counts. As 
+always, be sure to label your axes. Also, suppose we had a new data set
+collected 2 years later, do you think the proportion of cars sold by the top
+selling brand would change? Why or why not?
+
+
+
+```{r barplot}
+
+
+
+
+```
+
+
+**Answers:**  
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 2.5 (5 points):** Finally create a pie chart of the proportions of 
+car brands sold. In the answer section, report whether you think the bar chart 
+or pie chart is a better way to visualize this data and why?
+
+Bonus (0 points): see if you can figure out how to change the color of the segments
+of the pie chart. 
+
+
+```{r pie_chart}
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer**: 
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+# Part 3: Analyzing quantitative data from cars sold on Edmunds.com
+
+
+
+
+
+$\\$
+
+
+
+In the next exercises we will analyze some quantitative data by examining the
+prices of Subaru Imprezas, Toyota Corollas and Mazda 3's.
+
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 3.1 (5 points)**: The code below creates a vector called
+`subaru_prices`, which contains the prices for the Subaru Imprezas that were
+sold. Use the `length()` function to get the sample size *n* and verify that the
+number of Subarus in this vector matches the number that you found when you ran
+the `table()` function above.
+
+**Note:** the `length()` function tells you how many elements are in a *vector* while
+the `dim()` function tells you how many rows and columns are in a *data frame*.
+Since we are finding the number of elements in a vector, we are using the
+`length()` function here.
+
+
+
+```{r subarus}
+
+
+# This line gets a vector of only the Subaru prices (do not change it)
+subaru_prices <- subset(car_data$price, car_data$brand == "Subaru")
+
+
+# Calculate how many Subaru there are
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Exercise 3.2 (6 points):** Now use the `mean()` and `median()` functions on the
+`subaru_prices` vector. Is the mean or the median higher?  Does this indicate that the
+data is left or right skewed?
+
+
+```{r mean_median_price}
+
+
+
+
+
+```
+
+
+**Answers:** 
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+**Exercise 3.3 (7 points):** Next use the `hist(my_vector, breaks)` function to
+create a histogram of the prices for the Subarus. Try using different values for
+the `breaks` argument to create different number of bins in the histogram and be
+sure to label your axes appropriately. Then describe the shape of the data, and
+whether there seem to be any noticeable outliers.
+
+
+```{r hist_price}
+
+
+
+
+
+
+```
+
+
+
+**Answers:** 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+**Exercise 3.4 (7 points):** Let's now compare the Subaru prices to the prices
+of Toyota Corollas and Mazda 3's. The code below creates vectors of prices called
+`mazda_prices` and `toyota_prices`. Start by reporting the samples sizes for
+these two types of cars. Then create histograms to get a sense of how the Mazda
+and Toyota car prices are distributed (and again choose a reasonable number of
+bins) and describe the shape of these distributions.
+
+
+```{r compare_hists}
+    
+
+# Do not change the lines below 
+mazda_prices <- subset(car_data$price, car_data$brand == "Mazda")
+toyota_prices <- subset(car_data$price, car_data$brand == "Toyota")
+
+
+# Add your code below...
+
+
+
+
+
+
+
+
+
+```
+
+
+**Answer:** 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+**Exercise 3.5 (7 points):** Finally, calculate the mean and median of
+the prices for all three brands. Report which brand has the highest mean price
+and which brand has the highest median price.
+
+
+
+```{r compare_mean_sd}
+
+
+
+
+
+
+
+```
+
+
+**Answers:** 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Reflection (6 points)
+
+
+Please reflect on how the homework went by going to Canvas, going to the Quizzes link, and clicking on 
+[Reflection on homework 1](https://yale.instructure.com/courses/115642/quizzes/97759)
+
+Also, if you have not done so already, please be sure to fill out the class 
+[background survey](https://yale.instructure.com/courses/115642/quizzes/97748).
+Three points will be deducted from this homework if the background survey has not
+been filled out by the time homework 1 is due. 
+
+
+
+
+
