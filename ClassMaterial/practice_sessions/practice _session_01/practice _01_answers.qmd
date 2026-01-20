@@ -18,8 +18,7 @@ class code and for the homework. For more information on Quarto see <https://qua
   
   
   We can render a Quarto document to a pdf document by pressing the **Render button** 
-which is located at the top of the Quarto file in RStudio (the button has an arrow symbol). 
-This will generate a pdf that includes both content as well as the output of any embedded R code chunks within the document.
+which is located at the top of the Quarto file in RStudio (the button has an arrow symbol). This will generate a pdf that includes both content as well as the output of any embedded R code chunks within the document.
 
 
 **Note**: When working on the homework, please be sure to render the Quarto 
@@ -336,7 +335,7 @@ hist1<- hist( mydata$ dat1,
      main = "Histogram for mydata$dat1",      # title
      xlab = "mydata$dat values",              # x-axis label
      ylab = "Frequencies of mydata$dat",      # y-axis label
-     border = "darkgreen",                    # bins border's color
+     border = "darkgreen",                    # bins border's color 
      lwd = 2,                                 # border thickness
      cex.main = 1.5,                          # title size
      cex.lab = 1,                             # axis labels size
