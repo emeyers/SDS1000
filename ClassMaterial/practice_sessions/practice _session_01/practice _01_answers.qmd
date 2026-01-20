@@ -18,10 +18,8 @@ class code and for the homework. For more information on Quarto see <https://qua
   
   
   We can render a Quarto document to a pdf document by pressing the **Render button** 
-  which is located at the top of the Quarto file in RStudio (the button has an
-                                                             arrow symbol). 
-                                                             This will generate a pdf that includes both content as well as
-the output of any embedded R code chunks within the document.
+which is located at the top of the Quarto file in RStudio (the button has an arrow symbol). 
+This will generate a pdf that includes both content as well as the output of any embedded R code chunks within the document.
 
 
 **Note**: When working on the homework, please be sure to render the Quarto 
