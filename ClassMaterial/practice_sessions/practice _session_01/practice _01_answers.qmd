@@ -334,9 +334,9 @@ hist1<- hist( mydata$ dat1,
   
      col = "pink1",                           # bins color   
      main = "Histogram for mydata$dat1",      # title
-     xlab = "mydata$dat",                     # x-axis label
+     xlab = "mydata$dat values",              # x-axis label
      ylab = "Frequencies of mydata$dat",      # y-axis label
-     border = "darkgreen",                    # bins border thickness
+     border = "darkgreen",                    # bins border's color
      lwd = 2,                                 # border thickness
      cex.main = 1.5,                          # title size
      cex.lab = 1,                             # axis labels size
