@@ -1,0 +1,476 @@
+---
+title: "Class 3 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+# Part 1: Quick review of basics of R
+
+
+
+### 1.1 Number journey 1!
+
+1. Create an object called `year` and assign the value 2026
+2. Create an object called `days` and assign 365.25 to it
+3. Create an object called `days_since_bc` and assign `year` times `days` to it
+4. Print out `days_since_bc` to "show your work"
+
+
+```{r number_journey}
+
+year <- 2026
+
+days <- 365.25
+
+days_since_bc <- year * days
+
+days_since_bc
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### 1.2 Number journey 2!
+
+
+1. Create a vector object called `my_vec` and assign the values 3, 4, and 5 to it
+2. Take the square root of the values in `my_vec` and assign it to an object called `my_vec2` 
+3. Multiple `my_vec2` by the number of elements in `my_vec2` and assign it to an object called `my_vec3` 
+4. Sum the values in `my_vec3` and print out the result to show your work
+
+```{r number_journey2}
+
+my_vec <- c(3, 4, 5)
+
+my_vec2 <- sqrt(my_vec)
+
+my_vec3 <- my_vec2 * length(my_vec2)
+
+sum(my_vec3)
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+# Part 2: Analyzing categorical data in R
+
+
+Let's now look at analyzing categorical data in R!
+
+
+
+
+$\\$
+
+
+
+
+
+### 2.1 Getting a simulated sample of sprinkles
+
+
+We can use the SDS1000 function `get_sprinkle_sample()` to get a vector of random
+sprinkle colors. 
+
+```{r sprinkle_sample}
+
+# Load the SDS1000 package
+library(SDS1000)
+
+# Setting the seed so that we all get the same "random sample"
+set.seed(1000)  
+
+
+
+# Get a random sample of 100 sprinkles
+sprinkle_sample <- get_sprinkle_sample(100)
+
+
+# Show the first 10 sprinkles in the sample
+sprinkle_sample[1:10]
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+### 2.2 Frequency table
+
+We can use the `table()` function to create a frequency table of the sprinkle colors.
+
+```{r sprinkle_frequency_table}
+
+# Create a frequency table of the sprinkle colors
+
+sprinkle_count_table <- table(sprinkle_sample)
+
+sprinkle_count_table
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### 2.3 Relative frequency tables
+
+We can use the `prop.table()` function to create a relative frequency table of
+the sprinkle colors.
+
+Note: The `prop.table()` takes a frequency table as input, and **not** the
+original vector of data
+
+We can also get the proportion at a *specific factor level* using the SDS1000
+function `get_proportion()`.
+
+
+```{r sprinkle_relative_frequency_table}
+
+# Create a relative frequency table of the sprinkle colors
+sprinkle_prop_table  <- prop.table(sprinkle_count_table)
+
+sprinkle_prop_table 
+
+
+# Note that the sum of the proportions is 1
+sum(sprinkle_prop_table)
+
+
+# Get the proportion of red sprinkles using the SDS1000 get_proportion() function
+get_proportion(sprinkle_sample, "red")
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### 2.4 Bar plots and pie charts
+
+
+We can use the `barplot()` function to create a bar plot of the sprinkle colors.
+
+We can also use the `pie()` function to create a pie chart of the sprinkle colors.
+
+Note: Both functions take a frequency table as input, and **not** the original
+vector of data. 
+
+
+
+```{r sprinkle_barplot_and_pie_chart}
+
+# Create a bar plot of the sprinkle colors
+barplot(sprinkle_count_table, ylab = "Count")
+
+
+# Create a pie chart of the sprinkle colors
+pie(sprinkle_count_table)
+
+```
+
+
+Can you figure out how to change the color of the segments in the pie chart?
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+# Part 3: Analyzing a single quantitative variable
+
+
+Let's examine analyzing a single quantitative variable by looking the 
+[Gapminder data set](https://www.youtube.com/watch?v=jbkSRLYSojo) which contains
+information about different countries. We will focus on data from the year 2007
+only, which is loaded below. 
+
+
+Key variables in the Gapminder data set include:
+
+- `country`: The country of the observation
+- `continent`: The continent of the observation
+- `year`: The year of the observation
+- `lifeExp`: Life expectancy at birth (in years)
+- `pop`: Population of the country
+- `gdpPercap`: Gross domestic product per capita (in dollars)
+
+
+
+$\\$
+
+
+
+
+### 3.1 Load the data
+
+The code below loads the Gapminder data set and show the first 6 rows of the data. 
+The code also creates three new vector objects which are: 
+
+- `continents`: which contains the continent that each country is in.
+- `lifeExp_2007`: which contains the life expectancy data for the year 2007 only
+- `population`: which contains the population of each country in 2007 
+
+
+```{r load_gapminder_data}
+
+load("gapminder_2007.rda")
+
+# Show the number of rows and columns
+dim(gapminder_2007)
+
+# Create a new variable for continent
+continents <- gapminder_2007$continent
+
+# Create a new variable for life expectancy
+life_expectancy <- gapminder_2007$lifeExp
+
+# Create a new variable for population
+population <- gapminder_2007$pop
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+### 3.2 More practice analyzing categorical data
+
+For more practice analyzing categorical data, please see can create barplot 
+showing how many countries are in each continent.
+
+
+
+```{r practice_categorical_data}
+
+# 1. Create a frequency table showing how many countries are in each continent
+continent_table <- table(continents)
+continent_table
+
+# 2. Create a barplot of the frequency of countries in each continent
+barplot(continent_table, 
+        main = "Number of Countries in Each Continent", 
+        xlab = "Continent", 
+        ylab = "Number of Countries", 
+        col = rainbow(length(continent_table)))
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### 3.3 Histograms
+
+Let's now create a histogram of the life expectancy data for the year 2007. We
+can do this using the `hist()` function along with the vector of life expectancy
+data we created in part 2.1 which is stored in the object `life_expectancy`.
+
+Questions:
+
+1. What shape does this histogram have? Is it symmetric, right-skewed, or left-skewed?
+2. Are there any extreme outliers in the data? 
+
+
+```{r histogram_life_expectancy}
+
+# Create a histogram of life expectancy
+hist(life_expectancy, 
+     breaks = 20, 
+     main = "Histogram of Life Expectancy in 2007", 
+     xlab = "Life Expectancy (years)", 
+     ylab = "Frequency", 
+     col = "lightblue", 
+     border = "black")
+
+```
+
+
+**Answer:** 
+
+1. The histogram is left-skewed.
+
+2. There are not any noticeable extreme outliers in the data (we will discuss
+a more quantitative way to categorize outliers in a future class).
+
+
+
+
+$\\$
+
+
+
+
+
+
+# Part 4:  Descriptive statistics for the central tendency: the mean and median
+
+We can use the `mean()` and `median()` functions to calculate the mean and median
+of a sample of data. 
+
+Let's calculate the mean and median of the life expectancy data for the year 2007.
+
+Are these values what you would expect based on the skew of the data?
+
+```{r mean_median_life_expectancy}
+
+# Calculate the mean of life expectancy
+the_mean <- mean(life_expectancy)
+the_mean
+
+# Calculate the median of life expectancy
+the_median <- median(life_expectancy)
+the_median
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### 4.2 Showing the mean and median on a histogram
+
+
+We can add lines to the histogram to show where the mean and median are located using
+the `abline()` function.
+
+Let's add lines for the mean and median to the histogram we created in part 2.1.
+
+
+```{r add_mean_median_lines}
+
+# Create a histogram of life expectancy
+hist(life_expectancy, 
+     breaks = 20, 
+     main = "Histogram of Life Expectancy in 2007", 
+     xlab = "Life Expectancy (years)", 
+     ylab = "Frequency", 
+     col = "lightblue", 
+     border = "black")
+
+
+# Add a line for the mean
+abline(v = the_mean, col = "red", lwd = 2)
+
+# Add a line for the median
+abline(v = the_median, col = "blue", lwd = 2)
+
+# Add a legend
+legend("topleft", legend = c("Mean", "Median"), col = c("red", "blue"), lwd = 2)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+### 4.3 Internet pings (try this at home)
+
+When an individual visits a webpage a 'ping' is generated
+
+Below is a random sample of ping counts from 7 people who pinged a website at least once:
+
+   12, 45, 6, 4, 158, 10, 59 
+
+Question: What is the mean and median ping count in this sample? 
+
+Also, see if you can calculate these values without using the `mean()` and 
+`median()` functions. Hint: the `sum()`, `length()`, and `sort()` functions may 
+be useful.
+
+```{r}
+
+# Create the ping data as a vector 
+ping_counts <- c(12, 45, 6, 4, 158, 10, 59)
+
+
+# Calculate the mean ping count
+mean_ping <- sum(ping_counts) / length(ping_counts)
+
+
+# Calculate the median ping count
+sorted_pings <- sort(ping_counts)
+median_ping <- sorted_pings[(length(sorted_pings) + 1) / 2]
+
+
+mean_ping
+median_ping
+
+
+```
+
+
+
+
