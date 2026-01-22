@@ -200,18 +200,16 @@ w
 $\\$
 
 
-# Part 2: Quick review of categorical data analysis in R
+# Part 3: Quick review of categorical data analysis in R
 
-Let's quickly review how to analyze categorical data in R using a fictional
-dataset of voters' opinions of president Trump. 
-
+Let's quickly review how to analyze categorical data in R using a fictional dataset of voters' opinions of president Trump. 
 
 
-### 2.1 Getting a simulated sample of voters
+
+### 3.1 Getting a simulated sample of voters
 
 
-We can use the SDS1000 function `get_approval_sample()` to get a vector of random
-sprinkle colors. 
+We can use the SDS1000 function `get_approval_sample()` to get a vector of random dataset of voters' opinions of president Trump. 
 
 ```{r voter_sample}
 
@@ -233,24 +231,22 @@ set.seed(1000)
 
 $\\$
   
-### 2.2 Get the proportion:
+### 3.2 Get the proportion:
 
 #### Example: Get the proportion of voters that appropove of trump
   
-We can use the `table()` and `prop.table()` functions to create a frequency and
-relative frequency table of approval ratings.
+We can use the `table()` and `prop.table()` functions to create a frequency and relative frequency table of approval ratings.
 
-We can also use the SDS1000 `get_proprortion()` function to get the proportion
-of voters that approve of president Trump.
+We can also use the SDS1000 `get_proprortion()` function to get the proportion of voters that approve of president Trump.
 
 
 ```{r voter_frequency_table}
 
-# Create a table of the approval ratings
+# Create a table of the voters' opinions
 # your code here #
 
 
-# Create a relative frequency table of the approval ratings
+# Create a relative frequency table of the voters' opinions
 # your code here #
 
 
@@ -261,21 +257,20 @@ of voters that approve of president Trump.
 
 $\\$
   
-### 2.3 Bar plots and pie charts
+### 3.3 Bar plots and pie charts
   
   We can use the `barplot()` and `pie()` functions to visualize the data.
 
-Note: Both functions take a frequency table as input, and **not** the original
-vector of data. 
+**Note**: Both functions take a frequency table as input, and **not** the original vector of data. 
 
 ```{r voter_barplot_and_pie_chart}
 
 
-# Create a bar plot of the sprinkle colors
+# Create a bar plot of the voters' opinions
 # your code here #
 
 
-# Create a pie chart of the sprinkle colors
+# Create a pie chart of the voters' opinions
 # your code here #
 
 ```
@@ -286,7 +281,7 @@ Can you figure out how to change the color of the segments in the pie chart?
 $\\$
 
 
-# Part 3:  Analyzing Quantitative Data 
+# Part 4:  Analyzing Quantitative Data 
 
 ### Mean, Median, and histogram: 
 
