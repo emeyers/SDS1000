@@ -1,0 +1,292 @@
+---
+title: "Class 4 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+Today we're going to analyze data from the [Gapminder data set](https://www.youtube.com/watch?v=jbkSRLYSojo) 
+which contains information about different countries. We will focus on data from 
+the year 2007 only, which is loaded below.
+
+
+Key variables in the Gapminder data set include:
+
+- `country`: The country of the observation
+- `continent`: The continent of the observation
+- `year`: The year of the observation
+- `lifeExp`: Life expectancy at birth (in years)
+- `pop`: Population of the country
+- `gdpPercap`: Gross domestic product per capita (in dollars)
+
+The code below loads the Gapminder data set and show the first 6 rows of the data. 
+
+
+
+```{r load_gapminder_data}
+
+load("gapminder_2007.rda")
+
+# Show the first 5 rows of the data
+head(gapminder_2007)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+# Part 1: More practice analyzing categorical data
+
+For more practice analyzing categorical data, please do the following analysis.
+
+1. Extract information about the continents variable from the `gapminder_2007`
+data frame and store the result in a new object called `continents`.
+
+2. Create a frequency table showing how many countries are in each continent.
+
+3. Create a barplot of the frequency of countries in each continent.
+
+
+
+```{r practice_categorical_data}
+
+# 1. Extract information about the continents variable
+continents <- gapminder_2007$continent
+
+
+
+# 2. Create a frequency table showing how many countries are in each continent
+continent_table <- table(continents)
+continent_table
+
+
+
+# 3. Create a barplot of the frequency of countries in each continent
+barplot(continent_table, 
+        main = "Number of Countries in Each Continent", 
+        xlab = "Continent", 
+        ylab = "Number of Countries", 
+        col = rainbow(length(continent_table)))
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
+# Part 2: Analyzing a single quantitative variable
+
+
+We will now explore analyzing a single quantitative variable. To do this we will
+continue to look at the Gap Minder data but we will look at the life expectancy which
+is a quantitative variable. The code below extract information on life expectancy
+from the `gapminder_2007` data frame and stores it in a new object called `life_expectancy`.
+
+
+```{r extract_life_expectancy}
+
+# Extract a vector of life expectancy data
+
+life_expectancy <- gapminder_2007$lifeExp
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+### 2.1 Histograms
+
+Let's now create a histogram of the life expectancy data for the year 2007. We
+can do this using the `hist()` function along with the vector of life expectancy
+data we created in part 2.1 which is stored in the object `life_expectancy`.
+
+Questions:
+
+1. What shape does this histogram have? Is it symmetric, right-skewed, or left-skewed?
+2. Are there any extreme outliers in the data? 
+
+
+```{r histogram_life_expectancy}
+
+# Create a histogram of life expectancy
+hist(life_expectancy, 
+     breaks = 20, 
+     main = "Histogram of Life Expectancy in 2007", 
+     xlab = "Life Expectancy (years)", 
+     ylab = "Frequency", 
+     col = "lightblue", 
+     border = "black")
+
+
+```
+
+
+**Answer:** 
+
+1. The histogram is left-skewed.
+
+2. There are not any noticeable extreme outliers in the data (we will discuss
+a more quantitative way to categorize outliers in a future class).
+
+
+
+
+$\\$
+
+
+
+
+
+
+# Part 3: Descriptive statistics for the central tendency: the mean and median
+
+We can use the `mean()` and `median()` functions to calculate the mean and median
+of a sample of data. 
+
+Let's calculate the mean and median of the life expectancy data for the year 2007.
+
+Are these values what you would expect based on the skew of the data?
+
+```{r mean_median_life_expectancy}
+
+# Calculate the mean of life expectancy
+mean(life_expectancy)
+
+# Calculate the median of life expectancy
+median(life_expectancy)
+
+```
+
+
+
+$\\$
+
+
+
+### 3.2 Showing the mean and median on a histogram
+
+
+We can add lines to the histogram to show where the mean and median are located using
+the abline`()` function.
+
+Let's add lines for the mean and median to the histogram we created in part 2.1.
+
+
+```{r add_mean_median_lines}
+
+# Create a histogram of life expectancy
+hist(life_expectancy, 
+     breaks = 20, 
+     main = "Histogram of Life Expectancy in 2007", 
+     xlab = "Life Expectancy (years)", 
+     ylab = "Frequency", 
+     col = "lightblue", 
+     border = "black")
+
+
+# Add a line for the mean
+abline(v = mean(life_expectancy), col = "red", lwd = 2)
+
+# Add a line for the median
+abline(v = median(life_expectancy), col = "blue", lwd = 2)
+
+# Add a legend
+legend("topleft", legend = c("Mean", "Median"), col = c("red", "blue"), lwd = 2)
+
+```
+
+
+
+$\\$
+
+
+
+
+### 3.3 Internet pings 
+
+When an individual visits a webpage a 'ping' is generated
+
+Below is a random sample of ping counts from 7 people who pinged a website at least once:
+
+   12, 45, 6, 4, 158, 10, 59 
+
+Question: What is the mean and median ping count in this sample? 
+
+Also, see if you can calculate these values without using the `mean()` and 
+`median()` functions. Hint: the `sum()`, `length()`, and `sort()` functions may 
+be useful.
+
+```{r}
+
+# Create the ping data as a vector 
+ping_counts <- c(12, 45, 6, 4, 158, 10, 59)
+
+
+# Calculate the mean ping count
+mean_ping <- sum(ping_counts) / length(ping_counts)
+
+
+# Calculate the median ping count
+sorted_pings <- sort(ping_counts)
+median_ping <- sorted_pings[(length(sorted_pings) + 1) / 2]
+
+
+mean_ping
+median_ping
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+# Part 4: Measures variability: the variance and standard deviation 
+
+Let's now calculate the variance and standard deviation of the life expectancy data for the year 2007.
+
+```{r variance_standard_deviation_life_expectancy}
+
+# Calculate the variance of life expectancy
+var(life_expectancy)
+
+# Calculate the standard deviation of life expectancy
+sd(life_expectancy)
+
+```
+
+
+
+
+
+
+
+
+
