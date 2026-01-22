@@ -254,11 +254,11 @@ of voters that approve of president Trump.
 
 ```{r voter_frequency_table}
 
-# Create a table of the approval ratings
+# Create a table of the voters' opinions
 approval_table <- table(approval_sample)
 approval_table
 
-# Create a relative frequency table of the approval ratings
+# Create a relative frequency table of the voters' opinions
 approval_proportions <- prop.table(approval_table)
 approval_proportions
 
