@@ -187,7 +187,7 @@ appears to be normally distributed?
 
 Using this data set, find the mean and standard deviation, then calculate 1 standard deviations above, and 1 standard deviations below the mean. What percentiles do these values correspond to?
 
-
+**Note**: approximately, there is 68% of data between 1 standard deviations above, and 1 standard deviations below the mean, in the normal distribution.
 
 $\\$
 
