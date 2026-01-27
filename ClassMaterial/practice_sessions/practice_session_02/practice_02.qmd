@@ -1,0 +1,226 @@
+---
+title: "Practice Session 2"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+# Part 1 : Measures of central tendency 	&  Measures of spread for quantitative data	
+
+
+## 1.1 Calculating the Sample Standard Deviation by Hand
+
+
+#### Here is the formula for the sample mean:
+
+$\bar{x} = \frac{1}{n} \sum_{i = 1}^n x_i$
+
+
+#### And here is the formula for the sample standard deviation:
+
+$s = \sqrt{\frac{1}{n - 1} \sum_{i = 1}^n (x_i - \bar{x})^2}$
+
+
+#### Using the above data, perform the following calculations. Complete the table
+for calculating the sample standard deviation.
+
+![](s_calc.png) 
+
+![](s_sum.png)
+
+
+$\\$
+
+
+## 1.2 Five-Number Summary
+
+Using the numbers from the previous exercise, do the following:
+
+* Find the 5-number summary (minimum, Q1, median, Q3, maximum)
+* Check your work using R functions 
+
+```{r}
+# your code here
+```
+
+
+$\\$
+
+
+## 1.2 Boxplots
+
+Consider the `mtcars` data set. This data is built into R, so you can access it directly; no downloads required! First, create a histogram of the variable `mpg`. Then create a boxplot of `mpg`. 
+
+1. How do these two plots compare? 
+
+2. Create a boxplots of `mpg` per number of cylinders `cyl`.
+
+
+
+```{r}
+# your code here
+```
+
+
+$\\$
+
+
+## 1.3 Quantitative data : histograms and outliers
+
+Generate histograms for each of the following data sets. Use the `$` command to access the individual data sets. For each histogram, add the mean to the plot using `abline()`. Do you see any potential outliers? Also calculate the five-number summary for each using R.
+
+```{r}
+set.seed(999)
+s2_data = data.frame(
+  dat1 = -rchisq(1000, df = 1),
+  dat2 = rchisq(1000, df = 1),
+  dat3 = runif(1000),
+  dat4 = rnorm(1000),
+  dat5 = sample(c(rnorm(1000, mean = 2), rnorm(1000, mean = 10)), size = 1000)
+)
+```
+
+
+$\\$
+
+
+## 1.4  Percentiles
+
+Compute the 25th, 50th, and 75th percentile for the 5 data sets in the `s2_data` data.frame. Which has the smallest median? Which as the largest?
+
+```{r}
+## your code here 
+```
+ 
+
+$\\$
+
+
+
+## 1.5  Normal Distribution and +/- 2 Standard Deviations
+
+The normal distribution (also known as the "bell-curve") occurs very frequently in mathematics, statistics, and the natural and social sciences. Which of the 5 data sets in the `s2_data` data.frame 
+appears to be normally distributed?
+
+Using this data set, find the mean and standard deviation, then calculate 2 standard deviations above, and 2 standard deviations below the mean. What percentiles do these values correspond to?
+
+
+
+$\\$
+
+
+
+## 1.6 Z-Scores
+
+Read the following description on Z-scores, then answer the question below.
+
+![](z_score.png)
+
+![](weather.png)
+# Part 2 :  The Relationship Between Two Quantitative Variables: Correlation and Regression 
+
+$\\$
+
+
+In this session you might use the formula of the correlation between two quantitative variables:
+
+
+$r_{x y}=\frac{1}{(n-1) s_z s_y} \sum_{i=1}^n\left(x_i-\bar{x}\right)\left(y_i-\bar{y}\right)$
+
+
+$\\$
+
+Remember that the fitted regression line is defined by the equation: 
+
+* $\hat{y} = a + bx$, or 
+
+* $\hat{\text{Response}} = a + b \cdot \text{(Explanatory)}$
+
+* Residuals = observed - predicted = y - $\hat{y}$
+
+Where: 
+
+* Response: is the response variable or the dependent variable
+
+* Explanatory: is the independent variable
+  
+* a: is the y-intercept
+  
+* b: is the slope of the regression line
+
+$\\$
+
+ You may use the following R functions: `plot()`, `lm()`, `cor()`, `abline()`. And you might need to download Lock5Data using `library(Lock5Data)`. 
+
+
+# Part 2:  Two quantitative variables/ Scatterplot and Correlation
+
+## 2.1 Describe scatterplots
+
+Here are several scatterplots. The calculated correlations are 0.006, - 0.977, - 0.487, and 0.777. Match each scatter plot with the appropriate correlation coeffecient.
+
+
+![](scatterplot.png){width=50%}
+
+
+
+**Answers:**
+
+a.
+
+
+b.
+
+
+c.
+
+
+d.
+
+
+$\\$
+
+
+## 2.2 Create scatterplots in  R 
+
+
+Load the data `FloridaLakes` from library(Lock5Data).
+
+1. Describe the type of each of the variables: `pH`, `Calcium`, and `Alkalinity`. 
+
+2. Create a three scatter plots for each pair of variables: pH` vs `Calcium`, pH`  vs  `Alkalinity`, and  `Calcium`  vs  `Alkalinity` . Add the main title to each plot.
+
+3. What is the correlation coefficient between `pH` and  `Calcium`? Is it positive or negative?
+
+4. What do these coefficients mean in the context of this data?
+
+5. Try to calculate the correlation coefficient between `pH` and `Calcium` without using the `R` function for correlation.
+
+  
+**Answers:**
+
+```{r}
+# download the data and load it into R
+library(Lock5Data)
+data(FloridaLakes)
+
+
+```
+
+
+1.
+
+
+2.
+
+
+3.
+
+
+4.
+
+
+5.
+
+$\\$
