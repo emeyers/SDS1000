@@ -1,4 +1,3 @@
-
 ---
 title: "Practice Session 2 Answers"
 format: pdf
@@ -63,7 +62,7 @@ summary(v)
 $\\$
 
 
-## 1.2 Boxplots
+## 1.3 Boxplots and Histograms
 
 Consider the `mtcars` data set. This data is built into R, so you can access it directly; no downloads required! First, create a histogram of the variable `mpg`. Then create a boxplot of `mpg`. 
 
@@ -111,7 +110,7 @@ boxplot(mpg ~ cyl, data = mtcars,
 $\\$
 
 
-## 1.3 Quantitative data : histograms and outliers
+## 1.4 Quantitative data : histograms and outliers
 
 Generate histograms for each of the following data sets. Use the `$` command to access the individual data sets. For each histogram, add the mean to the plot using `abline()`. Do you see any potential outliers? Also calculate the five-number summary for each using R.
 
@@ -169,7 +168,7 @@ text(x = mean1, y = 650,  cex= 0.5, labels = "mean",
 
 $\\$
 
-## 1.4  Percentiles
+## 1.5 Percentiles
 
 Compute the 25th, 50th, and 75th percentile for the 5 data sets in the `s2_data` data.frame. Which has the smallest median? Which as the largest?
 
@@ -179,7 +178,7 @@ $\\$
 
 
 
-## 1.5  Normal Distribution and +/- 2 Standard Deviations
+## 1.6  Normal Distribution and +/- 2 Standard Deviations
 
 The normal distribution (also known as the "bell-curve") occurs very frequently in mathematics, statistics, and the natural and social sciences. Which of the 5 data sets in the `s2_data` data.frame 
 appears to be normally distributed?
@@ -191,7 +190,7 @@ Using this data set, find the mean and standard deviation, then calculate 2 stan
 $\\$
 
 
-## 1.6 Z-Scores
+## 1.7 Z-Scores
 
 Read the following description on Z-scores, then answer the question below.
 
@@ -236,9 +235,7 @@ $\\$
  You may use the following R functions: `plot()`, `lm()`, `cor()`, `abline()`. And you might need to download Lock5Data using `library(Lock5Data)`. 
 
 
-# Part 2:  Two quantitative variables/ Scatterplot and Correlation
-
-## 2.1 Describe scatterplots
+## 2.1 Describe scatterplots and correlation
 
 Here are several scatterplots. The calculated correlations are 0.006, - 0.977, - 0.487, and 0.777. Match each scatter plot with the appropriate correlation coeffecient.
 
