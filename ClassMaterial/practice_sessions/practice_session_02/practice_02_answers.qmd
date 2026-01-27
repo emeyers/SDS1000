@@ -170,7 +170,11 @@ $\\$
 
 Compute the 25th, 50th, and 75th percentile for the 5 data sets in the `s2_data` data.frame. Which has the smallest median? Which as the largest?
 
+```{r}
+percentiles<- fivenum( s2_data$ dat4)
+percentiles
 
+```
 
 $\\$
 
