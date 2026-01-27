@@ -53,9 +53,7 @@ v
 
 fivenum(v)
 
-## you can use function summary()
 
-summary(v)
 ```
 
 
