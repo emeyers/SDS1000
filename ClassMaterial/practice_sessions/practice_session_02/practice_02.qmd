@@ -25,9 +25,9 @@ $s = \sqrt{\frac{1}{n - 1} \sum_{i = 1}^n (x_i - \bar{x})^2}$
 #### Using the above data, perform the following calculations. Complete the table
 for calculating the sample standard deviation.
 
-![](s_calc.png) 
+![](s_calc.png){width=70%} 
 
-![](s_sum.png)
+![](s_sum.png){width=70%}
 
 
 $\\$
@@ -48,7 +48,7 @@ Using the numbers from the previous exercise, do the following:
 $\\$
 
 
-## 1.3 Boxplots and Histograms
+## 1.3 Boxplots
 
 Consider the `mtcars` data set. This data is built into R, so you can access it directly; no downloads required! First, create a histogram of the variable `mpg`. Then create a boxplot of `mpg`. 
 
@@ -103,12 +103,17 @@ $\\$
 The normal distribution (also known as the "bell-curve") occurs very frequently in mathematics, statistics, and the natural and social sciences. Which of the 5 data sets in the `s2_data` data.frame 
 appears to be normally distributed?
 
-Using this data set, find the mean and standard deviation, then calculate 1 standard deviations above, and 1 standard deviations below the mean. What percentiles do these values correspond to?
+Using this data set, find the mean and standard deviation, then calculate the endpoints of **1 standard deviations above**, and **1 standard deviations below the mean** . What percentiles do these values correspond to?
 
 **Note**: approximately, there is 68% of data between 1 standard deviations above, and 1 standard deviations below the mean, in the normal distribution.
 
-$\\$
 
+
+```{r}
+## your code here 
+```
+ 
+$\\$
 
 
 ## 1.7 Z-Scores
@@ -117,13 +122,22 @@ Read the following description on Z-scores, then answer the question below.
 
 ![](z_score.png)
 
-![](weather.png)
-# Part 2 :  The Relationship Between Two Quantitative Variables: Correlation and Regression 
+![](weather.png){width=70%}
+
+```{r}
+## your code here 
+```
+ 
 
 $\\$
 
 
-In this session you might use the formula of the correlation between two quantitative variables:
+# Part 2 :  The Relationship Between Two Quantitative Variables/ Correlation and Regression 
+
+
+
+
+You might use the formula of the correlation between two quantitative variables:
 
 
 $r_{x y}=\frac{1}{(n-1) s_z s_y} \sum_{i=1}^n\left(x_i-\bar{x}\right)\left(y_i-\bar{y}\right)$
@@ -149,12 +163,13 @@ Where:
   
 * b: is the slope of the regression line
 
-$\\$
+
 
  You may use the following R functions: `plot()`, `lm()`, `cor()`, `abline()`. And you might need to download Lock5Data using `library(Lock5Data)`. 
+ 
+$\\$
 
-
-## 2.1 Describe scatterplots and Correlation
+## 2.1 Describe scatterplots
 
 Here are several scatterplots. The calculated correlations are 0.006, - 0.977, - 0.487, and 0.777. Match each scatter plot with the appropriate correlation coeffecient.
 
