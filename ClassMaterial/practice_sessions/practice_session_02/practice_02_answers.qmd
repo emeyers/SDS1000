@@ -25,13 +25,12 @@ $s = \sqrt{\frac{1}{n - 1} \sum_{i = 1}^n (x_i - \bar{x})^2}$
 #### Using the above data, perform the following calculations. Complete the table
 for calculating the sample standard deviation.
 
-![](s_calc.png) 
+![](s_calc.png){width=70%} 
 
-![](s_sum.png)
+![](s_sum.png){width=70%} 
 
 
 $\\$
-
 
 ## 1.2 Five-Number Summary
 
@@ -59,22 +58,23 @@ fivenum(v)
 
 $\\$
 
-
 ## 1.3 Boxplots and Histograms
 
-Consider the `mtcars` data set. This data is built into R, so you can access it directly; no downloads required! First, create a histogram of the variable `mpg`. Then create a boxplot of `mpg`. 
+Consider the `mtcars` data set. This data is built into R, so you can access it directly; no downloads required!
+You can find out the structure of this data using the function `str()`.
 
-1. How do these two plots compare? 
+1. First, create a histogram of the variable `mpg`. Then create a boxplot of `mpg`. 
 
-2. Create a boxplots of `mpg` per number of cylinders `cyl`.
+2. How do these two plots compare? 
+
+3. Create a boxplots of `mpg` per number of cylinders `cyl`.
 
 
 **Answer**
 
 ```{r}
 
-
-# Create a histogram of 'mpg'
+#1# Create a histogram of 'mpg'
 
 hist(mtcars$mpg, 
      main = "Histogram of Miles Per Gallon (mpg)",
@@ -84,14 +84,16 @@ hist(mtcars$mpg,
      border = "darkblue")
 
 
-# Create a boxplot of 'mpg':
+#2# Create a boxplot of 'mpg':
 
 boxplot(mtcars$mpg, 
         main = "Boxplot of Miles Per Gallon (mpg)",
         xlab = "Miles Per Gallon (mpg)",
                col = "lightgreen")
 
-# create boxplot of mpg per cylender: 
+#3# create boxplot of mpg per cylender: 
+
+str(mtcars)
 
 # Ensure 'cyl' is treated as a factor (categorical variable) for grouping
 mtcars$cyl <- as.factor(mtcars$cyl)
@@ -106,7 +108,6 @@ boxplot(mpg ~ cyl, data = mtcars,
 ```
 
 $\\$
-
 
 ## 1.4 Quantitative data : histograms and outliers
 
@@ -171,10 +172,11 @@ $\\$
 Compute the 25th, 50th, and 75th percentile for the 5 data sets in the `s2_data` data.frame. Which has the smallest median? Which as the largest?
 
 ```{r}
-percentiles<- fivenum( s2_data$ dat4)
+percentiles<- quantile( s2_data$ dat1, c( 0.25, 0.5, 0.75))
 percentiles
 
 ```
+
 
 $\\$
 
@@ -185,23 +187,68 @@ $\\$
 The normal distribution (also known as the "bell-curve") occurs very frequently in mathematics, statistics, and the natural and social sciences. Which of the 5 data sets in the `s2_data` data.frame 
 appears to be normally distributed?
 
-Using this data set, find the mean and standard deviation, then calculate 1 standard deviations above, and 1 standard deviations below the mean. What percentiles do these values correspond to?
+Using this data set, find the mean and standard deviation, then calculate the endpoints of **1 standard deviations above**, and **1 standard deviations below the mean**. What percentiles do these values correspond to?
 
-**Note**: approximately, there is 68% of data between 1 standard deviations above, and 1 standard deviations below the mean, in the normal distribution.
+**Note**: there are approximately 68% of data between 1 standard deviations above, and 1 standard deviations below the mean.
 
 $\\$
 
+**Answers**: 
+
+It seems `dat4` has normal distribution:
+
+```{r}
+par(mfrow=c(2,3))
+hist1<- hist( mydata$ dat1)
+  hist2<- hist( mydata$ dat2)
+  hist3<- hist( mydata$ dat3)
+  hist4<- hist( mydata$ dat4)
+  hist5<- hist( mydata$ dat5) 
+  
+```
+
+* we will use `dat4`   
+```{r}
+
+## method1 :
+
+mean_4 <- mean (s2_data$ dat4 )
+mean_4
+sd_4 <- sd (s2_data$ dat4 )
+sd_4
+
+endpoints_1sd_below_above_mean <- c( mean_4 - 2*sd_4, mean_4 + 2*sd_4)
+endpoints_1sd_below_above_mean
+
+
+## method 2
+
+percentiles_middle_68percent <- quantile (s2_data$ dat4, c( 0.16, 0.84) )
+percentiles
+```
 
 ## 1.7 Z-Scores
 
 Read the following description on Z-scores, then answer the question below.
 
-![](z_score.png)
+![](z_score.png){width=70%} 
 
-![](weather.png)
+![](weather.png){width=70%} 
+**Answers**:
+
+```{r}
+# January z-score
+jan_z_score<- (13-2)/6
+jan_z_score
+
+# July z-score
+jul_z_score<- (13-24)/5
+jan_z_score
+
+```
 
 
-# Part 2 :  The Relationship Between Two Quantitative Variables: Correlation and Regression 
+# Part 2 :  The Relationship Between Two Quantitative Variables/ Correlation and Regression 
 
 $\\$
 
