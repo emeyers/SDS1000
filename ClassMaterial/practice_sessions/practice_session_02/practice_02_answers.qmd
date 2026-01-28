@@ -199,11 +199,12 @@ It seems `dat4` has normal distribution:
 
 ```{r}
 par(mfrow=c(2,3))
-hist1<- hist( mydata$ dat1)
-  hist2<- hist( mydata$ dat2)
-  hist3<- hist( mydata$ dat3)
-  hist4<- hist( mydata$ dat4)
-  hist5<- hist( mydata$ dat5) 
+
+hist1<- hist( s2_data$ dat1)
+  hist2<- hist( s2_data$ dat2)
+  hist3<- hist( s2_data$ dat3)
+  hist4<- hist( s2_data$ dat4)
+  hist5<- hist( s2_data$ dat5) 
   
 ```
 
