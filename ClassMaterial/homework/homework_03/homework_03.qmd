@@ -1,0 +1,462 @@
+---
+title: "Homework 3"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+In the following homework, you will gain practice creating linear models to 
+predict the values of a response variable from the value of an explanatory 
+variable, and you will examine questions related to sampling bias. Please submit 
+a compiled pdf with your answers to the exercises to Gradescope 
+*by 11pm on Sunday February 8th*. Please also make sure to  indicate the correct 
+pages to each question's answers on Gradescope to make sure that we can grade them.
+
+
+Some useful functions for completing this worksheet are:  `plot()`, `corr()`,
+`lm()`, `abline()`, and `coef()`. Also see the "R function" page on Canvas for a
+list of functions we have used in class.You might also find the following symbols 
+useful:  $\mu$, $\bar{x}$, $\pi$, $\hat{p}$, $\rho$, $\hat{y}$, and $\beta$. 
+
+For all questions that involve R, please use the R chunks (gray sections) to 
+create relevant plots and calculations, and then answer the questions in the 
+"answer" section below each chunk. Be sure to "show your work" by printing out 
+information that answers the question that have been asked (although please do 
+not print out pages of irrelevant data). Also, make sure to add appropriate 
+labels to all plots.  
+
+
+As always, if you need help with any of the homework assignments, please attend
+the TA office hours which are listed on Canvas and/or ask questions on Ed
+Discussions forum. Also, if you have completed the homework, please help others
+out by answering questions on Ed Discussions. Finally, reviewing the class
+slides and videos will be helpful if you run into difficulties, and attending
+the Practice Sessions will be very useful to solidify your knowledge. 
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 1: Simple linear regression
+ 
+
+
+
+$\\$
+
+
+
+On the last homework you practiced calculating statistics "by hand" using data 
+on  the number of hot dogs eaten by the winner of Nathan's Famous hot dog eating 
+contest. Let's continue to analyze this data set by looking at the question 
+of whether it has become harder to win this hot dog eating contest in more recent 
+years.
+
+The code below loads data on the winners of Nathan's Famous hot dog eating
+contest from the years 2002 to 2019. Please use the R chunk below to analyze
+data related to that contest and answer the following questions in the answer
+section below. Also, be sure to "show your work" by making sure your answers are
+printed out in the R chunk below.
+
+Note: As mentioned on the previous homework, doctors recommend you limit the 
+number of hot dogs you eat in a day as also discussed 
+[here](https://www.tiktok.com/@paramountplusaustralia/video/7259888863781358875?lang=en).
+
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 1.1 (4 points)**: In the R chunk below, create a scatter plot of the 
+number of hot dogs eaten as a function of year. Is the trend in the data mostly 
+positive or negative? 
+
+```{r q1_1}
+
+library(Lock5Data)
+
+
+# load the data on the hot dog contest winners in a data frame called HotDogs
+HotDogs <- HotDogs2019
+
+
+# Plot the number of hot dogs eaten as a function of the year
+
+
+
+
+
+
+
+```
+
+
+**Answer** 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 1.2 (7 points)**: Fit a linear model to this data predicting the 
+number of hot dogs eaten as a function of the year, and save the output of your
+fitted model to an object called `hotdog_fit`. Then recreate the scatter plot
+from 1.1 and add the fitted regression line to your plot (bonus, see if you can
+make the line color red). Then from **just looking at the resulting plot**,
+answer the questions of whether: 
+
+1. Is the residual larger in 2007 or in 2008?
+
+2. Is the residual positive or negative in 2010?
+
+
+```{r q1_2}
+
+
+# Recreate the plot above
+
+
+
+
+
+
+# Fit a linear regression model data and add the regression line to the plot
+
+
+
+
+
+
+# Add the regression line to the plot
+
+
+
+
+
+
+
+```
+
+
+**Answer** 
+
+1. 
+
+
+2. 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Exercise 1.3 (4 points)**: By looking at the scatter plot, guess the 
+correlation between year and number of hot dogs eaten. Then use R to find the
+correlation value and report what it is. Is the actual correlation value
+approximately what you expected it to be?
+
+
+```{r q1_3}
+
+# Calculate the correlation between the number of hot dogs eaten and the year
+
+
+
+
+
+```
+
+
+**Answer** 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 1.4 (6 points)**: Now extract the coefficients from your linear model 
+in the R chunk below. Then in the answers section, write out what the regression
+equation is; i.e., write the equation with the values of the coefficients
+plugged in.
+
+Hint: using the symbol $\hat{y}$ could be useful here. 
+
+
+```{r q1_4}
+
+# Print out the regression coefficients here. 
+# Then write the equation for the prediction line in the answers section below.
+
+
+
+
+
+```
+
+
+**Answer** 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 1.5 (6 points)**: In the answer section, write an interpretation of 
+what the coefficients mean in terms of years and the number of hot dogs
+predicted to be eaten.
+
+
+
+**Answer** 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Exercise 1.6 (6 points)**: Use your regression equation to predict the number 
+of hot dogs expected to be eaten in 2016. Show your work in R. Then find the
+actual number of hot dogs eaten by the winner in 2016 on the internet and report
+the residual.
+
+
+```{r q1_6}
+
+
+
+
+
+
+
+
+
+```
+
+
+
+**Answer** 
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+**Exercise 1.7 (5 points)**: Would it be appropriate to use this regression line 
+to predict the winners number of hot dogs in 2050? Please describe why or why not. 
+
+
+
+```{r 1_7}
+
+
+
+
+
+
+
+```
+
+
+
+**Answer** 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Part 2: Questions examining sampling and bias
+
+
+The following questions are intended to improve your understanding of sampling, 
+bias, sampling distributions and confidence intervals. I also recommend trying 
+additional questions from the Lock5 textbook to get more practice.
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 2.1** (6 points): In a sample survey of professors at the University 
+of Nebraska, 94% of them described themselves as "above average" teachers. Please 
+answer the following questions: 
+
+a. What is the sample? What is the population?
+
+b. Based on the information provided, can we conclude that the study suffers 
+from sampling bias? 
+
+c. Is 94% a good estimate for the percentage of above-average teachers at the 
+University of Nebraska? If not, why not? 
+
+Note: For this question you can assume that a simple random sample of professors
+at the University of Nebraska was taken and that the sample size was fairly large. 
+
+
+
+**Answers**:
+
+a. 
+
+
+
+b. 
+
+
+
+c. 
+
+
+
+
+
+$\\$
+
+
+
+
+
+**Exercise 2.2** (7 points): Employment statistics in the US are often based on 
+two nationwide monthly surveys: the Current Population Survey (CPS) and the 
+Current Employment Statistics (CES) survey. The CPS samples approximately 60,000 
+US households and collects the employment status, job type, and demographic 
+information of each resident in the household. The CES survey samples 140,000 
+nonfarm businesses and government agencies and collects the number of payroll 
+jobs, pay rates, and related information for each firm.
+
+a. What is the population in the CPS survey?
+
+b. What is the population in the CES survey?
+
+For each of the following statistical questions, state whether the results from 
+the CPS or CES survey would be more relevant.
+
+  i.	 Do larger companies tend to have higher salaries?
+
+  ii.	 What percentage of Americans are self-employed?
+
+  iii. Are married men more or less likely to be employed than single men?
+
+
+
+
+**Answers**:
+
+
+a. 
+
+
+b. 
+
+
+i. 
+
+ii. 
+
+iii. 
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Reflection (3 points)
+
+
+Please reflect on how the homework went by going to Canvas, going to the Quizzes 
+link, and clicking on Reflection on homework 3.
+
+
+
+
+
+
+
