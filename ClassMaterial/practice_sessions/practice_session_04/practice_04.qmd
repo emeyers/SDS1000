@@ -19,6 +19,8 @@ In general, Sampling Distributions are the distributions of a **statistic**. Thi
 
 Match each term with its definition.\ 
 
+**Terms**
+
 * (a) s
 * (b) $\sigma$
 * (c) Standard Error (SE)
