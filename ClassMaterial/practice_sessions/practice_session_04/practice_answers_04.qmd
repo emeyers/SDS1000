@@ -201,16 +201,19 @@ hist(salary_distribution, main = "Distribution of Salary Samples",
 
 ```{r}
 
-mu_estimate = mean(salary_distribution)
+point_estimate <- mean(salary_sample)
+point_estimate
 
 ```
 
-4.) Calculate the standard deviation of your sampling distribution from part 2.) to estimate the standard error.
+4.) Calculate the standard deviation of your sampling distribution from part 2.) to find the standard error.
 
 ```{r}
 
-se = sd(salary_distribution)
+se <- sd(salary_distribution)
+se
 
 ```
+
 
 
