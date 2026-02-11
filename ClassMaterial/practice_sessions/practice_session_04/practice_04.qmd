@@ -155,7 +155,7 @@ set.seed(1000)
 # your code here #
 ```
 
-4.) Calculate the standard deviation of your sampling distribution from part 2.) to estimate the standard error.
+4.) Calculate the standard deviation of your sampling distribution from part 2.) to find the standard error.
 
 ```{r}
 
