@@ -252,7 +252,8 @@ rroll <- function(num_rolls, prob = rep(1/6, 6), outcome_names = NULL) {
 #' @examples
 #'  # Get the critical value for a 95% confidence interval from the standard normal distribution
 #'  cnorm(0.95, side = "both")
-#'' @export
+#'  
+#' @export
 cnorm <- function(p, mean = 0, sd = 1, side = c("upper", "both", "lower")) {
   
   side <- match.arg(side)

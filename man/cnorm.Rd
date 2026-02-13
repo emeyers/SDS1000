@@ -21,3 +21,8 @@ This function returns the critical value(s) from the normal distribution
 given a central probability. This is particular useful for creating confidence
 intervals.
 }
+\examples{
+ # Get the critical value for a 95\% confidence interval from the standard normal distribution
+ cnorm(0.95, side = "both")
+ 
+}
