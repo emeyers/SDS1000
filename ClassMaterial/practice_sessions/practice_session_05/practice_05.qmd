@@ -240,15 +240,4 @@ State the null and alternative hypotheses for the statistical test described:
 
 4.) Testing to see if there is evidence that the correlation between two variables is positive.
 
-**Answers:**
 
-1.  $\ H_0: \mu=50$             vs      $\ H_a: \mu < 50$
-
-
-2.  $\ H_0: \pi=0.3$            vs      $\ H_a: \pi> 0.3$
-
-
-3.  $\ H_0:\mu_{A}= \mu_{B}$    vs      $\ H_a: \mu_{A} \neq \mu_{B}$
-
-
-4.  $\ H_0:\rho = 0$            vs      $\ H_a:\rho > 0$
