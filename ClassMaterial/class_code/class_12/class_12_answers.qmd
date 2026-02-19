@@ -1,0 +1,223 @@
+---
+title: "Class 12 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+
+
+# Part 1: More practice creating confidence intervals 
+
+
+
+[Pereira-Doel et al (2024)](https://pmc.ncbi.nlm.nih.gov/articles/PMC7028815/)
+conducted a study at the University of Surrey in the United Kingdom examining
+variables related to water consumption by people taking showers. Let's use the
+data from this study create a 90% confidence interval for the mean length of
+time that showers last.
+
+The data from the study showing the amount of time people spend in the shower is
+loaded into R as a vector called `shower_times` below. To start, please visualize
+the data. What do you notice about the distribution of shower times (i.e., 
+how would you describe the shape of the distribution, etc.)? 
+
+
+```{r shower_viz}
+
+load("shower_data.rda")
+
+shower_times <- shower_data$Time
+
+
+hist(shower_times, main = "Body Temperatures", 
+     breaks = 20,
+     xlab = "Temperature (°F)", col = "lightblue", border = "black")
+
+
+boxplot(shower_times, main = "Boxplot of Shower Times", ylab = "Time (minutes)", col = "lightblue")
+
+
+median(shower_times)
+
+mean(shower_times)
+
+```
+
+**Answer** As can be seen, the data is right skewed, with a long tail of longer shower times. The median shower time is around 5.4 minutes, but there are some showers that last much longer, with one shower lasting over 50 minutes. 
+
+
+
+
+$\\$
+
+
+
+
+Now create a 90% confidence interval for the mean shower time using the
+bootstrap!
+
+See if you can also create a 99% confidence interval as well!
+
+
+
+
+```{r shower_CI}
+
+
+library(SDS1000)
+
+
+
+# Calculate the observed mean
+
+(obs_mean <- mean(shower_times))
+
+
+
+
+
+# Create a bootstrap distribution in R
+
+boot_dist <- do_it(10000)  *  {
+
+  boot_sample <- sample(shower_times, length(shower_times), replace = TRUE)
+  
+  mean(boot_sample)
+  
+}
+
+
+
+# Visualize the bootstrap distribution
+
+hist(boot_dist, 100)
+
+
+
+
+# Get the bootstrap standard error SE*
+
+SE_boot <- sd(boot_dist)
+
+
+
+
+# Create a 95% confidence interval
+
+CI_lower <-  obs_mean  - 2 * SE_boot 
+CI_upper <-  obs_mean  + 2 * SE_boot 
+
+c(CI_lower, CI_upper)
+
+
+
+# Create a 90% confidence interval
+
+q_star <- cnorm(.90, side = "upper")
+
+(CI_90 <-  c(obs_mean - q_star * SE_boot, obs_mean + q_star * SE_boot))
+
+
+
+# Create a 99% confidence interval
+
+q_star <- cnorm(.99, side = "upper")
+
+
+(CI_99 <-  c(obs_mean - q_star * SE_boot, obs_mean + q_star * SE_boot))
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+# Part 2: Hypothesis tests
+
+In order to run a hypothesis test, we need to simulate statistics that would
+occur if "nothing interesting" is happening; i.e., if the "null hypothesis" is
+true.
+
+For hypothesis tests that involve proportions, we can do this by simulating
+flipping a coin k times, where k is the number of trials in our original data
+set. We can then count the number of heads we get, and see if this is larger
+than the number (or proportion) of positive outcomes we observed in our original
+data set.
+
+Using the `SDS1000` package, we can simulate coin flips using the `rflip()`
+function. For example, if we flip a coin 100 times, where each flip has a 50%
+chance of being heads, we can use `rflip(100, 0.5)` to get the number of
+heads we observed in our 100 flips.
+
+```{r coin_flip_example}
+
+library(SDS1000)
+
+#set.seed(1234)
+
+
+rflip(100, 0.5)
+
+
+```
+
+
+Can do one simulation of the Doris and Buzz example?  How many times do you 
+need to flip the coin to simulate the experiment that was run? 
+
+
+```{r doris_buzz_simulation}
+
+# How many times do we need to flip the coin?
+n_flips <- 16
+
+# Simulate one experiment
+rflip(n_flips, 0.5)
+
+```
+
+
+
+To see if the result we observed in the Doris and Buzz experiment is unusual, we can
+repeat the simulation many times to create a null distribution of statistics. We
+can then see how many of the simulated statistics are as extreme or more extreme
+than the statistic we observed in the original experiment.
+
+
+
+```{r doris_buzz_null_distribution}
+
+# How many times do we need to flip the coin?
+n_flips <- 16
+
+# Simulate the null distribution
+null_dist <- do_it(10000) * {
+  rflip(n_flips, 0.5)
+}
+
+# Visualize the null distribution
+hist(null_dist, breaks = 50, main = "Null Distribution of Heads in 16 Flips", 
+     xlab = "Number of Heads", xlim = c(0, 16))
+
+abline(v = 15, col = "red")
+
+```
+
+
+
+
+

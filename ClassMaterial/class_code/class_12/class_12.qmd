@@ -1,0 +1,209 @@
+---
+title: "Class 12 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+
+# Part 1: More practice creating confidence intervals 
+
+
+
+[Pereira-Doel et al (2024)](https://pmc.ncbi.nlm.nih.gov/articles/PMC7028815/)
+conducted a study at the University of Surrey in the United Kingdom examining
+variables related to water consumption by people taking showers. Let's use the
+data from this study create a 90% confidence interval for the mean length of
+time that showers last.
+
+The data from the study showing the amount of time people spend in the shower is
+loaded into R as a vector called `shower_times` below. To start, please visualize
+the data. What do you notice about the distribution of shower times (i.e., 
+how would you describe the shape of the distribution, etc.)? 
+
+
+```{r shower_viz}
+
+load("shower_data.rda")
+
+shower_times <- shower_data$Time
+
+
+
+# visualize the data here...
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+**Answer** 
+
+
+
+
+
+
+$\\$
+
+
+
+
+Now create a 90% confidence interval for the mean shower time using the
+bootstrap!
+
+See if you can also create a 99% confidence interval as well!
+
+
+
+
+
+```{r shower_CI}
+
+
+# Calculate the observed mean
+
+
+
+
+
+
+# Create a bootstrap distribution in R
+
+
+
+
+
+
+
+# Visualize the bootstrap distribution
+
+
+
+
+
+
+# Get the bootstrap standard error SE*
+
+
+
+
+
+
+# Create a 90% confidence interval
+
+
+
+
+
+
+
+
+# Create a 99% confidence interval
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+# Part 2: Hypothesis tests
+
+In order to run a hypothesis test, we need to simulate statistics that would
+occur if "nothing interesting" is happening; i.e., if the "null hypothesis" is
+true.
+
+For hypothesis tests that involve proportions, we can do this by simulating
+flipping a coin k times, where k is the number of trials in our original data
+set. We can then count the number of heads we get, and see if this is larger
+than the number (or proportion) of positive outcomes we observed in our original
+data set.
+
+Using the `SDS1000` package, we can simulate coin flips using the `rflip()`
+function. For example, if we flip a coin 100 times, where each flip has a 50%
+chance of being heads, we can use `rflip(100, 0.5)` to get the number of
+heads we observed in our 100 flips.
+
+```{r coin_flip_example}
+
+library(SDS1000)
+
+#set.seed(1234)
+
+
+
+
+
+```
+
+
+Can do one simulation of the Doris and Buzz example?  How many times do you 
+need to flip the coin to simulate the experiment that was run? 
+
+
+```{r doris_buzz_simulation}
+
+# How many times do we need to flip the coin?
+
+
+# Simulate one experiment
+
+
+```
+
+
+
+To see if the result we observed in the Doris and Buzz experiment is unusual, we can
+repeat the simulation many times to create a null distribution of statistics. We
+can then see how many of the simulated statistics are as extreme or more extreme
+than the statistic we observed in the original experiment.
+
+
+
+```{r doris_buzz_null_distribution}
+
+# How many times do we need to flip the coin?
+
+
+
+
+# Simulate the null distribution
+
+
+
+
+# Visualize the null distribution
+
+
+
+
+
+```
+
+
+
+
+
