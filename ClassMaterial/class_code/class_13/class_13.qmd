@@ -1,0 +1,292 @@
+---
+title: "Class 13 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+# Part 1: Hypothesis tests
+
+In order to run a hypothesis test, we need to simulate statistics that would
+occur if "nothing interesting" is happening; i.e., if the "null hypothesis" is
+true.
+
+For hypothesis tests that involve proportions, we can do this by simulating
+flipping a coin n times, where n is the number of trials in our original data
+set. We can then count the number of heads we get, and see if this is larger
+than the number (or proportion) of positive outcomes we observed in our original
+data set.
+
+Using the `SDS1000` package, we can simulate coin flips using the `rflip()`
+function. For example, if we flip a coin 100 times, where each flip has a 50%
+chance of being heads, we can use `rflip(100, 0.5)` to get the number of
+heads we observed in our 100 flips.
+
+```{r coin_flip_example}
+
+library(SDS1000)
+
+#set.seed(1234)
+
+
+
+
+
+
+```
+
+
+Can do one simulation of the Doris and Buzz example?  How many times do you 
+need to flip the coin to simulate the experiment that was run? 
+
+
+```{r doris_buzz_simulation}
+
+# How many times do we need to flip the coin?
+
+
+
+
+# Simulate one experiment
+
+
+
+
+```
+
+
+
+To see if the result we observed in the Doris and Buzz experiment is unusual, we can
+repeat the simulation many times to create a null distribution of statistics. We
+can then see how many of the simulated statistics are as extreme or more extreme
+than the statistic we observed in the original experiment.
+
+
+
+```{r doris_buzz_null_distribution}
+
+# How many times do we need to flip the coin?
+
+
+
+
+
+# Simulate the null distribution
+
+
+
+
+
+
+# Visualize the null distribution
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+$\\$ 
+
+
+
+
+
+
+# Part 2: Calculating a p-value
+
+Let's now calculate the p-value for the Doris and Buzz experiment. We observed
+15 heads out of 16 flips. We can calculate the p-value by seeing how many of the
+simulated statistics are as extreme or more extreme than 15 heads.
+
+To calculate the p-value we can use the `pnull()` function from the `SDS1000`
+package, which takes as input the following arguments:
+
+1. Observed statistic value. 
+
+2. A vector of simulated statistics (i.e., our null distribution)
+
+3. A logical value indicating whether we want to calculate the lower tail
+   probability (i.e., the proportion of simulated statistics less than or equal to
+   the observed statistic) or the upper tail probability (i.e., the proportion of
+   simulated statistics greater than or equal to the observed statistic).
+
+
+The `pnull()` function returns the p-value, which is the proportion of statistics 
+in our null distribution as or more extreme than the observed statistic.
+
+
+
+```{r doris_buzz_p_value}
+
+
+# Number of trials Buzz got correct
+
+
+
+
+# Calculate the p-value
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+
+## Part 3: Lie detector hypothesis test
+
+A study by Hollien, Harnsberger, Martin and Hollien (2010) tried to assess the 
+accuracy of lie detection software. 
+
+A sample of 48 participants were gather and attached to a lie detection device. 
+They were asked to read deceptive (lying) material out loud. 
+
+The lie detector correctly reported that 31 out of the 48 participants were lying. 
+
+Let's run a hypothesis test to see if the results provide evidence that lie 
+detectors are more than 60% accurate? 
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 1: State the null and alternative hypotheses 
+
+
+Words:
+ - Null hypothesis: 
+ - Alternative hypothesis: 
+ 
+Symbols:
+ - $H_0:   $
+ - $H_A:   $
+
+
+
+$\\$
+
+
+
+
+### Step 2: Calculate the observed statistic
+
+
+
+```{r lie_detector_stat}
+
+
+# step 2: compute observed statistic
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+### Step 3: create the null distribution
+
+
+
+```{r lie_detector_null_distribution}
+
+
+# create the null distribution
+
+
+
+
+
+
+
+# plot the null distribution
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 4: calculate the p-value
+
+```{r lie_detector_p_value}
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### 5. Step 5: Make decision
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+**Question**: What would have happened if we had tested whether lie detector 
+tests get it correct more than 50% of the time? 
+
+Try it!
+
+
+
+
