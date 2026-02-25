@@ -180,8 +180,9 @@ one_sided_pv
 
 $\\$
 
+# Part 3: Hypothesis Testing for Difference in Two Means
 
-## Practice 2.3: Caffeine Taps
+## Practice 3.1 : Caffeine Taps
 
 A sample of college students were asked to tap their fingers at a rapid rate. The sample was then divided at random into two groups of ten students each. Each student drank the equivalent of about two cups of coffee, which included about 200 mg of caffeine for the students in one group but was decaffeinated coffee for the second group. After a two hour period, each student was tested to measure finger tapping rate (taps per minute). The goal of the experiment was to determine whether caffeine produces an increase in the average tap rate.
 
@@ -284,10 +285,10 @@ $\\$
 
 
 
-# Part 3:  Extra Practices 
+# Part 4:  Extra Practices 
 
 
-## Practice 3.1:  Exploring the `pnull()` Function
+## Practice 4.1:  Exploring the `pnull()` Function
 
 In this exercise, we will practice using some basic R coding to calculate a p-value without using the `pnull()` function. 
 
@@ -313,7 +314,7 @@ prop_obs_lessthan_phat
 ```
 
 
-## Practice 3.2: UFO Shapes
+## Practice 4.2: UFO Shapes
 
 UFOs, or Unidentified Flying Objects have become commonplace in media and popular culture. Some witnesses claim that the objects have a cylindrical shape, while others believe they are more spherical. Load the data `ufo_data.csv` using the function ` read.csv`.
 
