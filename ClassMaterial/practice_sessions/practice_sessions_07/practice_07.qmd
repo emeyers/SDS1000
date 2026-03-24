@@ -1,0 +1,339 @@
+
+---
+title: "Practice Session 7"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+# Intro
+
+The focus of this practice session will be to perform hypothesis tests for the difference of two or more means. We will look at various test statistics that can be used. We will also conduct hypothesis testing for correlations.
+
+
+## Question 1: Exercise Hours Hypothesis Test for the Difference of Two Means
+
+
+A study is interested to check if the mean exercise hours for female students is less than the mean exercise hours for male students. Use data `ExerciseHours` and the two variables `Exercise` and `Sex`.
+
+```{r}
+library(SDS1000)
+library(Lock5Data)
+data(ExerciseHours)
+
+```
+
+
+1.a  Write the `null hypothesis`  and `alternative hypothesis` 
+
+
+1.b Create a boxplot to describe hours of exercise for `female` versus `male`.
+
+
+```{r}
+# your code here
+```
+
+1.c Subset the data `ExerciseHours` to two groups: `F` and `M` .
+
+
+```{r}
+# your code here
+```
+
+2. Compute the observed statistic (mean difference of exercise hours for Female and Male).
+
+```{r}
+# your code here
+```
+
+3. Create null hypothesis distribution
+
+3.a  Shuffle the two groups of `female` and `Male` into two samples, and find the mean difference of the two shuffled samples.
+
+
+```{r}
+# your code here
+```
+
+3.b Create the Null hypothesis Distribution using the function do_it()
+
+
+```{r}
+# your code here
+```
+
+3.c Plot histogram of the null distribution and show the line of the observed mean difference
+
+```{r}
+# your code here
+```
+
+4. Calculate p-value 
+
+```{r}
+# your code here
+```
+
+5. Make decision/Judgment
+
+
+$\\$
+
+
+## Question 2: Baseball Hits Hypothesis Test for Correlations
+
+Do more home runs mean more wins? In other words, is there a positive correlation between the number of home runs a team hits and the number of wins? Test this hypothesis using a permutation test. Data from the 2019 Major League Baseball (MLB) season is available in the `BaseballHits2019` dataset in the `Lock5Data` library. Make sure to extract the appropriate columns from the data.
+
+```{r}
+library(Lock5Data)
+library(SDS1000)
+data(BaseballHits2019)
+```
+
+
+1. Write the `null hypothesis`  and `alternative hypothesis`  in words and in symbols.
+
+
+
+1.b Create a scatterplot to visualize the association between `HomeRuns` and `Wins`.
+
+
+```{r}
+# your code here
+```
+
+2. Compute the observed statistic (correlation between `HomeRuns` and `Wins`).
+
+```{r}
+# your code here
+```
+
+3.a Create null hypothesis distribution
+  
+```{r}
+# your code here
+```
+
+3.b Plot a `histogram` of the null distribution and show the `line` of the `observed correlation` using the `abline()` function.
+
+
+```{r}
+# your code here
+```
+
+4. Calculate p-value 
+
+
+```{r}
+# your code here
+```
+
+5. Make a decision and state your conclusion:
+
+
+$\\$
+
+
+
+## Question 3: Comparing Multiple Samples/ The Mean Absolute Deviation (MAD) Statistic
+
+The **mean absolute deviation** (MAD) is a `statistic` that we can calculate to compare differences among more than two groups. Suppose we had 4 groups. Then the MAD statistic is given by:
+
+
+$\text{MAD} = \frac{|\bar{x}_1 - \bar{x}_2| + |\bar{x}_1 - \bar{x}_3| + |\bar{x}_1 - \bar{x}_4| + |\bar{x_2} - \bar{x}_3| + |\bar{x}_2 - \bar{x}_4| + |\bar{x}_3 - \bar{x}_4|}{6}$
+
+ 
+The Lock5Data library contains the data set `TextbookCosts`. Conduct a  test to see if the mean textbook cost differs among subjects. *Hint:* Follow the steps that you did for the previous exercises, except now use the `get_MAD_stat()` function to compute your observed statistic and to generate your null distribution.
+
+```{r}
+library(SDS1000)
+library(Lock5Data)
+data(TextbookCosts)
+
+```
+
+1. Write the `null hypothesis`  and `alternative hypothesis`  in words and in symbols.
+
+2. Compute the observed MAD statistic. Use the `get_MAD_stat()` function.
+
+
+```{r}
+# your code here
+```
+
+
+3.a Create null hypothesis distribution 
+
+
+```{r}
+# your code here
+```
+
+
+3.b Plot a `histogram` of the null distribution and show the `line` of the `observed ` using the `abline()` function.
+
+
+```{r}
+# your code here
+```
+
+
+
+4. Calculate p-value 
+
+
+```{r}
+# your code here
+```
+
+5. Make a decision and state your conclusion:
+
+
+
+$\\$
+
+
+
+# Extra practices: 
+
+## Question 4: Caffeine Taps Hypothesis Test for the Difference of Two Means
+
+A sample of male college students were asked to tap their fingers at a rapid rate. The sample was then divided at random into two groups of ten students each. Each student drank the equivalent of about two cups of coffee, which included about 200 mg of caffeine for the students in one group but was decaffeinated coffee for the second group. After a two hour period, each student was tested to measure finger tapping rate (taps per minute). The goal of the experiment was to determine whether caffeine produces an increase in the average tap rate.
+
+
+```{r}
+library(Lock5Data)
+library(SDS1000)
+data(CaffeineTaps)
+
+```
+
+1.a  Write the `null hypothesis` and `alternative hypothesis` in words and in symbols.
+
+
+
+1.b Create a boxplot to describe tap rates for `Caffeine` versus `No Caffeine`.
+
+```{r}
+# your code here
+```
+
+
+1.c Subset the data `CaffeineTaps` to two groups: `Caffeine` and `NoCaffeine`.
+
+```{r}
+
+Caffeine <- CaffeineTaps$Taps[CaffeineTaps$Group == "Caffeine"]
+NoCaffeine <- CaffeineTaps$Taps[CaffeineTaps$Group == "NoCaffeine"]
+
+```
+
+
+2. Compute the observed statistic (mean difference of tap number for the two groups).
+
+```{r}
+diff_caffeine = mean(Caffeine) - mean(NoCaffeine)
+```
+
+
+3.a Combine the two samples of `Caffeine` and `No Caffeine`. 
+
+```{r}
+combined_sample <- c(Caffeine, NoCaffeine)
+```
+
+
+
+3.b Create the Null hypothesis Distribution using `do_it()` function.  
+
+```{r}
+# Combine the two samples
+combined_sample <- c(Caffeine, NoCaffeine)
+
+
+null_dist <- do_it(10000) * {
+  shuffled_sample <- shuffle(combined_sample)
+
+  shuff_caff <- shuffled_sample[1:10]
+  shuff_nocaff <- shuffled_sample[11:20]
+
+  shuff_stat <- mean(shuff_caff) - mean(shuff_nocaff)
+}
+```
+
+3.c Plot a `histogram` of the null distribution and show the `line` of the `observed mean difference` using the `abline()` function.
+
+```{r}
+hist(null_dist , 
+     xlab = "Difference in Mean Tap Rate", main = "Null distribution")
+abline(v = diff_caffeine, col = "blue")
+```
+
+
+4. Calculate p-value 
+
+```{r}
+p_value_upper <- pnull(diff_caffeine, null_dist, lower.tail = F) 
+p_value_lower <- pnull(-1*diff_caffeine, null_dist) 
+
+p_value <- p_value_upper + p_value_lower
+p_value
+```
+
+5. Make a decision and state your conclusion:
+
+Since our p-value is less than 0.05, we will reject the null hypothesis. We therefore have evidence that drinking caffeinated coffee produces an increase in the average tap rate compared to those that drink decaffeinated coffee.
+
+$\\$
+
+## Question 5:
+
+We will use data on `Antibodies` (in μg/ml) production after receiving a `Vaccine` (Vaccine A, Vaccine B, Vaccine C). A hospital administered three different vaccines to six individuals and measured the antibody presence in their blood after a chosen time period. The data is saved in `patient_vaccine.csv`. Note that each patient received all three vaccines.
+
+Is there a difference in antibody presence among the three vaccines? 
+
+```{r}
+library(SDS1000)
+my_data<- read.csv("patient_vaccine.csv")
+```
+
+1.a Write the `null hypothesis`  and `alternative hypothesis` in words and in symbols.
+
+
+1.b Create side-by-side boxplots to show the variation in antibody production among the three vaccines.
+
+
+```{r}
+# your code here
+```
+
+2. Calculate the observed statistic
+
+```{r}
+# your code here
+```
+
+ 3. Create the null distribution
+ 
+
+```{r}
+# your code here
+```
+
+3.a. Plot the null distribution and add a red vertical line at the observed statistic
+
+
+```{r}
+# your code here
+```
+
+4. Calculate the p-value from the test
+
+```{r}
+# your code here
+```
+
+5. State your conclusion
+
