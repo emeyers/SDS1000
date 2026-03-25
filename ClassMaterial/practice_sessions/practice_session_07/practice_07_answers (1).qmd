@@ -1,6 +1,5 @@
-
 ---
-title: "Practice Session 7"
+title: "Practice Session 7 Answers"
 format: pdf
 editor: source
 editor_options: 
@@ -27,57 +26,96 @@ data(ExerciseHours)
 
 1.a  Write the `null hypothesis`  and `alternative hypothesis` 
 
+$\ H_0:\mu_{f}= \mu_{m}$   vs    $\ H_a: \mu_{f} < \mu_{m}$
+
+&nbsp;
 
 1.b Create a boxplot to describe hours of exercise for `female` versus `male`.
 
 
 ```{r}
-# your code here
+
+boxplot(Exercise ~ Sex , data = ExerciseHours)
 ```
 
 1.c Subset the data `ExerciseHours` to two groups: `F` and `M` .
 
-
 ```{r}
-# your code here
+
+excercise_fem <- ExerciseHours$Exercise[ExerciseHours$Sex == "F"]
+excercise_mal <- ExerciseHours$Exercise[ExerciseHours$Sex == "M"]
+
+length(excercise_fem)
+length(excercise_mal)
+
+## 30
+## 20
 ```
 
 2. Compute the observed statistic (mean difference of exercise hours for Female and Male).
 
 ```{r}
-# your code here
+
+obs_stat <- mean(excercise_fem) - mean(excercise_mal)
+obs_stat
+## -3
 ```
+
 
 3. Create null hypothesis distribution
 
 3.a  Shuffle the two groups of `female` and `Male` into two samples, and find the mean difference of the two shuffled samples.
 
-
 ```{r}
-# your code here
+
+combined_sample <- c(excercise_fem, excercise_mal)
+shuffled_sample <- shuffle(combined_sample)
+
+shuff_fem <- shuffled_sample[1:30]
+shuff_mal <- shuffled_sample[31:50]
+
+shuff_stat <- mean(shuff_fem) - mean(shuff_mal)
+shuff_stat
+# answers may vary
 ```
 
 3.b Create the Null hypothesis Distribution using the function do_it()
 
-
 ```{r}
-# your code here
+ 
+null_dist <- do_it(10000) * {
+shuffled_sample <- shuffle(combined_sample )
+
+shuff_fem <- shuffled_sample[1:30]
+shuff_mal <- shuffled_sample[31:50]
+
+shuff_stat <- mean(shuff_fem) - mean(shuff_mal)
+}
 ```
 
 3.c Plot histogram of the null distribution and show the line of the observed mean difference
 
 ```{r}
-# your code here
+hist(null_dist ,
+     xlab = "Difference in means of Exercise hous bewteen Female and Male",
+     main = "Null distribution")
+
+abline(v = obs_stat, col = "blue")
 ```
 
 4. Calculate p-value 
 
 ```{r}
-# your code here
+
+p_value <- pnull(obs_stat, null_dist, lower.tail = T) 
+p_value
+#0.1038 (# answers may vary)
 ```
+
 
 5. Make decision/Judgment
 
+We fail to reject the **null hypothesis**. There are not enough evidence to conclude that the average exercise hours for female students is less than the average exercise hours for male students.
 
 $\\$
 
@@ -93,45 +131,70 @@ data(BaseballHits2019)
 ```
 
 
+**Answers:**
+
 1. Write the `null hypothesis`  and `alternative hypothesis`  in words and in symbols.
 
+* Null: There is no linear association between home runs and wins
+* Alternative: There is a positive, linear association between home runs and wins
+
+&nbsp;
+
+* $H_0: \rho = 0$
+* $H_A: \rho > 0$
 
 
 1.b Create a scatterplot to visualize the association between `HomeRuns` and `Wins`.
 
-
 ```{r}
-# your code here
+runs <- BaseballHits2019$HomeRuns
+wins <- BaseballHits2019$Wins
+
+plot(runs, wins,
+     xlab = "Home Runs", ylab = "Wins", 
+     main = " Home Runs vs Wins  in the 2019 MLB Season")
 ```
 
 2. Compute the observed statistic (correlation between `HomeRuns` and `Wins`).
 
 ```{r}
-# your code here
+runs_wins_corr <-  cor(runs, wins)
+runs_wins_corr
 ```
 
 3.a Create null hypothesis distribution
   
+
 ```{r}
-# your code here
+
+null_dist <- do_it(10000) * {
+ cor(runs, shuffle(wins))
+}
+
 ```
 
 3.b Plot a `histogram` of the null distribution and show the `line` of the `observed correlation` using the `abline()` function.
 
-
 ```{r}
-# your code here
+
+hist(null_dist,
+     xlab = "Correlations between Home Runs and Wins", 
+     main = "Null distribution", 
+     xlim= c( -1, 1))
+
+abline(v = runs_wins_corr, col = "blue")
 ```
 
 4. Calculate p-value 
 
-
 ```{r}
-# your code here
+p_value <- pnull(runs_wins_corr, null_dist, lower.tail = F) 
+p_value
 ```
 
 5. Make a decision and state your conclusion:
 
+Since our p-value is less than 0.05, we will reject the null hypothesis. We therefore have evidence that there is a positive correlation between wins and home runs.
 
 $\\$
 
@@ -156,40 +219,70 @@ data(TextbookCosts)
 
 1. Write the `null hypothesis`  and `alternative hypothesis`  in words and in symbols.
 
+* Null: There is no difference in average textbook costs among subjects
+* Alternative: There is a difference in average textbook costs among subjects
+
+&nbsp;
+
+**In symbols**
+
+$H_0: \mu_{Arts} = \mu_{H} = \mu_{NS} = \mu_{SS}$
+
+$H_A: \mu_i \ne \mu_j$ for some i, j in {Arts,H, NS,SS}
+
+
 2. Compute the observed MAD statistic. Use the `get_MAD_stat()` function.
 
 
 ```{r}
-# your code here
+
+mad_stat <-   get_MAD_stat(TextbookCosts$Cost, TextbookCosts$Field)
+mad_stat
 ```
+
 
 
 3.a Create null hypothesis distribution 
 
 
 ```{r}
-# your code here
+
+null_dist <- do_it(10000) * {
+
+  shuffled_Field <- shuffle(TextbookCosts$Field )
+
+  get_MAD_stat(TextbookCosts$Cost, shuffled_Field)
+
+}
 ```
+
 
 
 3.b Plot a `histogram` of the null distribution and show the `line` of the `observed ` using the `abline()` function.
 
-
 ```{r}
-# your code here
+hist(null_dist,
+     xlab = "MAD Statistic for Textbook Costs by Field", 
+     main = "Null distribution")
+
+abline(v = mad_stat, col = "blue")
 ```
+
 
 
 
 4. Calculate p-value 
 
-
 ```{r}
-# your code here
+
+p_value <- pnull(mad_stat, null_dist, lower.tail = F) 
+p_value
 ```
+
 
 5. Make a decision and state your conclusion:
 
+Since our p-value is less than 0.05, we will reject the null hypothesis. We therefore have evidence that there is a difference in textbook cost among subjects.
 
 
 $\\$
@@ -212,12 +305,21 @@ data(CaffeineTaps)
 
 1.a  Write the `null hypothesis` and `alternative hypothesis` in words and in symbols.
 
+* Null: There is no difference in the average tapping rate between the caffeinated and decaffeinated groups 
+
+* Alternative: The average tapping rate in the caffeinated group is different from the decaffeinated group
+
+&nbsp;
+
+* $H_0: \mu_{c} - \mu_{nc} = 0$
+* $H_A: \mu_{c} - \mu_{nc} \neq 0$
 
 
 1.b Create a boxplot to describe tap rates for `Caffeine` versus `No Caffeine`.
 
 ```{r}
-# your code here
+
+boxplot(data = CaffeineTaps, Taps ~ Group)
 ```
 
 
@@ -299,41 +401,70 @@ library(SDS1000)
 my_data<- read.csv("patient_vaccine.csv")
 ```
 
-1.a Write the `null hypothesis`  and `alternative hypothesis` in words and in symbols.
+1. (a) Write the `null hypothesis`  and `alternative hypothesis` in words and in symbols.
 
+* Null: The vaccines cause the same amount of antibodies to be produced 
+* Alternative: At least one of the vaccines causes a different amount of antibodies to be produced
+
+**In symbols**
+
+$H_0: \mu_{A} = \mu_{B} = \mu_{C}$
+
+$H_A: \mu_i \ne \mu_j$ for some i, j in {A, B, C}
 
 1.b Create side-by-side boxplots to show the variation in antibody production among the three vaccines.
 
-
 ```{r}
-# your code here
+library(SDS1000)
+
+antibodi <-  my_data$Antibodies
+vaccine  <- my_data$Vaccine
+
+boxplot( antibodi ~ vaccine  )
+
 ```
 
 2. Calculate the observed statistic
-
 ```{r}
-# your code here
+obs_stat <- get_MAD_stat(antibodi ,  vaccine)
+obs_stat
 ```
 
  3. Create the null distribution
  
-
 ```{r}
-# your code here
+null_dist <- do_it(10000) * {
+
+  # shuffle the values
+  shuffled_Vaccine <- shuffle(vaccine)
+
+  # calculate the simulated statistic
+  get_MAD_stat(antibodi, shuffled_Vaccine)
+
+}
 ```
 
-3.a. Plot the null distribution and add a red vertical line at the observed statistic
-
-
-```{r}
-# your code here
-```
-
-4. Calculate the p-value from the test
+4. Plot the null distribution and add a red vertical line at the observed statistic
 
 ```{r}
-# your code here
+hist(null_dist, 
+     main = "Null distribution",
+     xlab = "Mean absolute deviation of group means")
+
+#3.c# add a red vertical line at the observed statistic
+abline(v = obs_stat, col = "red")
 ```
 
-5. State your conclusion
+5. Calculate the p-value from the test
 
+```{r}
+#4# P.Value
+p_value <- pnull(obs_stat, null_dist, lower.tail = FALSE)
+p_value
+
+### pv= 0.0433
+```
+
+6. State your conclusion
+
+At significance level 0.05, we can **reject the null** and conclude the **alternative**, that there is difference between the three vaccines in terms of the amounts of antibodies they produce
