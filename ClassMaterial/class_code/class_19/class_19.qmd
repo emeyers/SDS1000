@@ -1,0 +1,292 @@
+---
+title: "Class 19 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+
+
+## Part 1: Generating random data from a normal distribution
+
+
+IQ scores are normally distributed with a mean of 100 and a standard deviation of 15.
+
+Let's generate/simulate 1,000 random IQ scores and visualize the distribution.
+
+
+
+```{r normal_data}
+
+set.seed(123)  # for reproducibility
+
+
+
+# Generate random IQ scores
+
+
+
+# Visualize the distribution
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 2: Visualzing the distribution of IQ scores with a density plot
+
+
+We can visualize the distribution of IQ scores using a density plot.
+
+
+```{r density_plot}
+
+# Get a range of x values
+
+
+                
+# Calculate the density values for the normal distribution
+
+
+
+
+# Plot the density
+
+
+
+
+
+```
+
+
+
+We can also overlay the density plot on the histogram of the simulated IQ scores by normalizing the histogram so that the area sums to 1.
+
+
+
+
+```{r overlay_density}
+
+# Plot the histogram with density
+
+
+
+
+# Overlay the density plot - lines() adds to the previous plot
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 3: Calculating probabilities using the normal distribution
+
+We can calculate probabilities using the normal distribution. For example, what is the probability that a randomly selected individual has an IQ score less than 120?
+
+
+```{r calculate_probability}
+
+# Calculate the probability
+
+
+
+
+
+
+
+
+
+```
+
+
+We can also get probability ranges by subtracting cumulative probabilities.
+
+What is the probability that a randomly selected individual has an IQ score between 85 and 115?
+
+
+```{r calculate_probability_range}
+
+# Calculate the probability
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 4: The standard normal distribution
+
+The standard normal distribution is a special case of the normal distribution 
+where the mean is 0 and the standard deviation is 1.
+
+
+
+
+$\\$
+
+
+
+
+### Part 4.1: Converting data from an arbitrary normal distribution to a standard normal distribution
+
+We can convert any normal distribution to the standard normal distribution using
+the z-score formula: $$ z = \frac{x - \mu}{\sigma} $$
+
+Where: 
+- `z` is the z-score
+- `x` is the value from the original normal distribution
+- $\mu$ is the mean of the original normal distribution
+- $sigma$ is the standard deviation of the original normal distribution
+
+Let's say we have an IQ score of 112. What is the corresponding z-score?
+
+```{r z_score}
+
+
+# Given IQ score
+x <- 112
+
+
+# Mean and standard deviation of the IQ distribution
+mu <- 100
+sigma <- 15
+
+
+
+
+# Calculate the z-score
+
+
+
+
+# Now, let's find the probability of having an IQ score greater than 130 using the z-score
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+### Part 4.2: Converting many data points to a standard normal distribution 
+
+We can also convert many data points from an arbitrary normal distribution to a
+standard normal distribution. 
+
+
+```{r zscore_many_points}
+
+set.seed(100)
+
+
+# generate 1000 random IQ scores
+
+
+
+
+# visualize these IQ scores
+
+
+
+
+
+# convert these scores to z-scores
+
+
+
+# visualize these z-scores
+
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 4.3: Converting from a standard normal distribution to an arbitrary normal distribution
+
+
+We can also convert z-scores back to the original normal distribution using the formula:
+$$ X = z \cdot \sigma + \mu $$
+
+
+Let's say we have a z-score of 2.2. What is the corresponding IQ score?
+
+```{r z_to_x}
+
+# Given z-score
+
+
+
+# Convert z-score back to IQ score
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+

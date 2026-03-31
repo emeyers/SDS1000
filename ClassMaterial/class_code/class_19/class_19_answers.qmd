@@ -1,0 +1,295 @@
+---
+title: "Class 19 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+
+
+## Part 1: Generating random data from a normal distribution
+
+
+IQ scores are normally distributed with a mean of 100 and a standard deviation of 15.
+
+Let's generate/simulate some random IQ scores and visualize the distribution.
+
+
+
+```{r normal_data}
+
+set.seed(123)  # for reproducibility
+n <- 1000
+
+# Generate random IQ scores
+iq_scores <- rnorm(n, mean = 100, sd = 15)
+
+
+# Visualize the distribution
+hist(iq_scores, 
+     breaks = 30, 
+     main = "Histogram of Simulated IQ Scores", 
+     xlab = "IQ Score")
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 2: Visualzing the distribution of IQ scores with a density plot
+
+
+We can visualize the distribution of IQ scores using a density plot.
+
+
+```{r density_plot}
+
+# Get a range of x values
+x_values <- seq(50, 150, length.out = 1000)
+
+                
+# Calculate the density values for the normal distribution
+density_values <- dnorm(x_values, mean = 100, sd = 15)
+
+
+# Plot the density
+plot(x_values, density_values,
+     type = "l",
+     main = "Density Plot of IQ Scores",
+     xlab = "IQ Score",
+     ylab = "Density")
+
+```
+
+
+We can also overlay the density plot on the histogram of the simulated IQ scores by normalizing the histogram so that the area sums to 1.
+
+
+```{r overlay_density}
+
+# Plot the histogram with density
+hist(iq_scores,
+     breaks = 50,
+     probability = TRUE,  # normalize the histogram
+     main = "Histogram of Simulated IQ Scores with Density Overlay",
+     xlab = "IQ Score")
+
+
+# Overlay the density plot - lines() adds to the previous plot
+lines(x_values, density_values, col = "red")
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 3: Calculating probabilities using the normal distribution
+
+We can calculate probabilities using the normal distribution. For example, what is the probability that a randomly selected individual has an IQ score less than 120?
+
+
+```{r calculate_probability}
+
+# Calculate the probability
+probability <- pnorm(120, mean = 100, sd = 15)
+
+probability
+
+
+# we can viaulize this using the mosaic package xpnorm function
+# mosaic::xpnorm(120, mean = 100, sd = 15)
+
+
+```
+
+
+We can also get probability ranges by subtracting cumulative probabilities.
+
+What is the probability that a randomly selected individual has an IQ score between 85 and 115?
+
+
+```{r calculate_probability_range}
+
+# Calculate the probability
+
+probability_range <- pnorm(115, mean = 100, sd = 15) - pnorm(85, mean = 100, sd = 15)
+
+probability_range
+
+
+
+
+# we can viaulize this on a density plot 
+plot(x_values, density_values,
+     type = "l",
+     xlab = "IQ Score",
+     ylab = "Density")
+
+abline(v = c(85, 115), col = "red")
+abline(h = 0, col = "black")
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 4: The standard normal distribution
+
+The standard normal distribution is a special case of the normal distribution 
+where the mean is 0 and the standard deviation is 1.
+
+
+
+
+$\\$
+
+
+
+
+### Part 4.1: Converting data from an arbitrary normal distribution to a standard normal distribution
+
+We can convert any normal distribution to the standard normal distribution using
+the z-score formula: $$ z = \frac{x - \mu}{\sigma} $$
+
+Where: 
+- `z` is the z-score
+- `x` is the value from the original normal distribution
+- $\mu$ is the mean of the original normal distribution
+- $sigma$ is the standard deviation of the original normal distribution
+
+Let's say we have an IQ score of 112. What is the corresponding z-score?
+
+```{r z_score}
+
+
+# Given IQ score
+x <- 112
+
+
+# Mean and standard deviation of the IQ distribution
+mu <- 100
+sigma <- 15
+
+
+# Calculate the z-score
+z <- (x - mu) / sigma
+z
+
+
+# Now, let's find the probability of having an IQ score greater than 130 using the z-score
+probability_z <- pnorm(z, mean = 0, sd = 1, lower.tail = FALSE)
+
+
+```
+
+
+
+$\\$
+
+
+
+### Part 4.2: Converting many data points to a standard normal distribution 
+
+We can also convert many data points from an arbitrary normal distribution to a
+standard normal distribution. 
+
+
+```{r zscore_many_points}
+
+set.seed(100)
+
+
+# generate 1000 random IQ scores
+many_iq_scores <- rnorm(1000, 100, 15)
+
+# visualize these IQ scores
+hist(many_iq_scores, breaks = 50,
+     xlab = "IQ scores",
+     main = "1000 random IQ scores")
+
+
+
+# convert these scores to z-scores
+iq_z_scores <- (many_iq_scores - 100)/15
+
+# visualize these z-scores
+hist(iq_z_scores, breaks = 50,
+     xlab = "Z-scores",
+     main = "IQ scores converted to z-scores")
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Part 4.3: Converting from a standard normal distribution to an arbitrary normal distribution
+
+
+We can also convert z-scores back to the original normal distribution using the formula:
+$$ X = z \cdot \sigma + \mu $$
+
+
+Let's say we have a z-score of 2.2. What is the corresponding IQ score?
+
+```{r z_to_x}
+
+# Given z-score
+z_value <- 2.2
+
+# Convert z-score back to IQ score
+
+x_value <- z_value * sigma + mu
+x_value
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+
