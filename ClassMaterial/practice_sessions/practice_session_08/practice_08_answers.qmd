@@ -48,7 +48,7 @@ $$
 
 $\\$
 
-## Exercise 1 : Practice with `rnorm`, `pnorm`, and  `cnorm`
+## Exercise 1.  Practice with `rnorm`, `pnorm`, and  `cnorm`
 
 a.Using the `rnorm`, generate 100 random observations from a normal distribution. What are the default mean and standard deviation values? Plot a histogram of the data.
 
@@ -95,7 +95,7 @@ pnorm(7, mean = 10, sd = 5)
 
 
 
-c. Using the `pnorm` function with $\mu = 10$ and $\sigma = 5$, calculate the probability of observing a value less 15 but greater than 11.
+e. Using the `pnorm` function with $\mu = 10$ and $\sigma = 5$, calculate the probability of observing a value less 15 but greater than 11.
 
 ```{r}
 pnorm(15, mean = 10, sd = 5) - pnorm(11, mean = 10, sd = 5)
@@ -103,7 +103,7 @@ pnorm(15, mean = 10, sd = 5) - pnorm(11, mean = 10, sd = 5)
 
 
 
-d. Using the `cnorm` function with $\mu = 10$ and $\sigma = 5$, find the population values corresponding to a two-sided 95% interval.
+f. Using the `cnorm` function with $\mu = 10$ and $\sigma = 5$, find the population values corresponding to a two-sided 95% interval.
 
 ```{r}
 
@@ -116,7 +116,7 @@ $\\$
 
 
 
-## Exercise 2:  Z-Scores and the Standard Normal Distribution
+## Exercise 2.  Z-Scores and the Standard Normal Distribution
 
 a. Generate 1000 random observations from a normal distribution with mean 10 and standard deviation 2. Save the result to the variable `norm_data`
 
@@ -171,7 +171,7 @@ This histogram is centered at 0, and has a smaller spread than the first histogr
 $\\$
 
 
-### Exercise 3:  Confidence Interval. ICU Patients 
+## Exercise 3.  Confidence Interval With ICU Patients 
 
 Survival of ICU Patients in the dataset `ICUAdmissions` includes information on 200 patients admitted to an Intensive Care Unit. One of the variables, `Status`, indicates whether each patient lived (indicated with a 0) or died (indicated with a 1).\ 
 
@@ -206,7 +206,7 @@ We are $95 \%$ confident that the proportion of ICU patients (at this hospital) 
 
 $\\$
 
-### Exercise 4: Hypothesis Test. Is B a Good Choice on a Multiple-Choice Exam?
+## Exercise 4. Hypothesis Test: Is B a Good Choice on a Multiple-Choice Exam?
 
 Multiple-choice questions on Advanced Placement exams have five options: A, B, C, D, and E. A random sample of the correct choice on 400 multiple-choice questions on a variety of AP exams shows that B was the most common correct choice, with 90 of the 400 questions having B as the answer.\
 
@@ -255,7 +255,7 @@ $\\$
 
 # Extra Practices: 
 
-### Exercise 5: Incentives for Quitting Smoking: Do They Work?
+## Exercise 5. Incentives for Quitting Smoking: Do They Work?
 
 With no incentives, the proportion of smokers trying to quit who are still abstaining six months later is about 0.06. Participants in the study were randomly assigned to one of four different incentives, and the proportion successful was measured six months later. Of the 498 participants in the group with the least success, 47 were still abstaining from smoking six months later. We wish to test to see if this provides evidence that even the smallest incentive works better than the proportion of 0.06 with no incentive at all.
 
@@ -362,8 +362,7 @@ The p-values are close, as we expect. In every case, at a $5 \%$ level, we rejec
 
 
 
-
-## exercise 6:  Introduction to the Central Limit Theorem
+## Exercise 6.   Introduction to the Central Limit Theorem
 
 a. Using the `rexp()` function, generate 1000 observations from an exponential distribution with `rate = 1` (the default). Save this vector as the variable `exp_data`.
 ```{r}
