@@ -105,8 +105,8 @@ pnorm(15, mean = 10, sd = 5) - pnorm(11, mean = 10, sd = 5)
 
 f. Using the `cnorm` function with $\mu = 10$ and $\sigma = 5$, find the population values corresponding to a two-sided 95% interval.
 
-```{r}
-library(mosaic)
+```{r, warning=F}
+suppressPackageStartupMessages({library(mosaic)})
 cnorm(0.95, mean = 10, sd = 5)
 ```
 
