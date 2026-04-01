@@ -144,6 +144,7 @@ b.Create a histogram of `norm_data`.
 
 c. Convert `norm_data` into a vector of Z-scores using the following formula. Call this vector `z_data`.
 
+$$Z = \frac{x - \bar{x}}{s}$$
 
 
 ```{r}
