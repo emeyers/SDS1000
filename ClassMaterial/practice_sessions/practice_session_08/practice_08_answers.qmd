@@ -105,9 +105,8 @@ pnorm(15, mean = 10, sd = 5) - pnorm(11, mean = 10, sd = 5)
 
 f. Using the `cnorm` function with $\mu = 0$ and $\sigma = 1$, find the **critical value**  corresponding to 95% confidence interval.
 
-```{r, warning=F}
-suppressPackageStartupMessages({library(mosaic)})
-cnorm(0.95, mean = 10, sd = 5)
+```{r}
+cnorm(0.95, mean = 0, sd = 1)
 ```
 
 $\\$
@@ -127,7 +126,7 @@ norm_data <-  rnorm(1000, mean = 10, sd = 2)
 
 
 
-b.Create a histogram of `norm_data`.  
+b. Create a histogram of `norm_data`.  
 
 ```{r}
 hist(norm_data)
