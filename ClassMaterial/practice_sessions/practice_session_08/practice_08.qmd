@@ -53,7 +53,7 @@ $\\$
 
 ## Exercise 1.  Practice with `rnorm`, `pnorm`, and  `cnorm`
 
-a.Using the `rnorm`, generate 100 random observations from a normal distribution. What are the default mean and standard deviation values? Plot a histogram of the data.
+a. Using the `rnorm`, generate 100 random observations from a normal distribution. What are the default mean and standard deviation values? Plot a histogram of the data.
 
 
 ```{r}
@@ -105,7 +105,7 @@ e. Using the `pnorm` function with $\mu = 10$ and $\sigma = 5$, calculate the pr
 
 
 
-f. Using the `cnorm` function with $\mu = 10$ and $\sigma = 5$, find the population values corresponding to a two-sided 95% interval.
+f. Using the `cnorm` function with $\mu = 0$ and $\sigma = 1$, find the **critical value**  corresponding to 95% confidence interval.
 
 
 ```{r}
@@ -132,7 +132,7 @@ a. Generate 1000 random observations from a normal distribution with mean 10 and
 
 
 
-b.Create a histogram of `norm_data`.  
+b. Create a histogram of `norm_data`.  
 
 
 ```{r}
