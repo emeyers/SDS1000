@@ -1,0 +1,412 @@
+---
+title: "Class 20 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+# Part 1: Inference using the normal distribution
+
+We can use the normal distribution to perform inference about population parameters
+based on sample statistics.
+
+
+
+$\\$
+
+
+
+
+
+## Example: Do goalies guess the direction of a penalty shot less than 50% of the time? 
+
+
+From 1982 to 1994 there were 128 penalty shots in the World Cup.  
+Goal keepers correctly guessed the direction 41% of the time. Please run a 
+hypothesis test to assess whether goalies guessed the correct direction of the
+kick less than 50% of the time. 
+
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+### Step 2: Calculate the observed statistic (and check conditions are met)
+
+We can calculate the z-statistic using the formula: 
+
+$$z = \frac{\hat{p} - \pi_0}{SE} $$
+
+where:
+
+$$SE = \sqrt{\frac{\pi_0 \cdot (1 - \pi_0)}{n}}$$
+
+
+
+```{r}
+
+library(SDS1000)
+
+
+
+# step 2: calculate the z-statistic
+
+
+
+
+
+
+
+
+# check conditions are met
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 3: Visualize the null distribution
+
+Our null distribution is the standard normal distribution.We can visualize this
+null distribution using `dnorm()` function.
+
+
+```{r}
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+### Step 4: Calculate the p-value using the standard normal distribution 
+
+Since our conditions were met, we cna use the standard normal distribution as 
+our null distribution. Thus we can get p-values using the `pnorm()` function. 
+
+
+```{r}
+
+
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+### Step 5:  Make a decision 
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+# Part 2: Parametric confidence intervals for proportions
+
+
+A survey asked 2625 people whether they agreed with the statement 
+"There is only one true love for each person". 1812 of the respondents disagreed.
+
+Please compute a 90% confidence interval for the proportion who disagreed.
+
+Recall that the the formula for an estimate of the standard error for a proportion
+is:
+
+$$\hat{SE} = \sqrt{ \frac{\hat{p} \cdot (1 - \hat{p}) }{n}}$$
+And a confidence interval is given by: 
+
+$$\hat{p} \pm z^* \cdot \hat{SE}$$
+
+```{r}
+
+# The data
+
+
+
+
+
+
+# Checking conditions 
+
+
+
+
+
+# calculate the SE estimate
+
+
+
+
+
+# create the confidence interval
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+# Part 3: Practice problem - sinister lawyers
+
+
+10% of American population is left-handed. 
+
+A study found that out of a random sample of 105 lawyers, 16 were left-handed
+
+Test whether the proportion of left-handed lawyers is greater than the proportion 
+found in the American population. 
+
+
+
+$\\$
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 2: Calculate the observed statistic (and check conditions are met)
+
+We can calculate the z-statistic using the formula: 
+
+$$z = \frac{\hat{p} - \pi_0}{SE} $$
+
+where:
+
+$$SE = \sqrt{\frac{\pi_0 \cdot (1 - \pi_0)}{n}}$$
+
+
+
+```{r}
+
+# step 2: calculate the z-statistic
+
+
+
+
+
+
+
+
+
+# check conditions are met
+
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 3: Visualize the null distribution
+
+Our null distribution is the standard normal distribution.We can visualize this
+null distribution using `dnorm()` function.
+
+
+```{r}
+
+
+
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+### Step 4: Calculate the p-value using the standard normal distribution 
+
+Since our conditions were met, we can use the standard normal distribution as 
+our null distribution. Thus we can get p-values using the `pnorm()` function. 
+
+
+```{r}
+
+
+
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+### Step 5:  Make a decision 
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+## Practice: confidence interval for sinister lawyers
+
+
+Please compute a 95% confidence interval for the proportion of lawyers who are left-handed.
+
+Recall that the the formula for an estimate of the standard error for a proportion
+is:
+
+$$\hat{SE} = \sqrt{ \frac{\hat{p} \cdot (1 - \hat{p}) }{n}}$$
+And a confidence interval is given by: 
+
+$$\hat{p} \pm z^* \cdot \hat{SE}$$
+
+```{r}
+
+# The data
+
+
+
+
+
+
+# Checking conditions 
+
+
+
+
+
+
+# calculate the SE estimate
+
+
+
+
+
+
+
+# create the confidence interval
+
+
+
+
+
+
+```
+
+
+Q: What does the ocnfidence interval tell you? 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

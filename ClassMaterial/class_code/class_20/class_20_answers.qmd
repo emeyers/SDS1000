@@ -1,0 +1,418 @@
+---
+title: "Class 20 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+# Part 1: Inference using the normal distribution
+
+We can use the normal distribution to perform inference about population parameters
+based on sample statistics.
+
+
+
+$\\$
+
+
+
+
+
+## Example: Do goalies guess the direction of a penalty shot less than 50% of the time? 
+
+
+From 1982 to 1994 there were 128 penalty shots in the World Cup.  
+Goal keepers correctly guessed the direction 41% of the time. Please run a 
+hypothesis test to assess whether goalies guessed the correct direction of the
+kick less than 50% of the time. 
+
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+
+$H_0: \pi$ = .5
+$H_A: \pi$ < .5
+
+
+
+$\\$
+
+
+
+
+### Step 2: Calculate the observed statistic (and check conditions are met)
+
+We can calculate the z-statistic using the formula: 
+
+$$z = \frac{\hat{p} - \pi_0}{SE} $$
+
+where:
+
+$$SE = \sqrt{\frac{\pi_0 \cdot (1 - \pi_0)}{n}}$$
+
+
+
+```{r}
+
+library(SDS1000)
+
+
+
+# step 2: calculate the z-statistic
+
+SE <- sqrt( (.5 * (1-.5)) / 128)
+
+z_stat <- (.41 - .5)/SE
+
+
+
+
+# check conditions are met
+
+128 * .5
+
+128 * (1 - .5)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 3: Visualize the null distribution
+
+Our null distribution is the standard normal distribution.We can visualize this
+null distribution using `dnorm()` function.
+
+
+```{r}
+
+
+x_values_null <- seq(-4, 4, length.out = 1000)
+density_values_null <- dnorm(x_values_null, mean = 0, sd = 1)
+
+
+plot(x_values_null, density_values_null, type = "l",
+     main = "Null Distribution of Z-statistic",
+     xlab = "Z-score", 
+     ylab = "Density", 
+     col = "blue")
+
+
+abline(v = z_stat, col = "red", lwd = 2)
+
+
+```
+
+
+
+$\\$
+
+
+
+### Step 4: Calculate the p-value using the standard normal distribution 
+
+Since our conditions were met, we cna use the standard normal distribution as 
+our null distribution. Thus we can get p-values using the `pnorm()` function. 
+
+
+```{r}
+
+
+p_value <- pnorm(z_stat, 0, 1, lower.tail = TRUE)
+
+p_value
+
+
+```
+
+
+
+$\\$
+
+
+
+### Step 5:  Make a decision 
+
+
+Since our p-value is less than 0.05 we would reject the null hypothesis and
+conclude that goalies guess the direction of a penalty shot less than 50% of the
+time.
+
+
+
+
+
+$\\$
+
+
+
+
+# Part 2: Parametric confidence intervals for proportions
+
+
+A survey asked 2625 people whether they agreed with the statement 
+"There is only one true love for each person". 1812 of the respondents disagreed.
+
+Please compute a 90% confidence interval for the proportion who disagreed.
+
+Recall that the the formula for an estimate of the standard error for a proportion
+is:
+
+$$\hat{SE} = \sqrt{ \frac{\hat{p} \cdot (1 - \hat{p}) }{n}}$$
+And a confidence interval is given by: 
+
+$$\hat{p} \pm z^* \cdot \hat{SE}$$
+
+```{r}
+
+# The data
+n <- 2625
+p_hat <- 1812/n
+
+p_hat
+
+
+# Checking conditions 
+n * p_hat
+n * (1 - p_hat)
+
+
+# calculate the SE estimate
+
+SE <- sqrt(  (p_hat * (1 - p_hat)) /n  )
+SE 
+
+
+# create the confidence interval
+
+CI_lower <- p_hat - cnorm(.9) * SE
+CI_upper <- p_hat + cnorm(.9) * SE
+
+c(CI_lower, CI_upper )
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+# Part 3: Practice problem - sinister lawyers
+
+
+10% of American population is left-handed. 
+
+A study found that out of a random sample of 105 lawyers, 16 were left-handed
+
+Test whether the proportion of left-handed lawyers is greater than the proportion 
+found in the American population. 
+
+
+
+$\\$
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+$H_0: \pi = 0.10$
+
+$H_A: \pi > 0.10$
+
+
+$\\$
+
+
+
+
+
+### Step 2: Calculate the observed statistic (and check conditions are met)
+
+We can calculate the z-statistic using the formula: 
+
+$$z = \frac{\hat{p} - \pi_0}{SE} $$
+
+where:
+
+$$SE = \sqrt{\frac{\pi_0 \cdot (1 - \pi_0)}{n}}$$
+
+
+
+```{r}
+
+# step 2: calculate the z-statistic
+
+n <- 105
+p_hat <- 16/105
+p_hat
+
+
+SE <- sqrt( (p_hat * (1 - p_hat)) / n) 
+SE
+
+
+z_stat <- (p_hat - .1)/SE
+z_stat
+
+
+
+# check conditions are met
+
+105 * .1
+105 * (1 - .1)
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 3: Visualize the null distribution
+
+Our null distribution is the standard normal distribution.We can visualize this
+null distribution using `dnorm()` function.
+
+
+```{r}
+
+x_values_null <- seq(-4, 4, length.out = 1000)
+density_values_null <- dnorm(x_values_null, mean = 0, sd = 1)
+
+
+plot(x_values_null, density_values_null, type = "l",
+     main = "Null Distribution of Z-statistic",
+     xlab = "Z-score", 
+     ylab = "Density", 
+     col = "blue")
+
+
+abline(v = z_stat, col = "red", lwd = 2)
+
+
+```
+
+
+
+$\\$
+
+
+
+### Step 4: Calculate the p-value using the standard normal distribution 
+
+Since our conditions were met, we can use the standard normal distribution as 
+our null distribution. Thus we can get p-values using the `pnorm()` function. 
+
+
+```{r}
+
+
+p_value <- pnorm(z_stat, 0, 1, lower.tail = FALSE)
+
+p_value
+
+
+```
+
+
+
+$\\$
+
+
+
+### Step 5:  Make a decision 
+
+
+Since our p-value is slightly more than 0.05 we fail to reject the null hypothesis.
+Thus we can't conclude that lawyers are more sinister. If we wanted to show this,
+we would have to redo our whole experiment with a larger sample size and then
+perhaps we would be able to reject the null hypothesis. 
+
+
+
+$\\$
+
+
+
+## Practice: confidence interval for sinister lawyers
+
+
+Please compute a 95% confidence interval for the proportion of lawyers who are left-handed.
+
+Recall that the the formula for an estimate of the standard error for a proportion
+is:
+
+$$\hat{SE} = \sqrt{ \frac{\hat{p} \cdot (1 - \hat{p}) }{n}}$$
+And a confidence interval is given by: 
+
+$$\hat{p} \pm z^* \cdot \hat{SE}$$
+
+```{r}
+
+# The data
+n <- 105
+p_hat <- 16/n
+
+p_hat
+
+
+# Checking conditions 
+n * p_hat
+n * (1 - p_hat)
+
+
+# calculate the SE estimate
+
+SE <- sqrt(  (p_hat * (1 - p_hat)) /n  )
+SE 
+
+
+# create the confidence interval
+
+CI_lower <- p_hat - cnorm(.95) * SE
+CI_upper <- p_hat + cnorm(.95) * SE
+
+c(CI_lower, CI_upper )
+
+
+```
+
+
+Q: What does the ocnfidence interval tell you? 
+
+
+A: Somewhere between 8.3% and 22.1% of lawyers are left-handed (so it is feasible
+that 10% of lawyers are left-handed)
+
+
+
+
+
+
+
+
+
+
+
