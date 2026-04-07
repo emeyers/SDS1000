@@ -260,12 +260,13 @@ $$SE = \sqrt{\frac{\pi_0 \cdot (1 - \pi_0)}{n}}$$
 
 # step 2: calculate the z-statistic
 
+pi_0 <- .1
 n <- 105
 p_hat <- 16/105
 p_hat
 
 
-SE <- sqrt( (p_hat * (1 - p_hat)) / n) 
+SE <- sqrt( (pi_0  * (1 - pi_0 )) / n) 
 SE
 
 
