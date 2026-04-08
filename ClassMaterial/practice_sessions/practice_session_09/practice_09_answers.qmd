@@ -9,92 +9,102 @@ editor_options:
 
 # Introduction 
 
-The **Central Limit Theorem** for Sample Means indicates that if the sample size $n$ is large, the distribution of sample means from a population with mean $\mu$ and standard deviation $\sigma$ is approximately normally distributed with mean $\mu$ and standard deviation $\sigma / \sqrt{n}$.
+The **Central Limit Theorem** for Sample Means indicate that if the sample size $n$ is large, the distribution of sample means from a population with mean $\mu$ and standard deviation $\sigma$ is approximately normally distributed with mean $\mu$ and standard deviation $\sigma / \sqrt{n}$.
 
-Unfortunately, we find two difficulties when trying to use this result in practice. First, we generally don't know the standard deviation $\sigma$. This means that we need to use the standard deviation from the sample, $s$, when estimating the standard error of the sample means.
+Unfortunately, we find two difficulties when trying to use this result in practice. First, we generally don't know the standard deviation $\sigma$, so we can just use the standard deviation from the sample, $s$, when estimating the standard error of the sample means.
 
 $$
 SE=\frac{s}{\sqrt{n}}
 $$
+The Second difficulty  is that when we use the   $SE=\frac{s}{\sqrt{n}}$  to estimate the standard error of the sampling distribution of the means, the distribution is no longer  normal. The result is known as a **t-distribution** with **degrees of freedom**, df= n-1. 
 
-The second difficulty is that when we use the $SE = \frac{s}{\sqrt{n}}$ to estimate the standard error of the sampling distribution of the means, the distribution of our test statistic is no longer normal. The resulting distribution that our test statistic follows is known as a **t-distribution** with **degrees of freedom** $df = n-1$. 
-
+$\\$
 
 ## 1. Single Mean
 
-Let $\bar{x}$ be the sample mean, and $s$ be the sample standard deviation. Let $t^*$ be the critical value from the t-distribution with $df=n-1$ that corresponds to our confidence level and/or significance level. Suppose that the distribution of the population is approximately normal and/or the sample size is sufficiently large.
+Let $\bar{x}$ and $s$ be the sample mean and standard deviation, respectively. $t^*$ is an endpoint chosen from a t-distribution with $df=n-1$. And if the distribution of the population is approximately normal or the sample size is large.
 
-* **Confidence Interval for a One Mean**
 
-The confidence interval for the population mean, $\mu$, is given by:
+* **CI for a One Mean**
+
+The confidence interval for the population mean, $\mu$, is
 
 $$
 \bar{x} \pm t^* \cdot \frac{s}{\sqrt{n}}
 $$
 
-* **Hypothesis Test for One Mean: T-Test**
 
-To test $H_{\mathrm{0}}: \mu=\mu_{\mathrm{0}}$ vs $H_a: \mu \neq \mu_{\mathrm{0}}$ (or a one-tail alternative), we compute the following test statistic:
+* **Hypothesis Test for a One Mean: T- Test**
+
+To test $H_{\mathrm{0}}: \mu=\mu_{\mathrm{0}}$ vs $H_a: \mu \neq \mu_{\mathrm{0}}$ (or a one-tail alternative) use the t -test statistic as follows: 
 
 $$
 t=\frac{\text { Statistic }- \text { Null value }}{S E}=\frac{\bar{x}-\mu_0}{s / \sqrt{n}}
 $$
 
-where the p-value of the test is computed using the appropriate tail(s) of a t-distribution with $n-1$ degrees of freedom.
+where  the p -value of the test is computed using the appropriate tail(s) of a t -distribution with $n-1$ degrees of freedom.
+
 
 $\\$
 
-# 2. Inference for Difference of Two Means
 
-Consider two populations. Assume each population is approximately normally distributed, or that both of our samples are sufficiently large. Let $\bar{x}_1$ and $\bar{x}_2$ be the sample means means, $s_1$ and $s_2$ be the sample standard deviations, and $n_1$ and $n_2$ be the sample sizes, respectively. 
+# 2. Inference for Difference in Two Means
 
- * **Confidence Interval for Difference of Two Means**
+Consider two population approximately normally distributed or the two sample sizes are large. Where $\bar{x}_1$ and $\bar{x}_2$ are the means, $s_1$ and $s_2$ are the standard deviations, and the samples of sizes $n_1$ and $n_2$ respectively. 
+
+
+
+ * **Confidence Interval for Difference in Two Means**
  
-The confidence interval for the difference of two means, $\mu_1 - \mu_2$, is given by:
+The confidence interval for the difference in two population means, $\mu_1-\mu_2$, is
 
 $$
 \left(\bar{x}_1-\bar{x}_2\right) \pm t^* \cdot \sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}}
 $$
 
-where **$t^*$** is an endpoint chosen from a t-distribution with df = $\min (n_1-1, n_2-1)$.
+where **$t^*$** is an endpoint chosen from a t-distribution with df = min ( $n_1-1$, $n_2-1$ ) .
 
-* **Hypothesis Test for Difference of Two Means (Two-Sample t-Test )**
+
+
+
+* **Hypothesis Test for Difference in Two  Means (Two-Sample t-Test )**
 
 To test $H_{\mathrm{O}}: \mu_1=\mu_2$ vs $H_a: \mu_1 \neq \mu_2$ (or one-tail test), we use two-sample t -statistic: 
 
 $$
 t=\frac{\text { Statistic }- \text { Null value }}{S E}=\frac{\left(\bar{x}_1-\bar{x}_2\right)-0}{\sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}}}
 $$
-we use a t -distribution to find the p-value  with df = min ( $n_1-1$, $n_2-1$ ). 
-
+we use a t -distribution to find the p -value  with df = min ( $n_1-1$, $n_2-1$ ). 
 
 $\\$
 
 
-# 3. Inference for Difference of Means with **Paired Data**
+# 3. Inference for  Difference in Means with **Paired Data**
 
-* **Confidence Interval for Difference of Means with Paired Data** 
+* **CI for Difference in Means with Paired Data** 
 
-To estimate the difference in means based on paired data, we first subtract to compute the difference for each data pair and compute the mean $\bar{x}_d$, the standard deviation $s_d$, and the sample size $n_d$ for the sample differences. As before, we need the differences to be approximately normally distributed (or the sample size to be sufficiently large).
+To estimate the difference in means based on paired data, we first subtract to compute the difference for each data pair and compute the mean $\bar{x}_d$, the standard deviation $s_d$, and the sample size $n_d$ for the sample differences.Provided the differences are reasonably normally distributed (or the sample size is large).
 
-The confidence interval for the difference in means is given by:
+The  confidence interval for the difference in means is given by:
 
 $$
-\text { Statistic } \pm t^* \cdot S E=\bar{x}_d \pm t^* \frac{s_d}{\sqrt{n_d}}
+\text { Statistic } \pm t^* \cdot S E=\bar{x}_{diff} \pm t^* \frac{s_{diff}}{\sqrt{n_{diff}}}
 $$
 
-where $t^*$ is a percentile from a t-distribution with $df = n_d - 1$.
+where $t^*$ is a percentile from a t -distribution with $n_d-1$ degrees of freedom.
 
 
-* **Hypothesis Test for Difference of Means with Paired Data** 
+* **Hypothesis Test for Difference in Means with Paired Data** 
 
 To test $H_{\mathrm{o}}: \mu_d=\mathrm{o}$ vs $H_a: \mu_d \neq \mathrm{o}$ (or one-tail test) we use the t-test statistic:
 
 $$
-t=\frac{\text { Statistic }- \text { Null value }}{S E}=\frac{\bar{x}_d-0}{s_d / \sqrt{n_d}}
+t=\frac{\text { Statistic }- \text { Null value }}{S E}=\frac{\bar{x}_{diff}-0}{s_{diff} / \sqrt{n_{diff}}}
 $$
 
-If the differences are reasonably normally distributed (or the sample size is sufficiently large), we can use a t-distribution with $n_d-\mathbf{1}$ degrees of freedom to compute a p-value for this test statistic.
+
+If the differences are reasonably normally distributed (or the sample size is large), we use a t-distribution with $n_d-\mathbf{1}$ degrees of freedom to compute a p -value for this test statistic.
+
 
 
 $\\$
@@ -133,11 +143,12 @@ There appears to be one outlier. We might want to investigate this score further
 
 
 
-
 b. Step 1: State the null and alternative hypotheses using symbols.
 
 * $H_0: \mu = 80$
 * $H_A: \mu > 80$
+
+
 
 
 c. Step 2: Calculate the sample statistic.
@@ -146,7 +157,7 @@ c. Step 2: Calculate the sample statistic.
 
 # compute sample mean
 mean_exam1 <-  mean(exam1) 
-mean_exam1 
+
 ```
 
 
@@ -182,9 +193,6 @@ pt(t_stat_exam1, df = n1 - 1, lower.tail = F)
 
 
 
-
-
-
 f. Step 5: State your conclusion.
 
 Since our p-value is greater than 0.05, we will **fail to reject** the null hypothesis. We therefore do not have evidence that student's exam scores are significantly higher than 80.
@@ -207,11 +215,16 @@ abline(v = t_stat_exam1, col = "blue") # add vertical red line
 
 It seems that the sample mean wasn't very far from the null value of 80, which supports the lack of significance in our test.
 
+
+
 $\\$
+
+
 
 # Exercise 2: Two Sample t-test
 
-The same local statistics instructor believes that students perform differently on the two exams, `Exam1` , and  `Exam2`.  Again, the data is available in the `StatsGrades`  from the `Lock5Data` library. Visualize the data of `Exam2`.
+The same local statistics instructor believes that students perform  differently on the two exams, `Exam1` , and  `Exam2`.  Again, the data is available in the `StatsGrades`  from the `Lock5Data` library. Visualize the data of `Exam2`.
+
 
 ```{r}
 library(SDS1000)
@@ -235,10 +248,6 @@ hist(exam2, xlab = "Exam 2-Exam1  Scores")
 a. Is this research question could be answered with t-test for two independent samples, or, t- test for paired data? 
 
 
-
-
-
-
 This is t- test for paired data.
   
   
@@ -246,10 +255,10 @@ This is t- test for paired data.
 
 b. Step1: State the null and alternative hypotheses using symbols.
 
-Let  $D$ be the true difference between the exam 1 and exam 2 scores. We will perform the following two-sided test:
+Let $ \mu_{diff} $ be the true mean difference between the exam 1 and exam 2 scores. We will perform the following two-sided test:
 
--   $H_0: D = 0$
--   $H_A: D \neq 0$
+-   $H_0: \mu_{diff} = 0$
+-   $H_A: \mu_{diff} \neq 0$
 
 
 
@@ -280,7 +289,7 @@ se_diff <-  sd(diff_exams) / sqrt(n_diff)
 
 # find the t-test statistics for the difference between the two exams
 t_stat_diff <-  mean_diff / se_diff
-t_stat_diff
+
 ```
 
 
@@ -300,11 +309,18 @@ f. Step 5: State your conclusion.
 
 Since our p-value is less than 0.05, we will reject the null hypothesis. We therefore have evidence that students performed differently on the two exams.
 
+
 $\\$
+
+
 
 ## Excersice 3 :  Mental Imaging and Muscle Fatigue
 
-A new study explores how actual muscle fatigue affects mental imaging. Participants were asked to either perform `Actual` pointing motions or to `Mentally` imagine doing the motions. Eight participants were assigned to each group (mental vs actual), and the time in seconds to complete the motions is given in the data set `MentalMuscle`. The participant's ability to perform motions (mental or actual) was measured pre- and post-fatigue. Participants developed muscle fatigue by holding a heavy weight outwards for as long as they could. After becoming fatigued, they were asked to repeat the previous mental or actual motions. Use a 5% significance level for the tests.
+A new study explores how actual muscle fatigue affects mental imaging. Participants were asked to either perform `Actual` pointing motions or to `Mental` imagining equivalent arm pointing motions. 
+
+
+Participants then developed muscle fatigue by holding a heavy weight out horizontally as long as they could. After becoming fatigued, they were asked to repeat the previous mental or actual motions. Eight participants were assigned to each group, and the time in seconds to complete the motions is given in data  `MentalMuscle`. Use a 5% significance level for the tests.
+
 
 *Note*: Data is approximated from this research paper.
 Demougeot, L., and Papaxanthis, C., *Muscle Fatigue Affects Mental Simulation of Action*, The Journal of Neuroscience, 2011;31(29): 10712–20. [Link](https://www.jneurosci.org/content/31/29/10712).
@@ -319,11 +335,13 @@ data(MentalMuscle)
 mental_muscule <- na.omit(MentalMuscle)
 ```
  
-1. Test to see whether there is a significant difference in mean times between mentally doing the actions and actually doing the actions before any muscle fatigue (pre-fatigue). 
+
+
+1. Test to see whether there is a significant difference in mean times between mentally imaging doing the actions and actually doing the actions before any muscle fatigue (pre-fatigue). 
 
 a. Is this t-test for paired difference in means, or a t-test for two means for two independent samples. 
 
-* This is a t-test for difference in two means for two independent samples, the `Actual` motions vs the `Mental`  imagining`. 
+* This is a t-test for difference in two means for **two independent samples**, the `Actual` motions vs the `Mental`  imagining`. 
 
 
 1.b Step 1:  State the null and alternative hypotheses.
@@ -336,6 +354,8 @@ H_0: & \mu_M- \mu_A =0  \\
 H_a: & \mu_M - \mu_A \neq 0
 \end{array}
 $$
+
+
 
 1.c Step 2: Calculate the statistic of interest. 
 
@@ -385,11 +405,14 @@ pv <- 2 *pt ( 0.3520491, df= 8-1,  lower.tail =F)
 pv
 ```
 
-This is a two-tail test, so the p-value is twice the area above 0.3520 in a t -distribution with $df = 7$. 
+This is a two-tail test, so the p -value is twice the area above 0.3520 in a t -distribution with $d f=7$. 
+
+
 
 f- Step 5: Conclusion
 
-We see that the p-value is $0.73$. This is a very large p-value, so we do not reject $H_0$. There is no convincing evidence at all of a difference between the two groups before muscle fatigue.
+We see that the p -value is $0.73$. This is a very large p -value, so we do not reject $H_0$. There is no convincing evidence at all of a difference between the two groups before muscle fatigue.
+
 
 ```{r}
 # Create sequence of t-values
@@ -401,15 +424,13 @@ plot(t_values, dt_values, type = "l")
 abline(v= c(t_stat_pre_mental_actual, - t_stat_pre_mental_actual) , col = "green2") # add vertical red line
 ```
 
+
+
 2. Now test to see whether people who mentally perform the motions are faster, on average, at `mentally imaging` the actions `post-fatigue` than `pre-fatigue`.
 Is this t-test for paired difference in means, or a t-test difference in two means for two independent samples. 
 
 
-**Summarized Answers***
-
-* Since the same 8 people under the the `mental` group  perform the movements twice, once before muscle fatigue and once after. To compare the pre-fatigue and post-fatigue means for those doing mental movements we use a paired difference in means test. 
-
-We compute the differences, `D = PostFatigue − PreFatigue`, using the data for the people doing the `mental imaging`.
+* Since the same 8 people under the the `mental` group  perform the movements twice, once before muscle fatigue and once after. To compare the pre-fatigue and post-fatigue means for those doing mental movements we use a **paired difference in means test**. 
 
 
 a. Step 1:  State the null and alternative hypotheses
@@ -417,14 +438,21 @@ The hypotheses are:
 
 $$
 \begin{array}{ll}
-H_0: & \mu_D = 0 \\
-H_a: & \mu_D < 0
+H_0: & \mu_{diff} = 0 \\
+H_a: & \mu_{diff} < 0
 \end{array}
 $$
 
 Notice that if we had subtracted the other direction (PreFatigue - PostFatigue), the alternative would be in the other direction and all the differences would have the opposite sign, but the results would be identical. 
 
+
+
+
+
+
 b. Step 2:  Calculated the observed statistic
+
+
 
 ```{r}
 
@@ -455,12 +483,12 @@ t_test_diff_mental
 
 
 $$
-t=\frac{\bar{x}_D}{s_D / \sqrt{n_D}}=\frac{-1.2375}{1.538958 / \sqrt{8}}=-2.2743
+t=\frac{\bar{x}_{diff}}{s_{diff} / \sqrt{n_{diff}}}=\frac{-1.2375}{1.538958 / \sqrt{8}}=-2.2743
 $$
 d. Step 4: Find the p-value
 
 
-This is a lower-tail test, so the p-value is the area below -2.28 in a t -distribution with $d f=7$. 
+This is a lower-tail test, so the p -value is the area below -2.28 in a t -distribution with $df=7$. 
 We could find the p-value is 0.028 .
 
 ```{r}
@@ -508,9 +536,11 @@ data(GSWarriors2019)
  
 a. Find a 95% confidence interval for the difference in mean free throw attempts.
 
+
 This question is asking about an estimate and confidence interval for the difference in means, $\mu_H-\mu_A$, where now $\mu$ is the mean number of free throw attempts in a game.
 
-The sample sizes are both more than 30 and the $FTA$ amounts have no outliers,so we use a t-distribution with $41-1=40$ degrees of freedom.
+The sample sizes are both more than 30 and the $FTA$ amounts have no outliers, so we use a t-distribution with $df= 41-1=40$ degrees of freedom.
+
 To find $t^*$ for $95 \%$ confidence interval we use the function`ct` .
 
 ```{r}
@@ -518,7 +548,9 @@ t_cv <- ct(0.95, df= 40, side="both")
 t_cv
 ```
 
+
 Thus, the confidence interval for the difference in mean free throw attempts at home games compared to their road games is: 
+
 
 $$
 \begin{aligned}
@@ -534,3 +566,5 @@ Based on these results we are $95 \%$ sure that the Warriors average between 2.6
 
 
 $\\$
+
+
