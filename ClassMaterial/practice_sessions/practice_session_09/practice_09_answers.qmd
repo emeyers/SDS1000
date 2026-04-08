@@ -137,7 +137,7 @@ There appears to be one outlier. We might want to investigate this score further
 b. Step 1: State the null and alternative hypotheses using symbols.
 
 * $H_0: \mu = 80$
-* $H_A: \mu \neq 80$
+* $H_A: \mu > 80$
 
 
 
