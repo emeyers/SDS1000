@@ -238,9 +238,9 @@ exam2 <- StatGrades$Exam2
 
 diff_ex1_ex2 <- exam2-exam1
 boxplot(exam2-exam1,
-        main= " boxplt of Exam 2-Exam2",
-        ylab = "Exam 2- Exam1 Scores")
-hist(exam2, xlab = "Exam 2-Exam1  Scores")
+        main= " boxplt of Exam 2-Exam 1",
+        ylab = "Exam 2- Exam 1 Scores")
+hist(exam2, xlab = "Exam 2-Exam 1  Scores")
 
 ```
 
@@ -255,7 +255,7 @@ This is t- test for paired data.
 
 b. Step1: State the null and alternative hypotheses using symbols.
 
-Let $ \mu_{diff} $ be the true mean difference between the exam 1 and exam 2 scores. We will perform the following two-sided test:
+Let $\mu_{diff}$ be the true mean difference between the exam 1 and exam 2 scores. We will perform the following two-sided test:
 
 -   $H_0: \mu_{diff} = 0$
 -   $H_A: \mu_{diff} \neq 0$
