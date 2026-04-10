@@ -238,8 +238,8 @@ exam2 <- StatGrades$Exam2
 
 diff_ex1_ex2 <- exam2-exam1
 boxplot(exam2-exam1,
-        main= " boxplt of Exam 2-Exam 1",
-        ylab = "Exam 2- Exam 1 Scores")
+        main= " Boxlot of Exam 2-Exam 1",
+        ylab = "Exam 2-Exam 1 Scores")
 hist(exam2, xlab = "Exam 2-Exam 1  Scores")
 
 ```
