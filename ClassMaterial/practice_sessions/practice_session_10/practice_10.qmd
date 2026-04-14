@@ -1,1 +1,192 @@
+---
+title: "Practice Session 10 Answers"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+# Part 1: The Chi-Squared Test
+
+The Chi-Squared test is an extension of the the test for proportions by allowing for more than two groups. To be clear, the Chi-Squared test is meant to assess differences when our variables are **categorical**. So, you will not perform a Chi-Squared test if your data is purely quantitative. These categorical variables are often measured using "counts", or the total number of observations that fall within a given category.
+
+The test statistic for a Chi-Squared test is given by the following expression:
+
+$$\chi^2 = \sum \frac{(\text { Observed }- \text { Expected })^2}{\text { Expected }}$$
+
+This test statistic follows a Chi-Squared distribution, which, like the t-distribution, depends on the degrees of freedom (df). In general, the Chi-Squared distribution is **right-skewed**, so we only use the **right tail** when calculating p-values.
+
+The main Chi-Squared test that we will consider is the **Chi-Squared test for goodness-of-fit**. For the test of goodness-of-fit, the degrees of freedom is equal to the number of categories ($k$) minus one. Hence, $df = k - 1$. 
+
+## Question 1: Chi-Squared Test for Goodness-of-Fit
+
+Sixty people were asked whether they preferred vanilla, chocolate, or strawberry ice cream and the
+results are shown in the table below. Perform a chi-squared goodness-of-fit test to determine whether the
+flavors are equally popular.
+
+$\\$
+
+\begin{tabular}{|l|c|}
+\hline Flavor & Frequency \\
+\hline Vanilla & 28 \\
+Chocolate & 23 \\
+Strawberry & 9 \\
+\hline TOTAL & 60 \\
+\hline
+\end{tabular}
+
+$\\$
+
+### 5 Steps of Hypothesis Testing for the Chi-Squared Test
+
+1) State the null and alternative hypotheses. Also state the degrees of freedom.
+
+&nbsp;
+
+2) Calculate the Chi-squared test statistic using the formula above. Here are some helpful steps:
+  
+  * a) Compute the expected count for each category 
+  * b) Subtract each expected count from its corresponding observed count, square this difference, and divide by the expected count.
+  * c) Add together the values you computed in step b) to obtain the Chi-Squared statistic
+
+&nbsp;
+
+3) Visualize the null distribution using the `dchisq()` function. Add a red vertical line at the observed test statistic. *Hint: a reasonable range for the sequence values could be 0 to 15.*
+
+&nbsp;
+
+4) Find the p-value using `pchisq()` function. *hint*: find the function in the help page.
+
+&nbsp;
+
+5) Make a judgment and state your conclusion.
+
+$\\$
+
+### Question 2: More Practice with the Chi-Squared Test 
+
+Studies in genetics often involve chi-squared tests. For one gene, we expect $25 \%$ of people to have
+the variant AA, $25 \%$ to have the variant BB , and $50 \%$ to have the variant AB . Observed counts of the three variants in one sample are shown. Do these counts provide evidence that the stated proportions are not right?
+
+$\\$
+
+\begin{tabular}{|c|c|}
+\hline Variant & Frequency \\
+\hline AA & 142 \\
+BB & 121 \\
+AB & 307 \\
+\hline Total & 570 \\
+\hline
+\end{tabular}
+
+$\\$
+
+### 5 Steps of Hypothesis Testing for Chi-Squared Test
+
+1) State the null and alternative hypothesis. Also state the degrees of freedom (df).
+
+&nbsp;
+
+2) Calculate the Chi-squared test statistic using the formula above. Here are some helpful steps:
+  
+  * a) Compute the expected count for each category
+  * b) Subtract each expected count from its corresponding observed count, square this difference, and divide by the expected count
+  * c) Add together the values you computed in step b)
+  
+&nbsp;
+
+3) Visualize the null distribution using the `dchisq()` function. Add a red vertical line at the observed test statistic. *Hint: a reasonable range for the sequence values could be 0 to 8.*
+
+&nbsp;
+
+4) Find the p-value using `pchisq()` function.
+
+&nbsp;
+
+5) Make a judgment and state your conclusion.
+
+$\\$
+
+
+# Part 2: ANOVA Test for Comparing Multiple Means
+
+Similar to the Chi-Squared, the ANOVA is an extension of the test for means by allowing for more than two groups. The ANOVA procedure produces an F-statistic, which follows the aptly named F-distribution. Since larger values of the F-statistic are evidence against the null hypothesis, we only use the right tail when computing p-values. Hopefully you can see the parallels with the Chi-Squared test and distribution. The key difference between the ANOVA and Chi-Squared test is that the ANOVA compares means, so our underlying data is quantitative. Although the groups themselves are differentiated by a categorical variable, the data we work with is quantitative. This is in contrast to the Chi-Squared test, which strictly uses categorical variables and their corresponding counts.
+
+Another important feature of the F-distribution is that it has two parameters, called degrees of freedom 1 ($df_1$) and degrees of freedom 2 ($df_2$). The formula for the first is $df_1 = k - 1$, where $k$ is the number of groups. And the formula for the second is $df_2 = n - k$, where $n$ is the total sample size.
+
+## Question 3: ANOVA
+
+A survey was given to a sample of high school seniors in Pennsylvania. Two of the variables in the survey are `HangHours`, the number of hours per week spent hanging out with friends, and `SchoolPressure`, the amount of pressure felt due to schoolwork (None, Very little, Some, or A lot). The survey data can be found in the dataset `PASeniors` in the `Lock5Data` library.
+
+We wish to test whether the amount of school pressure felt by students is related to the mean time hanging out with friends. 
+
+1) Prepare the data and clean it using `na.omit(my_dataframe)`.
+
+&nbsp;
+
+2) What is the explanatory variable? Is it categorical or quantitative? What is the response variable? Is it categorical or quantitative?
+  
+&nbsp;
+
+3) Find the summary statistics for the groups of `SchoolPressure`, using function `mosaic::favstats(Response ~ grouping, data = my_data)`. Which group has the largest mean and standard deviation?
+
+&nbsp;
+
+### 5 Steps of Hypothesis Testing for ANOVA
+
+ a) State the null and alternative hypotheses. Also state the degrees of freedom.
+ 
+ &nbsp;
+ 
+ b) Calculate the F-statistic using the function `aov(Response ~ grouping, data = my_data)`. Then use the `summary()` function to see the output.
+
+ &nbsp;
+ 
+ c) Visualize the null distribution using the `df()` function. You will need to create a sequence of input values for the x-axis. *Hint: a reasonable range for the sequence could be values from 0 to 5.*
+ 
+ &nbsp;
+ 
+ d) Obtain the p-value both by using the `pf()` function, and by looking at the output from the function `aov(Response ~ grouping, data = my_data)`.
+
+ &nbsp;
+ 
+ e) Make a judgment and state your conclusion.
+
+$\\$
+
+# Part 3: Inference for Linear Regression
+
+Hypothesis testing can be done for more than sample means and proportions. We can also test hypotheses relating to regression parameters, like $\beta_1$, the slope, and $\beta_0$, the y-intercept. The hypotheses typically test whether the parameter is greater than zero, less than zero, or not equal to zero.
+
+# Question 5: Hypothesis Testing for Regression Slope $\beta_1$
+
+Do triples lead to more wins? A "triple" in baseman occurs when a batter hits a ball in play, and is able to advance three bases (i.e., make it to third base). However, triples have become less common due to improvements in defensive positioning and outfielder speed. Perform a hypothesis test to see if hitting more triples is linearly associated with earning more wins. The data is available in the `BaseballHits2014` data set from the `Lock5Data` library.
+
+a) Create a scatterplot to visualize the relationship between `Wins` and `Triples`
+
+&nbsp;
+
+### 5 Steps of Hypothesis Testing for Linear Regression
+
+b) State the null and alternative hypotheses using symbols.
+
+&nbsp;
+
+c) Fit the regression model with `Wins` as the outcome, and `Triples` as the predictor. Extract the slope coefficient by using the `coef()` function, and selecting the second value (e.g., `coef(my_model)[2]`).
+
+&nbsp;
+
+d) 
+
+ * i) Create a null distribution by using the `do_it` function. The approach you will want to take is to fit a regression model inside the `do_it` call (maybe call it `curr_model`), and you will use `Wins` as the outcome, and a shuffled `Triples` as the predictor. You can shuffle the `Triples` variable using the `shuffle()` function. Extract the slope coefficient after fitting each model.
+ * ii) Plot a histogram of your null distribution, and add a red vertical line at the observed slope
+
+&nbsp;
+
+e) Calculate the p-value by seeing the proportion of null values that are more extreme than the one you observed.
+
+&nbsp;
+
+f) State your conclusion.
+
 

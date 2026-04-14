@@ -1,1 +1,384 @@
+---
+title: "Practice Session 10 Answers"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+# Part 1: The Chi-Squared Test
+
+The Chi-Squared test is an extension of the the test for proportions by allowing for more than two groups. To be clear, the Chi-Squared test is meant to assess differences when our variables are **categorical**. So, you will not perform a Chi-Squared test if your data is purely quantitative. These categorical variables are often measured using "counts", or the total number of observations that fall within a given category.
+
+The test statistic for a Chi-Squared test is given by the following expression:
+
+$$\chi^2 = \sum \frac{(\text { Observed }- \text { Expected })^2}{\text { Expected }}$$
+
+This test statistic follows a Chi-Squared distribution, which, like the t-distribution, depends on the degrees of freedom (df). In general, the Chi-Squared distribution is **right-skewed**, so we only use the **right tail** when calculating p-values.
+
+The main Chi-Squared test that we will consider is the **Chi-Squared test for goodness-of-fit**. For the test of goodness-of-fit, the degrees of freedom is equal to the number of categories ($k$) minus one. Hence, $df = k - 1$. 
+
+## Question 1: Chi-Squared Test for Goodness-of-Fit
+
+Sixty people were asked whether they preferred vanilla, chocolate, or strawberry ice cream and the
+results are shown in the table below. Perform a chi-squared goodness-of-fit test to determine whether the
+flavors are equally popular.
+
+$\\$
+
+\begin{tabular}{|l|c|}
+\hline Flavor & Frequency \\
+\hline Vanilla & 28 \\
+Chocolate & 23 \\
+Strawberry & 9 \\
+\hline TOTAL & 60 \\
+\hline
+\end{tabular}
+
+$\\$
+
+### 5 Steps of Hypothesis Testing for the Chi-Squared Test
+
+1) State the null and alternative hypotheses. Also state the degrees of freedom.
+
+**In symbols:**
+
+* **$H_0: \pi_v = \pi_c = \pi_s = 1/3$**
+* **$H_A: \text{At least one}\; \pi_i \neq  1/3$**
+
+**The degrees of freedom are $df = 3 - 1 = 2$, or the number of categories minus one.**
+
+&nbsp;
+
+2) Calculate the Chi-squared test statistic using the formula above. Here are some helpful steps:
+  
+  * a) Compute the expected count for each category 
+  
+   **The expected counts are $60 \cdot \frac{1}{3} = 20$ for each category**
+    
+&nbsp;
+    
+  * b) Subtract each expected count from its corresponding observed count, square this difference, and divide by the expected count. 
+  
+**Note: contributions to the Chi-Squared statistic, $(O-E)^2 / E$, are shown as new columns in the table below.**
+
+\begin{tabular}{|l|c|c|c|}
+\hline Flavor & Observed & Expected & Contribution \\
+\hline Vanilla & 28 & 20 & 3.2 \\
+Chocolate & 23 & 20 & 0.45 \\
+Strawberry & 9 & 20 & 6.05 \\
+\hline TOTAL & 60 & 60 & 9.7 \\
+\hline
+\end{tabular}
+
+&nbsp;
+
+  * c) Add together the values you computed in step b) to obtain the Chi-Squared statistic
+  
+  **Adding the contributions together, we can see that the Chi-Squared statistic is equal to 9.7.**
+
+&nbsp;
+
+3) Visualize the null distribution using the `dchisq()` function. Add a red vertical line at the observed test statistic. *Hint: a reasonable range for the sequence values could be 0 to 15.*
+
+```{r}
+chi_squared_values = seq(0, 15, length.out = 1000)
+density_values = dchisq(chi_squared_values, df = 2)
+
+plot(chi_squared_values, density_values, 
+     main = "Chi-Squared Distribution (df = 2)", type = "l",
+     xlab = "Chi-Squared Values", ylab = "Density")
+
+abline(v = 0)
+abline(v = 9.7, col = "red")
+```
+
+&nbsp;
+
+4) Find the p-value using `pchisq()` function. *hint*: find the function in the help page.
+
+```{r}
+pchisq(9.7, df = 2, lower.tail = F)
+```
+
+**We can see that the p-value is 0.0078.**
+
+&nbsp;
+
+5) Make a judgment and state your conclusion.
+
+**Since our p-value is less than 0.05, we will reject the null hypothesis. We therefore have evidence that the flavors are not equally popular.**
+
+$\\$
+
+### Question 2: More Practice with the Chi-Squared Test 
+
+Studies in genetics often involve chi-squared tests. For one gene, we expect $25 \%$ of people to have
+the variant AA, $25 \%$ to have the variant BB , and $50 \%$ to have the variant AB . Observed counts of the three variants in one sample are shown. Do these counts provide evidence that the stated proportions are not right?
+
+$\\$
+
+\begin{tabular}{|c|c|}
+\hline Variant & Frequency \\
+\hline AA & 142 \\
+BB & 121 \\
+AB & 307 \\
+\hline Total & 570 \\
+\hline
+\end{tabular}
+
+$\\$
+
+### 5 Steps of Hypothesis Testing for Chi-Squared Test
+
+1) State the null and alternative hypothesis. Also state the degrees of freedom (df).
+
+* **$H_0: \pi_{AA} = 0.25,\; \pi_{B B}=0.25,\; \pi_{A B}=0.50$**
+* **$H_A: \pi_{AA} \neq 0.25\; \text{or}\; \pi_{B B} \neq 0.25\; \text{or}\; \pi_{A B} \neq 0.50$**
+
+**The degrees of freedom are $df = 3 - 1 = 2$.**
+
+&nbsp;
+
+2) Calculate the Chi-squared test statistic using the formula above. Here are some helpful steps:
+  
+  * a) Compute the expected count for each category
+  
+  **The expected counts are:**
+  
+  * AA: $570 \cdot 0.25 = 142.5$
+  * BB: $570 \cdot 0.25 = 142.5$
+  * AB: $570 \cdot 0.5 = 285$
+  
+  &nbsp;
+  
+  * b) Subtract each expected count from its corresponding observed count, square this difference, and divide by the expected count
+  
+  \begin{tabular}{|c|c|c|c|}
+  \hline Variant & Frequency & Observed & Contribution \\
+  \hline AA & 142 & 142.5 & 0.00 \\
+         BB & 121 & 142.5 & 3.24 \\
+         AB & 307 & 285 & 1.70 \\
+  \hline Total & 570 & & 4.94 \\
+  \hline
+  \end{tabular}
+
+&nbsp;
+
+  * c) Add together the values you computed in step b)
+  
+    **We see that the chi-squared test statistic is 4.94.**
+
+&nbsp;
+
+3) Visualize the null distribution using the `dchisq()` function. Add a red vertical line at the observed test statistic. *Hint: a reasonable range for the sequence values could be 0 to 8.*
+
+```{r}
+chi_squared_values = seq(0, 8, length.out = 1000)
+density_values = dchisq(chi_squared_values, df = 2)
+
+plot(chi_squared_values, density_values, 
+     main = "Chi-Squared Distribution (df = 2)", type = "l",
+     xlab = "Chi-Squared Values", ylab = "Density")
+
+abline(v = 0)
+abline(v = 4.94, col = "red")
+```
+
+&nbsp;
+
+4) Find the p-value using `pchisq()` function.
+
+```{r}
+pchisq(4.94, df= 2, lower.tail= F)
+```
+ 
+**The p-value is 0.0845.** 
+
+&nbsp;
+
+5) Make a judgment and state your conclusion.
+
+**Since our p-value is greater than 0.05, we will fail to reject the null hypothesis. We therefore do not have evidence to contradict the hypothesized proportions.**
+
+$\\$
+
+
+# Part 2: ANOVA Test for Comparing Multiple Means
+
+Similar to the Chi-Squared, the ANOVA is an extension of the test for means by allowing for more than two groups. The ANOVA procedure produces an F-statistic, which follows the aptly named F-distribution. Since larger values of the F-statistic are evidence against the null hypothesis, we only use the right tail when computing p-values. Hopefully you can see the parallels with the Chi-Squared test and distribution. The key difference between the ANOVA and Chi-Squared test is that the ANOVA compares means, so our underlying data is quantitative. Although the groups themselves are differentiated by a categorical variable, the data we work with is quantitative. This is in contrast to the Chi-Squared test, which strictly uses categorical variables and their corresponding counts.
+
+Another important feature of the F-distribution is that it has two parameters, called degrees of freedom 1 ($df_1$) and degrees of freedom 2 ($df_2$). The formula for the first is $df_1 = k - 1$, where $k$ is the number of groups. And the formula for the second is $df_2 = n - k$, where $n$ is the total sample size.
+
+## Question 3: ANOVA
+
+A survey was given to a sample of high school seniors in Pennsylvania. Two of the variables in the survey are `HangHours`, the number of hours per week spent hanging out with friends, and `SchoolPressure`, the amount of pressure felt due to schoolwork (None, Very little, Some, or A lot). The survey data can be found in the dataset `PASeniors` in the `Lock5Data` library.
+
+We wish to test whether the amount of school pressure felt by students is related to the mean time hanging out with friends. 
+
+1) Prepare the data and clean it using `na.omit(my_dataframe)`.
+
+```{r}
+library(SDS1000)
+library(Lock5Data)
+data(PASeniors)
+
+cPASeniors <- na.omit(PASeniors)
+
+# Remove empty group that appears in boxplots
+cPASeniors$SchoolPressure <- factor(cPASeniors$SchoolPressure, levels = c("A lot", "None", "Some", "Very little"))
+```
+
+&nbsp;
+
+2) What is the explanatory variable? Is it categorical or quantitative? What is the response variable? Is it categorical or quantitative?
+  
+  **The explanatory variable is amount of pressure felt from schoolwork, which is categorical. The response variable is number of hours per week hanging out with friends, which is quantitative.**
+
+&nbsp;
+
+3) Find the summary statistics for the groups of `SchoolPressure`, using function `mosaic::favstats(Response ~ grouping, data = my_data)`. Which group has the largest mean and standard deviation?
+
+```{r}
+#create boxplot for the data
+boxplot(HangHours ~ SchoolPressure, data= cPASeniors)
+
+# find the statistics for the groups
+mosaic::favstats(HangHours ~ SchoolPressure, data= cPASeniors)
+```
+
+**The highest mean (15.91 hours per week hanging with friends) is for the group feeling 'Very little' pressure from schoolwork. The lowest mean (9.866 hours per week hanging out with friends) is for the group feeling 'A lot' of pressure from schoolwork.**
+
+&nbsp;
+
+### 5 Steps of Hypothesis Testing for ANOVA
+
+ a) State the null and alternative hypotheses. Also state the degrees of freedom.
+ 
+**$\begin{array}{ll}H_0: & \mu_1=\mu_2=\mu_3=\mu_4 \\ H_a: & \text { Some } \mu_i \neq \mu_j\end{array}$**
+
+**There are $k = 4$ groups, and the sample size is $n = 355$. Hence, the degrees of freedom are $df_1 = 4 - 1 = 3$ and $df_2 = 355 - 4 = 351$.**
+ 
+ &nbsp;
+ 
+ b) Calculate the F-statistic using the function `aov(Response ~ grouping, data = my_data)`. Then use the `summary()` function to see the output.
+ 
+```{r}
+# create the ANOVA model
+anova_model <- aov(HangHours ~ SchoolPressure, data = cPASeniors)
+
+# summary statistics of the ANOVA model
+summary(anova_model)
+```
+ 
+ **We see in the output that the F-statistic is 2.799.**
+ 
+ &nbsp;
+ 
+ c) Visualize the null distribution using the `df()` function. You will need to create a sequence of input values for the x-axis. *Hint: a reasonable range for the sequence could be values from 0 to 5.*
+ 
+```{r}
+F_values = seq(0, 5, length.out = 1000)
+density_values = df(F_values, df1 = 3, df2 = 351)
+
+plot(F_values, density_values, type = "l",
+     xlab = "F Values", ylab = "Density", 
+     main = "F-Distribution with df1 = 3, df2 = 351")
+
+abline(v =  2.799, col = "red")
+```
+ 
+ &nbsp;
+ 
+ d) Obtain the p-value both by using the `pf()` function, and by looking at the output from the function `aov(Response ~ grouping, data = my_data)`.
+ 
+```{r}
+pf(2.799, df1 = 3, df2 = 351, lower.tail = F)
+```
+ 
+ **Our p-value is around 0.04. And we also see this from the output from `aov()` above.**
+ 
+ &nbsp;
+ 
+ e) Make a judgment and state your conclusion.
+
+  **Since our p-value is less than 0.05, we will reject the null hypothesis. We have evidence of a difference in mean number of hours a week spent hanging out with friends depending on how much stress students feel from schoolwork.**
+
+$\\$
+
+# Part 3: Inference for Linear Regression
+
+Hypothesis testing can be done for more than sample means and proportions. We can also test hypotheses relating to regression parameters, like $\beta_1$, the slope, and $\beta_0$, the y-intercept. The hypotheses typically test whether the parameter is greater than zero, less than zero, or not equal to zero.
+
+# Question 5: Hypothesis Testing for Regression Slope $\beta_1$
+
+Do triples lead to more wins? A "triple" in baseman occurs when a batter hits a ball in play, and is able to advance three bases (i.e., make it to third base). However, triples have become less common due to improvements in defensive positioning and outfielder speed. Perform a hypothesis test to see if hitting more triples is linearly associated with earning more wins. The data is available in the `BaseballHits2014` data set from the `Lock5Data` library.
+
+a) Create a scatterplot to visualize the relationship between `Wins` and `Triples`
+
+```{r}
+library(Lock5Data)
+library(SDS1000)
+plot(BaseballHits2014$Triples, BaseballHits2014$Wins, xlab = "Number of Triples",
+     ylab = "Number of Wins", main = "Wins vs Triples in the 2014 MLB Season")
+```
+
+&nbsp;
+
+### 5 Steps of Hypothesis Testing for Linear Regression
+
+b) State the null and alternative hypotheses using symbols.
+
+* $H_0: \beta_1 = 0$
+* $H_A: \beta_1 > 0$
+
+&nbsp;
+
+c) Fit the regression model with `Wins` as the outcome, and `Triples` as the predictor. Extract the slope coefficient by using the `coef()` function, and selecting the second value (e.g., `coef(my_model)[2]`).
+
+```{r}
+triple_mod = lm(data = BaseballHits2014, Wins ~ Triples)
+obs_beta1 = coef(triple_mod)[2]
+obs_beta1
+```
+
+&nbsp;
+
+d) 
+
+ * i) Create a null distribution by using the `do_it` function. The approach you will want to take is to fit a regression model inside the `do_it` call (maybe call it `curr_model`), and you will use `Wins` as the outcome, and a shuffled `Triples` as the predictor. You can shuffle the `Triples` variable using the `shuffle()` function. Extract the slope coefficient after fitting each model.
+
+```{r}
+null_dist_triples = do_it(10000) * {
+  curr_mod = lm(data = BaseballHits2014, Wins ~ shuffle(Triples))
+  coef(curr_mod)[2]
+}
+```
+
+&nbsp;
+
+ * ii) Plot a histogram of your null distribution, and add a red vertical line at the observed slope
+
+```{r}
+hist(null_dist_triples, main = "Null Distribution of Slope",
+     xlab = "Triples")
+abline(v = obs_beta1, col = "red")
+```
+
+&nbsp;
+
+e) Calculate the p-value by seeing the proportion of null values that are more extreme than the one you observed.
+
+```{r}
+pnull(obs_beta1, null_dist_triples, lower.tail = F)
+```
+
+&nbsp;
+
+f) State your conclusion.
+
+**Since our p-value is greater than 0.05, we will fail to reject the null hypothesis. We therefore do not have evidence that hitting more triples is linearly associated with earning more wins.**
+
+
+
 
