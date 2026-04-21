@@ -1,0 +1,126 @@
+---
+title: "Practice Session 11"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+# Part 1: Theory of Hypothesis Testing
+
+## Introduction to Type I and Type II Errors
+
+In hypothesis testing, we need to decide whether we are going to reject the null hypothesis, or fail to reject the null hypothesis. We sometimes, however, make the wrong decision. The types of mistakes we can make are: 
+
+* Type I error: The null hypothesis is **true** but we mistakenly reject it;  i.e., we report a false result. 
+* Type II error: The null hypothesis is **false**, but we fail to reject it;  i.e., we fail to report a real result.
+
+What we generally try to do is to control for the Type I error rate so we only make Type I errors a small portion of the time (e.g., we only make type I errors 5% percent of the time) The probability that we make a Type I error is also known as the significance level. Typically, we set our significance level to be 0.05 in hypothesis testing (so we are only report 5% false results). 
+
+## Question 1: Type I, Type II, or Neither?
+
+For each of the following statements, decide whether a Type I or a Type II error was made. If no error was made, indicate that no error was committed.
+
+a) Shiba ran a hypothesis test with the following hypotheses:
+
+* $H_0: \mu = 50$
+* $H_A: \mu > 50$
+
+Shiba rejected the null hypothesis. In reality, the true mean is equal to 50.
+
+b) Joe wanted to test if the mean bag weight of Lays Potato chips is less than 5 oz.
+
+* $H_0: \mu = 5$
+* $H_A: \mu < 5$
+
+He failed to reject the null. In reality, the true mean is equal to 5 oz.
+
+c) A test for an infectious disease gives a positive result if a patient is believed to have the disease, and a negative result otherwise. However, the test can sometimes be wrong. Label the following statements as a Type I error, Type II error, or neither. Assume the null hypothesis is that the patient doesn't have the disease.
+
+* A positive test result; the patient actually has the disease 
+* A positive test result; the patient doesn't actually have the disease
+* A negative test result; the patient actually has the disease
+* A negative test result; the patient doesn't actually have the disease
+
+In the context of this question, which error (Type I or Type II) would be more problematic? If you could make one of these errors less likely to occur, which one would it be, and why?
+
+# Part 2: Review of Inference for (Simple) Linear Regression
+
+As we saw last week, hypothesis testing can be done for more than sample means and proportions. We can also test hypotheses relating to regression parameters, like $\beta_1$, the slope, and $\beta_0$, the y-intercept. The hypotheses typically test whether the parameter is greater than zero, less than zero, or not equal to zero. 
+
+# Question 2: Hypothesis Testing for Simple Linear Regression
+
+Do larger countries have more rural land? Investigate this question using the `TenCountries` data set from the `Lock5Data` library. Fit a regression model, and run a hypothesis test to see if countries with more area tend to have a higher percentage of rural land. In other words, run a test to see if the slope coefficient is greater than zero. **Assume that the percent of rural land is the response variable, and the area of the country is the explanatory variable.**
+
+a) First, create a scatterplot to visualize the relationship between `Area` and `PctRural`. Based on this scatterplot, do you think there is a relationship between the variables? Do you think we will be able to reject the null hypothesis?
+
+b) State the null and alternative hypotheses using symbols
+
+c) Fit the regression model with `PctRural` as the outcome, and `Area` as the predictor. Extract the slope coefficient by using the `coef()` function, and selecting the second value (e.g., `coef(my_model)[2]`).
+
+d) Create a null distribution by using the `do_it` function. The approach you will want to take is to fit a regression model inside the `do_it` call (maybe call it `curr_model`), and you will use `PctRural` as the outcome, and a shuffled `Area` as the predictor. You can shuffle the `Area` variable using the `shuffle()` function. Extract the slope coefficient after fitting each model.
+
+e) Plot a histogram of your null distribution, and add a red vertical line at the observed slope
+
+f) Calculate the p-value by seeing the proportion of null values that are more extreme than the one you observed.
+
+g) State your conclusion.
+
+h) A collaborator raises concerns about this analysis. She notes that there is a disagreement between your permutation results, and the output from the `summary()` function. What could be causing this issue? Could there be an issue with the data set that you used?
+
+# Question 3: Additional Hypothesis Testing for Simple Linear Regression
+
+Are taller students worse at math? Data was collected from high school students that included their height and scores on the SAT math section. Fit a regression model and run a hypothesis test to see if taller tend to score worse on the math section. **Assume that SAT math score is the response variable, and student height is the explanatory variable.**\ 
+
+The data is available in the `StudentSurvey` dataset from the `Lock5Data` library. We first will remove missing values from the data set using the `na.omit()` function.
+
+a) First, create a scatterplot to visualize the relationship between `SAT math score (MathSAT)` and `Height`.
+
+b) State the null and alternative hypotheses using symbols
+
+c) Fit the regression model with `Height` as the outcome, and `Weight` as the predictor. Extract the slope coefficient by using the `coef()` function, and selecting the second value (e.g., `coef(my_model)[2]`).
+
+d) Create a null distribution by using the `do_it` function. The approach you will want to take is to fit a regression model inside the `do_it` call (maybe call it `curr_model`), and you will use `MathSAT` as the outcome, and a shuffled `Height` as the predictor. You can shuffle the `Height` variable using the `shuffle()` function. Extract the slope coefficient after fitting each model.
+
+e) Plot a histogram of your null distribution, and add a red vertical line at the observed slope
+
+f) Calculate the p-value by seeing the proportion of null values that are more extreme than the one you observed.
+
+g) State your conclusion.
+
+# Part 3: Inference for (Multiple) Linear Regression
+
+So far, we have fit regression models where we had a single predictor or variable relating to our outcome variable. However, we often are interested in understanding the relationship among the outcome and two or more other variables. Regression with more than one predictor is known as multiple linear regression. 
+
+## Question 4: Hypothesis Testing for Multiple Linear Regression
+
+In this next exercise, we will predict arm span from both height and foot length. A study collected a sample of high school students and measured their arm span, height, and foot length. The data set is called `PASeniors`, and it is located in the `Lock5Data` library.
+
+```{r}
+library(SDS1000)
+library(Lock5Data)
+data(PASeniors)
+
+cPASeniors<- na.omit(PASeniors)
+```
+
+1) Fit a simple linear regression model to predict arm span from height. See the outputs using the `summary()` function.
+
+2) Fit a simple linear regression model to predict arm span from foot length.
+
+3) This question has multiple parts:
+
+a) Find the slope for each model. Which predictor has a larger slope?
+
+b) Find the standard deviation of the error term for each model. Which predictor has a smaller standard deviation for the error term?
+
+c) Find the percentage of variability in arm span that each predictor explains. Which predictor explains more variability?
+
+4) Now fit a multiple linear regression to predict arm span using both height and foot length.
+
+a) What arm span would the fitted model predict for a student who is 180 cm tall and has a foot length of 26 cm?
+
+b) Are height and foot length statistically significant predictors of arm span? Justify your answer.
+
+c) How much of the variability in arm span is explained by the two predictors?
+
