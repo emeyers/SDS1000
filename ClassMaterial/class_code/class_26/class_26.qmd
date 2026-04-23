@@ -1,0 +1,69 @@
+---
+title: "Class 26 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+# Multiple linear regression 
+
+
+In multiple linear regression, we have more than one explanatory variable. The
+model can be written as:
+$$y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... + \beta_p x_p + \epsilon$$
+
+Where:
+- $y$ is the response variable
+- $x_1, x_2, ..., x_p$ are the explanatory variables
+- $\beta_0$ is the intercept
+- $\beta_1, \beta_2, ..., \beta_p$ are the coefficients
+- $\epsilon$ is the error term (i.e., what can't be explained by the linear equation)
+
+
+We can fit multiple linear regression models in R using the `lm()` function,
+just like we did for simple linear regression. We just need to include multiple
+explanatory variables in the formula.
+
+
+Let's use the `FirstYearGPA.rda` dataset that contains data on first year college
+students. We will try to predict their GPA from the following variables: 
+
+- High school GPA (HSGPA)
+- SAT verbal scores (SATV)
+- Number of humanities credits (HU)
+
+
+
+```{r multiple_linear_regression}
+
+# load the data
+load("FirstYearGPA.rda")
+
+
+# fit the multiple linear regression model
+
+
+
+
+
+# summarize the model
+
+
+
+
+```
+
+
+The summary output will show us the coefficients for each explanatory variable,
+along with their standard errors, t-values, and p-values. We can use this
+information to assess the significance of each variable in the model.
+
+
+To learn more about multiple regression, take additional statistics classes (e.g.
+S&DS 2300: Data Exploration and Analysis)!
+
+
+
