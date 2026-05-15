@@ -194,7 +194,9 @@ save_zip_of_all_class_material <- function() {
   zip_file_name <- paste0(backup_folder_name, ".zip")
   zip_file_path <- file.path(backup_folder_path, zip_file_name)
   
-  zip(zipfile = zip_file_path, files = get_class_material_root_path(), flags = "-r", extras = "-j")
+  #zip(zipfile = zip_file_path, files = get_class_material_root_path(), flags = "-r", extras = "-j")
+  zip(zipfile = zip_file_path, files = get_class_material_root_path(), flags = "-r")
+  
   
 }
 
