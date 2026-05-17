@@ -15,7 +15,7 @@ shuffle <- function(v){
 
 
 
-#' Calculates the proportion of points in a vector greater than a specified value
+#' Calculates the proportion of points in a vector more extreme than a specified value
 #'
 #'   
 #' @param obs_value A value which will be used to assess

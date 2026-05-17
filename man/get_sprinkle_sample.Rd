@@ -10,7 +10,11 @@ get_sprinkle_sample(n)
 \item{n}{The sample size.}
 }
 \description{
-This function generates a fictional sample of data of sprinkles.
+`r lifecycle::badge("deprecated")`
+
+This function generates a fictional sample of data of sprinkles. This
+function was renamed rsprinkles() to be more consistent with other functions
+that generate random samples.
 }
 \examples{
  # Generate a sample from 10 sprinkle colors

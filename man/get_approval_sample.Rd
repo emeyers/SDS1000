@@ -15,8 +15,11 @@ approve". If this is set to false, then a vector that only has the levels
 "disapprove",  "approve" will be returned.}
 }
 \description{
+`r lifecycle::badge("deprecated")`
+
 This function generates a sample of fictional data of people approve
-of the president.
+of the president. This function was renamed rsprinkles() to be more consistent 
+with other functions that generate random samples.
 }
 \examples{
  # Generate a sample from 10 individuals

@@ -16,7 +16,9 @@ proportion of coin flips that were "heads" otherwise it returns the number
 of coin flips that were "heads".}
 }
 \description{
-Gives a count/proportion from simulating n coin flips
+`r lifecycle::badge("deprecated")`
+
+This function was renamed rflip()
 }
 \examples{
  set.seed(100)
