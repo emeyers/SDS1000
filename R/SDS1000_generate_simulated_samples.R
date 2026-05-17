@@ -8,10 +8,10 @@
 #'
 #' @examples
 #'  # Generate a sample from 10 sprinkle colors
-#'  get_sprinkle_sample(10)
+#'  rsprinkles(10)
 #'
 #' @export
-get_sprinkle_sample <- function(n) {
+rsprinkles <- function(n) {
   
   the_colors <- as.factor(c("green", "orange",  "pink",   "red",   "white",  "yellow"))
   the_proportions <- c(0.15,   0.16,   0.12,   0.155,   0.30,   0.115)
@@ -38,10 +38,10 @@ get_sprinkle_sample <- function(n) {
 #'
 #' @examples
 #'  # Generate a sample from 10 individuals
-#'  get_approval_sample(10)
+#'  rapprovals(10)
 #'
 #' @export
-get_approval_sample <- function(n, degree_of_approval = FALSE) {
+rapprovals <- function(n, degree_of_approval = FALSE) {
 
 
   if (degree_of_approval == FALSE) {
@@ -167,31 +167,6 @@ rflip <- function(num_flips = 1, prob = .5, report_proportion = FALSE) {
   head_amount
   
 }
-
-
-
-
-
-# For backward compatibility (in case there is a mistake in my class code)
-
-#' Gives a count/proportion from simulating n coin flips
-#' 
-#'   
-#' @param num_flips The number of times to flip the coin.
-#' 
-#' @param prob The probability of generated a "heads" on each flip.
-#' 
-#' @param report_proportion A Boolean that if set to TRUE will return the
-#'   proportion of coin flips that were "heads" otherwise it returns the number
-#'   of coin flips that were "heads".
-#'   
-#' @examples
-#'  set.seed(100)
-#'  rflip_count(10)
-#'
-#'
-#' @export
-rflip_count <- rflip
 
 
 
@@ -323,5 +298,106 @@ ct <- function(p, df, side = c("upper", "both", "lower")) {
   
 }
 
+
+
+
+
+
+
+
+
+
+### Deprecated functions
+
+
+#' Generate a random sample of sprinkle colors
+#'
+#' @description 
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This function generates a fictional sample of data of sprinkles. This
+#' function was renamed rsprinkles() to be more consistent with other functions
+#' that generate random samples.
+#' 
+#' @param n The sample size.
+#' 
+#'
+#' @examples
+#'  # Generate a sample from 10 sprinkle colors
+#'  get_sprinkle_sample(10)
+#'
+#' @export
+get_sprinkle_sample <- function(n) {
+  
+  deprecate_soft("0.2026.3", "get_sprinkle_sample()", "rsprinkles()")
+  
+  rsprinkles()
+  
+}
+
+
+
+
+#' Generate a random sample of a president's approval ratings
+#'
+#' @description 
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This function generates a sample of fictional data of people approve
+#' of the president. This function was renamed rsprinkles() to be more consistent 
+#' with other functions that generate random samples.
+#' 
+#' @param n The sample size.
+#' 
+#' @param degree_of_approval A Boolean that if set to TRUE will return a vector
+#'   with the levels "strongly disapprove", "disapprove",  "approve", "strongly
+#'   approve". If this is set to false, then a vector that only has the levels
+#'   "disapprove",  "approve" will be returned.
+#'
+#' @examples
+#'  # Generate a sample from 10 individuals
+#'  get_approval_sample(10)
+#'
+#' @export
+get_approval_sample <- function(n, degree_of_approval = FALSE) {
+  
+  deprecate_soft("0.2026.3", "get_approval_sample()", "rapprovals()")
+  
+  rapprovals(n, degree_of_approval = degree_of_approval)
+  
+}
+
+
+
+
+
+#' Gives a count/proportion from simulating n coin flips
+#' 
+#' @description 
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This function was renamed rflip()
+#' 
+#' @param num_flips The number of times to flip the coin.
+#' 
+#' @param prob The probability of generated a "heads" on each flip.
+#' 
+#' @param report_proportion A Boolean that if set to TRUE will return the
+#'   proportion of coin flips that were "heads" otherwise it returns the number
+#'   of coin flips that were "heads".
+#'   
+#' @examples
+#'  set.seed(100)
+#'  rflip_count(10)
+#'
+#'
+#' @export
+rflip_count <- function(num_flips = 1, prob = .5, report_proportion = FALSE) {
+  
+  # deprecate_soft("0.2026.2", "rflip_count()", "rflip()")
+  
+  rflip(num_flips = num_flips, prob = prob, report_proportion = report_proportion)
+  
+}
 
 

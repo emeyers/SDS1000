@@ -1,7 +1,7 @@
 Package: SDS1000
 Type: Package
 Title: Tools for the class Introductory Statistics
-Version: 0.2026.2
+Version: 0.2026.3
 Author: Ethan Meyers
 Maintainer: Ethan Meyers <ethan.meyers@gmail.com>
 Description: A package with functions for downloading material and  
@@ -13,6 +13,7 @@ RoxygenNote: 7.3.3
 Imports: 
     httr,
     devtools,
-    fs
+    fs,
+    lifecycle
 Suggests: 
     testthat (>= 2.1.0)

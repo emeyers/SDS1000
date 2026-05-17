@@ -5,3 +5,5 @@
 
 ClassMaterial/*
 
+^\.positai$
+^\.claude$
