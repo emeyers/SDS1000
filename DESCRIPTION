@@ -17,3 +17,4 @@ Imports:
     lifecycle
 Suggests: 
     testthat (>= 2.1.0)
+URL: https://emeyers.github.io/SDS1000/
