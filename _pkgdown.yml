@@ -2,3 +2,64 @@ url: https://emeyers.github.io/SDS1000/
 template:
   bootstrap: 5
 
+reference:
+  - title: "Analyze Data"
+    desc: "Functions for statistical analysis, simulation, and visualization."
+    contents:
+      - do_it
+      - get_proportion
+      - get_MAD_stat
+      - get_F_stat
+      - get_chisqr_stat
+      - stats_by_group
+      - plot_norm
+      - plot_t
+      - plot_chisq
+      - plot_f
+      - shuffle
+      - ptail
+      - resample_pairs
+      - cnorm
+      - ct
+      - rsprinkles
+      - rapprovals
+      - rflip
+      - rroll
+
+
+  - title: "Get Class Material"
+    desc: "Functions for navigating to homework, class sessions, and other course material."
+    contents:
+      - goto_homework
+      - goto_class
+      - goto_practice_session
+      - goto_final_project
+      - goto_directory
+
+
+  - title: "Backup Data, and Setup/Configuration"
+    desc: "Functions for configuration and backing up class material."
+    contents:
+      - save_zip_of_all_class_material
+      - get_version
+
+
+  - title: "Deprecated or package management"
+    desc: "Functions that have been deprecated or should only be used rarely."
+    contents:
+      - pnull
+      - rflip_count
+      - get_sprinkle_sample
+      - get_approval_sample
+      - rflip_sequence
+      - download_github_directory
+      - download_any_file
+      - download_only_if_missing
+      - list_github_files
+      - move_to_backup
+      - restore_from_backup
+      - list_backups
+      - set_class_material_root_path
+      - get_class_material_root_path
+      - update_installed_packages
+
