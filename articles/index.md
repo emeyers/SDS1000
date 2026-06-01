@@ -22,3 +22,10 @@ analyze data using standard R without relying on the SDS1000 package.
 
   Part 1 of 2. Covers do_it(), get_proportion(), rflip(), rroll(),
   shuffle(), and resample_pairs() and their base R equivalents.
+
+- [Transitioning to Base R: Theory-Based Hypothesis
+  Tests](https://emeyers.github.io/SDS1000/articles/transitioning-theory-tests.md):
+
+  Part 3 of the transitioning series. Covers t.test(), cor.test(),
+  aov(), chisq.test(), and lm() as complete base R replacements for the
+  SDS1000 wrapper functions.
