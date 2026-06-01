@@ -1,10 +1,24 @@
 # Articles
 
-### All vignettes
+### Transitioning to Base R
 
-- [Transitioning from SDS1000 to Base
-  R](https://emeyers.github.io/SDS1000/articles/transitioning-to-base-r.md):
+A two-part guide for students graduating from SDS1000 who want to
+analyze data using standard R without relying on the SDS1000 package.
 
-  A guide for students who have completed S&DS 1000 and want to analyze
-  data using standard R functions, without relying on the SDS1000
-  package.
+- [SDS1000 → Base R Cheat
+  Sheet](https://emeyers.github.io/SDS1000/articles/transitioning-cheatsheet.md):
+
+  A printable one-page summary of every SDS1000 function and its base R
+  equivalent. Use File \> Print (or Ctrl/Cmd + P) to save as PDF.
+
+- [Transitioning to Base R: Inference and
+  Visualization](https://emeyers.github.io/SDS1000/articles/transitioning-inference.md):
+
+  Part 2 of 2. Covers ptail(), cnorm(), ct(), distribution plots, and a
+  complete worked example using only base R.
+
+- [Transitioning to Base R: Simulation and Data
+  Summaries](https://emeyers.github.io/SDS1000/articles/transitioning-simulation.md):
+
+  Part 1 of 2. Covers do_it(), get_proportion(), rflip(), rroll(),
+  shuffle(), and resample_pairs() and their base R equivalents.
