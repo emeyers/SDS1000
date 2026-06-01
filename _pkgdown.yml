@@ -1,6 +1,8 @@
 url: https://emeyers.github.io/SDS1000/
 template:
   bootstrap: 5
+
+
 reference:
 - title: Analyze Data
   desc: Functions for statistical analysis, simulation, and visualization.
