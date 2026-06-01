@@ -167,3 +167,13 @@ Functions that have been deprecated or should only be used rarely.
 - [`update_installed_packages()`](https://emeyers.github.io/SDS1000/reference/update_installed_packages.md)
   : Installs packages that are used in the class
 
+# Articles
+
+### All vignettes
+
+- [Transitioning from SDS1000 to Base
+  R](https://emeyers.github.io/SDS1000/articles/transitioning-to-base-r.md):
+
+  A guide for students who have completed S&DS 1000 and want to analyze
+  data using standard R functions, without relying on the SDS1000
+  package.

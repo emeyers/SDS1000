@@ -1,6 +1,8 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://emeyers.github.io/SDS1000/404.html</loc></url>
 <url><loc>https://emeyers.github.io/SDS1000/LICENSE-text.html</loc></url>
+<url><loc>https://emeyers.github.io/SDS1000/articles/index.html</loc></url>
+<url><loc>https://emeyers.github.io/SDS1000/articles/transitioning-to-base-r.html</loc></url>
 <url><loc>https://emeyers.github.io/SDS1000/authors.html</loc></url>
 <url><loc>https://emeyers.github.io/SDS1000/index.html</loc></url>
 <url><loc>https://emeyers.github.io/SDS1000/reference/cnorm.html</loc></url>
