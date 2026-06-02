@@ -35,5 +35,5 @@ S4 objects.
 
 ``` r
  many_hellos <- do_it(10) * { "hello" }
-#> Error in loadNamespace(x): there is no package called ‘lazyeval’
+#> Error in lazyeval::f_capture(e2): Promise has already been forced
 ```

@@ -204,6 +204,20 @@ using standard R without relying on the SDS1000 package.
 Reference guides showing how to run each type of analysis covered in
 S&DS 1000 using base R.
 
+- [Parametric Confidence
+  Intervals](https://emeyers.github.io/SDS1000/articles/class-summary-parametric-cis.md):
+
+  A reference guide covering every parametric confidence interval from
+  S&DS 1000: one proportion, one mean, difference of two means, and
+  regression slope.
+
+- [Randomization (Bootstrap) Confidence
+  Intervals](https://emeyers.github.io/SDS1000/articles/class-summary-randomization-cis.md):
+
+  A reference guide covering every bootstrap confidence interval from
+  S&DS 1000: one proportion, one mean, difference of two means, and
+  regression slope.
+
 - [Randomization Hypothesis
   Tests](https://emeyers.github.io/SDS1000/articles/class-summary-randomization-tests.md):
 
