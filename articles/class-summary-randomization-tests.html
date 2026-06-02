@@ -185,13 +185,14 @@ Tests</a></li>
 </ul>
 </div>
 <div class="tip-box">
-<p><strong>Base R note.</strong> The class code uses
-<code><a href="../reference/do_it.html">do_it()</a></code> and <code><a href="../reference/pnull.html">pnull()</a></code> from the SDS1000 package.
-This guide uses the base R equivalents throughout:
-<code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate()</a></code> to build null distributions, and
-<code>mean(null_dist &gt;= obs_stat)</code> to compute p-values. See the
-<a href="transitioning-simulation.html">Transitioning to Base R</a>
-series for more detail on these substitutions.</p>
+<p><strong>Key SDS1000 functions used in this guide.</strong>
+<code>do_it(n) * { expr }</code> repeats an expression <code>n</code>
+times and collects the results. <code>rflip(n, p)</code> simulates
+<code>n</code> coin flips with probability <code>p</code>.
+<code>rroll(n, prob)</code> simulates rolling a die <code>n</code>
+times. <code>shuffle(x)</code> randomly permutes a vector.
+<code>ptail(obs, null, lower.tail)</code> computes the p-value from a
+null distribution.</p>
 </div>
 <hr>
 </div>
@@ -201,10 +202,7 @@ series for more detail on these substitutions.</p>
 <p><strong>When to use:</strong> One categorical variable with two
 outcomes; test whether the population proportion π equals a specific
 value π₀. The null distribution is created by simulating coin flips
-under the assumption that H₀ is true.</p>
-<p><strong>Null distribution:</strong> Simulate <code>n</code> coin
-flips with probability π₀ using <code><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom()</a></code>, repeat many
-times.</p>
+under the assumption that H₀ is true using <code><a href="../reference/rflip.html">rflip()</a></code>.</p>
 <p><strong>Example (class 12):</strong> Doris the dolphin and Buzz the
 dolphin were tested to see whether Buzz could identify which lever Doris
 was pointing to. In 16 trials, Buzz got the correct answer 15 times. Is
@@ -226,14 +224,14 @@ there evidence that Buzz is doing better than random chance?</p>
 <div class="section level3">
 <h3 id="step-3-create-the-null-distribution">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution"></a>
 </h3>
-<p>Under H₀, each trial is like a fair coin flip. Simulate 10,000
-experiments:</p>
+<p>Under H₀, each trial is like a fair coin flip. Use
+<code><a href="../reference/rflip.html">rflip()</a></code> to simulate 10,000 experiments:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">5731</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="fl">1</span>, size <span class="op">=</span> <span class="va">n_trials</span>, prob <span class="op">=</span> <span class="fl">0.50</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/rflip.html">rflip</a></span><span class="op">(</span><span class="va">n_trials</span>, <span class="fl">0.50</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">null_dist</span>, breaks <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Null Distribution — Number of Correct Answers"</span>,</span>
@@ -246,7 +244,7 @@ experiments:</p>
 <h3 id="step-4-calculate-the-p-value">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value"></a>
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">null_dist</span> <span class="op">&gt;=</span> <span class="va">obs_stat</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_stat</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 5e-04</span></span></code></pre>
 </div>
@@ -263,12 +261,12 @@ detector is more than 60% accurate?</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">9021</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">n</span>       <span class="op">&lt;-</span> <span class="fl">48</span></span>
+<span><span class="va">n</span>        <span class="op">&lt;-</span> <span class="fl">48</span></span>
 <span><span class="va">obs_phat</span> <span class="op">&lt;-</span> <span class="fl">31</span> <span class="op">/</span> <span class="fl">48</span></span>
 <span></span>
-<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="fl">1</span>, size <span class="op">=</span> <span class="va">n</span>, prob <span class="op">=</span> <span class="fl">0.60</span><span class="op">)</span> <span class="op">/</span> <span class="va">n</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/rflip.html">rflip</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0.60</span><span class="op">)</span> <span class="op">/</span> <span class="va">n</span></span>
+<span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">null_dist</span>, breaks <span class="op">=</span> <span class="fl">60</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Null Distribution — Proportion Correct"</span>,</span>
@@ -277,7 +275,7 @@ detector is more than 60% accurate?</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">obs_phat</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-randomization-tests_files/figure-html/one_prop_lie-1.png" class="r-plt" alt="" width="576"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">null_dist</span> <span class="op">&gt;=</span> <span class="va">obs_phat</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_phat</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.3084</span></span></code></pre>
 <p>Since p = 0.308 &gt; 0.05, we <strong>fail to reject</strong> H₀.
@@ -293,7 +291,7 @@ accuracy.</p>
 more outcomes; test whether the population proportions match a set of
 expected values. The observed statistic is the chi-squared statistic;
 the null distribution is created by simulating random samples from the
-expected distribution using <code><a href="https://rdrr.io/r/stats/Multinom.html" class="external-link">rmultinom()</a></code>.</p>
+expected distribution using <code><a href="../reference/rroll.html">rroll()</a></code>.</p>
 <p><strong>Example (class 23):</strong> A Yale professor examined the
 birth months of 198 randomly selected Yale students. Are students
 equally likely to be born in any month?</p>
@@ -318,17 +316,19 @@ equally likely to be born in any month?</p>
 <div class="section level3">
 <h3 id="step-3-create-the-null-distribution-1">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-1"></a>
 </h3>
-<p>Under H₀, birth months are equally likely. Simulate 10,000 samples of
-198 students from a uniform distribution across 12 months:</p>
+<p>Under H₀, birth months are equally likely. Use <code><a href="../reference/rroll.html">rroll()</a></code>
+to simulate 10,000 samples of 198 students from a uniform distribution
+across 12 months:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">3341</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">n_students</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">observed_counts</span><span class="op">)</span></span>
+<span><span class="va">n_students</span>      <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">observed_counts</span><span class="op">)</span></span>
+<span><span class="va">expected_counts</span> <span class="op">&lt;-</span> <span class="va">expected_counts</span></span>
 <span></span>
-<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="op">{</span></span>
-<span>  <span class="va">sim_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Multinom.html" class="external-link">rmultinom</a></span><span class="op">(</span><span class="fl">1</span>, size <span class="op">=</span> <span class="va">n_students</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">12</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
+<span>  <span class="va">sim_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rroll.html">rroll</a></span><span class="op">(</span><span class="va">n_students</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">12</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="op">(</span><span class="va">sim_counts</span> <span class="op">-</span> <span class="va">expected_counts</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span> <span class="op">/</span> <span class="va">expected_counts</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">null_dist</span>, breaks <span class="op">=</span> <span class="fl">60</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Null Distribution — Chi-squared Statistic"</span>,</span>
@@ -341,7 +341,7 @@ equally likely to be born in any month?</p>
 <h3 id="step-4-calculate-the-p-value-1">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-1"></a>
 </h3>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">null_dist</span> <span class="op">&gt;=</span> <span class="va">obs_stat</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_stat</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.7917</span></span></code></pre>
 </div>
@@ -359,8 +359,8 @@ uniform distribution.</p>
 </h2>
 <p><strong>When to use:</strong> A quantitative variable measured in two
 independent groups; test whether the two group means are equal. The null
-distribution is created by shuffling the group labels — under H₀, group
-membership doesn’t matter.</p>
+distribution is created by using <code><a href="../reference/shuffle.html">shuffle()</a></code> to randomly
+reassign group labels — under H₀, group membership doesn’t matter.</p>
 <p><strong>Observed statistic:</strong> Difference in group means:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>x</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>x</mi><mo accent="true">‾</mo></mover><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">\bar{x}_1 - \bar{x}_2</annotation></semantics></math></p>
 <p><strong>Example (class 17):</strong> A randomized controlled trial
@@ -387,19 +387,19 @@ decrease?</p>
 <div class="section level3">
 <h3 id="step-3-create-the-null-distribution-2">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-2"></a>
 </h3>
-<p>Combine both groups into one vector and shuffle the labels 10,000
-times:</p>
+<p>Combine both groups into one vector and use <code><a href="../reference/shuffle.html">shuffle()</a></code> to
+randomly reassign group labels 10,000 times:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">6174</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">combined_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">treat</span>, <span class="va">control</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="op">{</span></span>
-<span>  <span class="va">shuff</span>         <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">combined_data</span><span class="op">)</span></span>
+<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
+<span>  <span class="va">shuff</span>         <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shuffle.html">shuffle</a></span><span class="op">(</span><span class="va">combined_data</span><span class="op">)</span></span>
 <span>  <span class="va">shuff_treat</span>   <span class="op">&lt;-</span> <span class="va">shuff</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span></span>
 <span>  <span class="va">shuff_control</span> <span class="op">&lt;-</span> <span class="va">shuff</span><span class="op">[</span><span class="fl">11</span><span class="op">:</span><span class="fl">21</span><span class="op">]</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">shuff_treat</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">shuff_control</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">null_dist</span>, breaks <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Null Distribution — Difference in Means"</span>,</span>
@@ -412,7 +412,7 @@ times:</p>
 <h3 id="step-4-calculate-the-p-value-2">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-2"></a>
 </h3>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">null_dist</span> <span class="op">&gt;=</span> <span class="va">obs_stat</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_stat</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.0605</span></span></code></pre>
 </div>
@@ -433,7 +433,7 @@ three or more independent groups; test whether all group means are
 equal. The observed statistic is the <strong>mean absolute deviation
 (MAD)</strong> of group means — the average of all pairwise absolute
 differences between group means. The null distribution is created by
-shuffling the group labels.</p>
+using <code><a href="../reference/shuffle.html">shuffle()</a></code> on the group labels.</p>
 <p><strong>Example (class 17/18):</strong> Hope College students were
 timed completing a Sudoku-like puzzle, grouped into four majors. Is
 there a difference in mean completion time?</p>
@@ -454,7 +454,6 @@ there a difference in mean completion time?</p>
 <span><span class="va">majors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Applied Sci"</span>, <span class="st">"Natural Sci"</span>, <span class="st">"Social Sci"</span>, <span class="st">"Arts/Hum"</span><span class="op">)</span>,</span>
 <span>              each <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Visualize the data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">completion_times</span> <span class="op">~</span> <span class="va">majors</span>,</span>
 <span>        main  <span class="op">=</span> <span class="st">"Completion Time by Major"</span>,</span>
 <span>        ylab  <span class="op">=</span> <span class="st">"Time (seconds)"</span>,</span>
@@ -468,14 +467,18 @@ there a difference in mean completion time?</p>
 <div class="section level3">
 <h3 id="step-3-create-the-null-distribution-3">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-3"></a>
 </h3>
-<p>Shuffle the group labels to break any real association:</p>
+<p>Use <code><a href="../reference/shuffle.html">shuffle()</a></code> on the group labels to break any real
+association:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">8812</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="op">{</span></span>
-<span>  <span class="va">shuffled_majors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">majors</span><span class="op">)</span></span>
+<span><span class="va">completion_times</span> <span class="op">&lt;-</span> <span class="va">completion_times</span></span>
+<span><span class="va">majors</span>           <span class="op">&lt;-</span> <span class="va">majors</span></span>
+<span></span>
+<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
+<span>  <span class="va">shuffled_majors</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shuffle.html">shuffle</a></span><span class="op">(</span><span class="va">majors</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="../reference/get_MAD_stat.html">get_MAD_stat</a></span><span class="op">(</span><span class="va">completion_times</span>, <span class="va">shuffled_majors</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">null_dist</span>, breaks <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Null Distribution — MAD Statistic"</span>,</span>
@@ -488,7 +491,7 @@ there a difference in mean completion time?</p>
 <h3 id="step-4-calculate-the-p-value-3">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-3"></a>
 </h3>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">null_dist</span> <span class="op">&gt;=</span> <span class="va">obs_stat</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_stat</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.0416</span></span></code></pre>
 </div>
@@ -513,8 +516,9 @@ natural choice for a general alternative hypothesis.</p>
 </h2>
 <p><strong>When to use:</strong> Two quantitative variables; test
 whether the population correlation ρ equals zero. The null distribution
-is created by shuffling one of the two variables — this breaks any real
-relationship while preserving the marginal distributions.</p>
+is created by using <code><a href="../reference/shuffle.html">shuffle()</a></code> on one of the two variables —
+this breaks any real relationship while preserving the marginal
+distributions.</p>
 <p><strong>Example (class 18):</strong> A dataset of 77 breakfast
 cereals recorded sugar content and calorie content. Is there evidence of
 a positive correlation?</p>
@@ -529,8 +533,8 @@ a positive correlation?</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1123</span><span class="op">)</span></span>
 <span><span class="co"># Simulated to match class 18 cereal data structure</span></span>
-<span><span class="va">n</span>       <span class="op">&lt;-</span> <span class="fl">77</span></span>
-<span><span class="va">sugar</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">15</span><span class="op">)</span></span>
+<span><span class="va">n</span>        <span class="op">&lt;-</span> <span class="fl">77</span></span>
+<span><span class="va">sugar</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">15</span><span class="op">)</span></span>
 <span><span class="va">calories</span> <span class="op">&lt;-</span> <span class="fl">90</span> <span class="op">+</span> <span class="fl">3.5</span> <span class="op">*</span> <span class="va">sugar</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, sd <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sugar</span>, <span class="va">calories</span>,</span>
@@ -545,14 +549,17 @@ a positive correlation?</p>
 <div class="section level3">
 <h3 id="step-3-create-the-null-distribution-4">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-4"></a>
 </h3>
-<p>Shuffle the sugar values to destroy any correlation with
-calories:</p>
+<p>Use <code><a href="../reference/shuffle.html">shuffle()</a></code> on the sugar values to destroy any
+correlation with calories:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">5671</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">sugar</span><span class="op">)</span>, <span class="va">calories</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">sugar</span>    <span class="op">&lt;-</span> <span class="va">sugar</span></span>
+<span><span class="va">calories</span> <span class="op">&lt;-</span> <span class="va">calories</span></span>
+<span></span>
+<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="../reference/shuffle.html">shuffle</a></span><span class="op">(</span><span class="va">sugar</span><span class="op">)</span>, <span class="va">calories</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">null_dist</span>, breaks <span class="op">=</span> <span class="fl">80</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Null Distribution — Correlation"</span>,</span>
@@ -565,7 +572,7 @@ calories:</p>
 <h3 id="step-4-calculate-the-p-value-4">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-4"></a>
 </h3>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">null_dist</span> <span class="op">&gt;=</span> <span class="va">obs_stat</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_stat</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0</span></span></code></pre>
 </div>
@@ -584,8 +591,8 @@ cereals.</p>
 <p><strong>When to use:</strong> Two quantitative variables where you
 want to test whether the slope of a linear regression model is
 significantly different from zero. The null distribution is created by
-shuffling the response variable — under H₀ (no relationship), the
-pairing between x and y is arbitrary.</p>
+using <code><a href="../reference/shuffle.html">shuffle()</a></code> on the response variable — under H₀ (no
+relationship), the pairing between x and y is arbitrary.</p>
 <p><strong>Example (class 25):</strong> Data on cigarette consumption
 per capita and lung cancer rates across U.S. states. Is there evidence
 of a positive slope?</p>
@@ -608,7 +615,7 @@ of a positive slope?</p>
 <span>     main <span class="op">=</span> <span class="st">"Lung Cancer Rate vs. Cigarette Consumption"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-randomization-tests_files/figure-html/reg_obs-1.png" class="r-plt" alt="" width="576"></p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">lung_lm</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">cancer_rate</span> <span class="op">~</span> <span class="va">cigs_per_capita</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">lung_lm</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">cancer_rate</span> <span class="op">~</span> <span class="va">cigs_per_capita</span><span class="op">)</span></span>
 <span><span class="va">obs_slope</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">lung_lm</span><span class="op">)</span><span class="op">[</span><span class="st">"cigs_per_capita"</span><span class="op">]</span></span>
 <span><span class="va">obs_slope</span></span></code></pre></div>
 <pre><code><span><span class="co">## cigs_per_capita </span></span>
@@ -617,17 +624,20 @@ of a positive slope?</p>
 <div class="section level3">
 <h3 id="step-3-create-the-null-distribution-5">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-5"></a>
 </h3>
-<p>Shuffle the cancer rate values — this breaks the association with
-<code>cigs_per_capita</code> while keeping both variables’ distributions
-intact:</p>
+<p>Use <code><a href="../reference/shuffle.html">shuffle()</a></code> on the cancer rate values — this breaks
+the association with <code>cigs_per_capita</code> while keeping both
+variables’ distributions intact:</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">3318</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="op">{</span></span>
-<span>  <span class="va">shuffled_cancer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">cancer_rate</span><span class="op">)</span></span>
+<span><span class="va">cancer_rate</span>     <span class="op">&lt;-</span> <span class="va">cancer_rate</span></span>
+<span><span class="va">cigs_per_capita</span> <span class="op">&lt;-</span> <span class="va">cigs_per_capita</span></span>
+<span></span>
+<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
+<span>  <span class="va">shuffled_cancer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/shuffle.html">shuffle</a></span><span class="op">(</span><span class="va">cancer_rate</span><span class="op">)</span></span>
 <span>  <span class="va">null_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">shuffled_cancer</span> <span class="op">~</span> <span class="va">cigs_per_capita</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">null_lm</span><span class="op">)</span><span class="op">[</span><span class="st">"cigs_per_capita"</span><span class="op">]</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">null_dist</span>, breaks <span class="op">=</span> <span class="fl">80</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Null Distribution — Regression Slope"</span>,</span>
@@ -640,7 +650,7 @@ intact:</p>
 <h3 id="step-4-calculate-the-p-value-5">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-5"></a>
 </h3>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">null_dist</span> <span class="op">&gt;=</span> <span class="va">obs_slope</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_slope</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0</span></span></code></pre>
 </div>
@@ -673,42 +683,37 @@ lung cancer rate.</p>
 <tr class="odd">
 <td>One proportion</td>
 <td>Count or proportion</td>
-<td><code>rbinom(1, n, pi_0)</code></td>
-<td><code>mean(null &gt;= obs)</code></td>
+<td><code>do_it(n) * { rflip(n, pi_0) }</code></td>
+<td><code>ptail(obs, null, lower.tail = FALSE)</code></td>
 </tr>
 <tr class="even">
 <td>Multiple proportions</td>
 <td>Chi-squared:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∑</mo><mo stretchy="false" form="prefix">(</mo><mi>O</mi><mo>−</mo><mi>E</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup><mi>/</mi><mi>E</mi></mrow><annotation encoding="application/x-tex">\sum(O-E)^2/E</annotation></semantics></math>
 </td>
-<td><code>rmultinom(1, n, expected_p)</code></td>
-<td><code>mean(null &gt;= obs)</code></td>
+<td><code>do_it(n) * { rroll(n, expected_p) }</code></td>
+<td><code>ptail(obs, null, lower.tail = FALSE)</code></td>
 </tr>
 <tr class="odd">
 <td>Two means</td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>x</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>x</mi><mo accent="true">‾</mo></mover><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">\bar{x}_1 - \bar{x}_2</annotation></semantics></math></td>
-<td>
-<code>sample(combined)</code> then re-split</td>
-<td>
-<code>mean(null &gt;= obs)</code> or
-<code>mean(null &lt;= obs)</code>
-</td>
+<td><code>do_it(n) * { shuff &lt;- shuffle(combined); ... }</code></td>
+<td><code>ptail(obs, null, lower.tail = FALSE)</code></td>
 </tr>
 <tr class="even">
 <td>More than two means</td>
-<td>MAD of group means</td>
-<td><code>sample(group_labels)</code></td>
-<td><code>mean(null &gt;= obs)</code></td>
+<td>MAD: <code><a href="../reference/get_MAD_stat.html">get_MAD_stat()</a></code>
+</td>
+<td><code>do_it(n) * { get_MAD_stat(y, shuffle(groups)) }</code></td>
+<td><code>ptail(obs, null, lower.tail = FALSE)</code></td>
 </tr>
 <tr class="odd">
 <td>Correlation</td>
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mtext mathvariant="normal">cor</mtext><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">r = \text{cor}(x, y)</annotation></semantics></math></td>
 <td>
-<code>sample(x)</code> (shuffle one variable)</td>
-<td>
-<code>mean(null &gt;= obs)</code> or
-<code>mean(null &lt;= obs)</code>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo></mrow><annotation encoding="application/x-tex">r =</annotation></semantics></math><code>cor(x, y)</code>
 </td>
+<td><code>do_it(n) * { cor(shuffle(x), y) }</code></td>
+<td><code>ptail(obs, null, lower.tail = FALSE)</code></td>
 </tr>
 <tr class="even">
 <td>Regression slope</td>
@@ -716,12 +721,8 @@ lung cancer rate.</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>β</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><annotation encoding="application/x-tex">\hat{\beta}_1</annotation></semantics></math>
 from <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>
 </td>
-<td>
-<code>sample(y)</code> (shuffle response)</td>
-<td>
-<code>mean(null &gt;= obs)</code> or
-<code>mean(null &lt;= obs)</code>
-</td>
+<td><code>do_it(n) * { coef(lm(shuffle(y) ~ x))[2] }</code></td>
+<td><code>ptail(obs, null, lower.tail = FALSE)</code></td>
 </tr>
 </tbody>
 </table>

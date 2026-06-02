@@ -31,15 +31,12 @@ statistic falls.
 - [Parametric Hypothesis
   Tests](https://emeyers.github.io/SDS1000/articles/transitioning-parametric-tests.md)
 
-**Base R note.** The class code uses
-[`do_it()`](https://emeyers.github.io/SDS1000/reference/do_it.md) and
-[`pnull()`](https://emeyers.github.io/SDS1000/reference/pnull.md) from
-the SDS1000 package. This guide uses the base R equivalents throughout:
-[`replicate()`](https://rdrr.io/r/base/lapply.html) to build null
-distributions, and `mean(null_dist >= obs_stat)` to compute p-values.
-See the [Transitioning to Base
-R](https://emeyers.github.io/SDS1000/articles/transitioning-simulation.md)
-series for more detail on these substitutions.
+**Key SDS1000 functions used in this guide.** `do_it(n) * { expr }`
+repeats an expression `n` times and collects the results. `rflip(n, p)`
+simulates `n` coin flips with probability `p`. `rroll(n, prob)`
+simulates rolling a die `n` times. `shuffle(x)` randomly permutes a
+vector. `ptail(obs, null, lower.tail)` computes the p-value from a null
+distribution.
 
 ------------------------------------------------------------------------
 
@@ -48,10 +45,8 @@ series for more detail on these substitutions.
 **When to use:** One categorical variable with two outcomes; test
 whether the population proportion π equals a specific value π₀. The null
 distribution is created by simulating coin flips under the assumption
-that H₀ is true.
-
-**Null distribution:** Simulate `n` coin flips with probability π₀ using
-[`rbinom()`](https://rdrr.io/r/stats/Binomial.html), repeat many times.
+that H₀ is true using
+[`rflip()`](https://emeyers.github.io/SDS1000/reference/rflip.md).
 
 **Example (class 12):** Doris the dolphin and Buzz the dolphin were
 tested to see whether Buzz could identify which lever Doris was pointing
@@ -77,16 +72,17 @@ obs_stat
 
 ### Step 3: Create the null distribution
 
-Under H₀, each trial is like a fair coin flip. Simulate 10,000
-experiments:
+Under H₀, each trial is like a fair coin flip. Use
+[`rflip()`](https://emeyers.github.io/SDS1000/reference/rflip.md) to
+simulate 10,000 experiments:
 
 ``` r
 
 set.seed(5731)
 
-null_dist <- replicate(10000, {
-  rbinom(1, size = n_trials, prob = 0.50)
-})
+null_dist <- do_it(10000) * {
+  rflip(n_trials, 0.50)
+}
 
 hist(null_dist, breaks = 50,
      main = "Null Distribution — Number of Correct Answers",
@@ -101,7 +97,7 @@ abline(v = obs_stat, col = "red", lwd = 2)
 
 ``` r
 
-p_value <- mean(null_dist >= obs_stat)
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
 p_value
 ```
 
@@ -126,12 +122,12 @@ H_0: \pi = 0.60 \qquad H_A: \pi > 0.60
 
 set.seed(9021)
 
-n       <- 48
+n        <- 48
 obs_phat <- 31 / 48
 
-null_dist <- replicate(10000, {
-  rbinom(1, size = n, prob = 0.60) / n
-})
+null_dist <- do_it(10000) * {
+  rflip(n, 0.60) / n
+}
 
 hist(null_dist, breaks = 60,
      main = "Null Distribution — Proportion Correct",
@@ -144,7 +140,7 @@ abline(v = obs_phat, col = "red", lwd = 2)
 
 ``` r
 
-p_value <- mean(null_dist >= obs_phat)
+p_value <- ptail(obs_phat, null_dist, lower.tail = FALSE)
 p_value
 ```
 
@@ -162,7 +158,7 @@ test whether the population proportions match a set of expected values.
 The observed statistic is the chi-squared statistic; the null
 distribution is created by simulating random samples from the expected
 distribution using
-[`rmultinom()`](https://rdrr.io/r/stats/Multinom.html).
+[`rroll()`](https://emeyers.github.io/SDS1000/reference/rroll.md).
 
 **Example (class 23):** A Yale professor examined the birth months of
 198 randomly selected Yale students. Are students equally likely to be
@@ -194,19 +190,22 @@ obs_stat
 
 ### Step 3: Create the null distribution
 
-Under H₀, birth months are equally likely. Simulate 10,000 samples of
-198 students from a uniform distribution across 12 months:
+Under H₀, birth months are equally likely. Use
+[`rroll()`](https://emeyers.github.io/SDS1000/reference/rroll.md) to
+simulate 10,000 samples of 198 students from a uniform distribution
+across 12 months:
 
 ``` r
 
 set.seed(3341)
 
-n_students <- sum(observed_counts)
+n_students      <- sum(observed_counts)
+expected_counts <- expected_counts
 
-null_dist <- replicate(10000, {
-  sim_counts <- as.vector(rmultinom(1, size = n_students, prob = rep(1/12, 12)))
+null_dist <- do_it(10000) * {
+  sim_counts <- rroll(n_students, prob = rep(1/12, 12))
   sum((sim_counts - expected_counts)^2 / expected_counts)
-})
+}
 
 hist(null_dist, breaks = 60,
      main = "Null Distribution — Chi-squared Statistic",
@@ -221,7 +220,7 @@ abline(v = obs_stat, col = "red", lwd = 2)
 
 ``` r
 
-p_value <- mean(null_dist >= obs_stat)
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
 p_value
 ```
 
@@ -239,8 +238,10 @@ distribution.
 
 **When to use:** A quantitative variable measured in two independent
 groups; test whether the two group means are equal. The null
-distribution is created by shuffling the group labels — under H₀, group
-membership doesn’t matter.
+distribution is created by using
+[`shuffle()`](https://emeyers.github.io/SDS1000/reference/shuffle.md) to
+randomly reassign group labels — under H₀, group membership doesn’t
+matter.
 
 **Observed statistic:** Difference in group means:
 $`\bar{x}_1 - \bar{x}_2`$
@@ -271,7 +272,9 @@ obs_stat
 
 ### Step 3: Create the null distribution
 
-Combine both groups into one vector and shuffle the labels 10,000 times:
+Combine both groups into one vector and use
+[`shuffle()`](https://emeyers.github.io/SDS1000/reference/shuffle.md) to
+randomly reassign group labels 10,000 times:
 
 ``` r
 
@@ -279,12 +282,12 @@ set.seed(6174)
 
 combined_data <- c(treat, control)
 
-null_dist <- replicate(10000, {
-  shuff         <- sample(combined_data)
+null_dist <- do_it(10000) * {
+  shuff         <- shuffle(combined_data)
   shuff_treat   <- shuff[1:10]
   shuff_control <- shuff[11:21]
   mean(shuff_treat) - mean(shuff_control)
-})
+}
 
 hist(null_dist, breaks = 100,
      main = "Null Distribution — Difference in Means",
@@ -299,7 +302,7 @@ abline(v = obs_stat, col = "red", lwd = 2)
 
 ``` r
 
-p_value <- mean(null_dist >= obs_stat)
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
 p_value
 ```
 
@@ -319,7 +322,9 @@ conclusive.
 independent groups; test whether all group means are equal. The observed
 statistic is the **mean absolute deviation (MAD)** of group means — the
 average of all pairwise absolute differences between group means. The
-null distribution is created by shuffling the group labels.
+null distribution is created by using
+[`shuffle()`](https://emeyers.github.io/SDS1000/reference/shuffle.md) on
+the group labels.
 
 **Example (class 17/18):** Hope College students were timed completing a
 Sudoku-like puzzle, grouped into four majors. Is there a difference in
@@ -346,7 +351,6 @@ completion_times <- c(rnorm(10, mean = 22, sd = 5),
 majors <- rep(c("Applied Sci", "Natural Sci", "Social Sci", "Arts/Hum"),
               each = 10)
 
-# Visualize the data
 boxplot(completion_times ~ majors,
         main  = "Completion Time by Major",
         ylab  = "Time (seconds)",
@@ -365,16 +369,21 @@ obs_stat
 
 ### Step 3: Create the null distribution
 
-Shuffle the group labels to break any real association:
+Use
+[`shuffle()`](https://emeyers.github.io/SDS1000/reference/shuffle.md) on
+the group labels to break any real association:
 
 ``` r
 
 set.seed(8812)
 
-null_dist <- replicate(10000, {
-  shuffled_majors <- sample(majors)
+completion_times <- completion_times
+majors           <- majors
+
+null_dist <- do_it(10000) * {
+  shuffled_majors <- shuffle(majors)
   get_MAD_stat(completion_times, shuffled_majors)
-})
+}
 
 hist(null_dist, breaks = 100,
      main = "Null Distribution — MAD Statistic",
@@ -389,7 +398,7 @@ abline(v = obs_stat, col = "red", lwd = 2)
 
 ``` r
 
-p_value <- mean(null_dist >= obs_stat)
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
 p_value
 ```
 
@@ -414,7 +423,8 @@ natural choice for a general alternative hypothesis.
 ## Correlation
 
 **When to use:** Two quantitative variables; test whether the population
-correlation ρ equals zero. The null distribution is created by shuffling
+correlation ρ equals zero. The null distribution is created by using
+[`shuffle()`](https://emeyers.github.io/SDS1000/reference/shuffle.md) on
 one of the two variables — this breaks any real relationship while
 preserving the marginal distributions.
 
@@ -434,8 +444,8 @@ H_0: \rho = 0 \qquad H_A: \rho > 0
 
 set.seed(1123)
 # Simulated to match class 18 cereal data structure
-n       <- 77
-sugar   <- runif(n, 0, 15)
+n        <- 77
+sugar    <- runif(n, 0, 15)
 calories <- 90 + 3.5 * sugar + rnorm(n, sd = 12)
 
 plot(sugar, calories,
@@ -455,15 +465,20 @@ obs_stat
 
 ### Step 3: Create the null distribution
 
-Shuffle the sugar values to destroy any correlation with calories:
+Use
+[`shuffle()`](https://emeyers.github.io/SDS1000/reference/shuffle.md) on
+the sugar values to destroy any correlation with calories:
 
 ``` r
 
 set.seed(5671)
 
-null_dist <- replicate(10000, {
-  cor(sample(sugar), calories)
-})
+sugar    <- sugar
+calories <- calories
+
+null_dist <- do_it(10000) * {
+  cor(shuffle(sugar), calories)
+}
 
 hist(null_dist, breaks = 80,
      main = "Null Distribution — Correlation",
@@ -478,7 +493,7 @@ abline(v = obs_stat, col = "red", lwd = 2)
 
 ``` r
 
-p_value <- mean(null_dist >= obs_stat)
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
 p_value
 ```
 
@@ -495,9 +510,10 @@ positive correlation between sugar and calorie content in cereals.
 
 **When to use:** Two quantitative variables where you want to test
 whether the slope of a linear regression model is significantly
-different from zero. The null distribution is created by shuffling the
-response variable — under H₀ (no relationship), the pairing between x
-and y is arbitrary.
+different from zero. The null distribution is created by using
+[`shuffle()`](https://emeyers.github.io/SDS1000/reference/shuffle.md) on
+the response variable — under H₀ (no relationship), the pairing between
+x and y is arbitrary.
 
 **Example (class 25):** Data on cigarette consumption per capita and
 lung cancer rates across U.S. states. Is there evidence of a positive
@@ -527,7 +543,7 @@ plot(cigs_per_capita, cancer_rate,
 
 ``` r
 
-lung_lm  <- lm(cancer_rate ~ cigs_per_capita)
+lung_lm   <- lm(cancer_rate ~ cigs_per_capita)
 obs_slope <- coef(lung_lm)["cigs_per_capita"]
 obs_slope
 ```
@@ -537,18 +553,23 @@ obs_slope
 
 ### Step 3: Create the null distribution
 
-Shuffle the cancer rate values — this breaks the association with
+Use
+[`shuffle()`](https://emeyers.github.io/SDS1000/reference/shuffle.md) on
+the cancer rate values — this breaks the association with
 `cigs_per_capita` while keeping both variables’ distributions intact:
 
 ``` r
 
 set.seed(3318)
 
-null_dist <- replicate(10000, {
-  shuffled_cancer <- sample(cancer_rate)
+cancer_rate     <- cancer_rate
+cigs_per_capita <- cigs_per_capita
+
+null_dist <- do_it(10000) * {
+  shuffled_cancer <- shuffle(cancer_rate)
   null_lm <- lm(shuffled_cancer ~ cigs_per_capita)
   coef(null_lm)["cigs_per_capita"]
-})
+}
 
 hist(null_dist, breaks = 80,
      main = "Null Distribution — Regression Slope",
@@ -563,7 +584,7 @@ abline(v = obs_slope, col = "red", lwd = 2)
 
 ``` r
 
-p_value <- mean(null_dist >= obs_slope)
+p_value <- ptail(obs_slope, null_dist, lower.tail = FALSE)
 p_value
 ```
 
@@ -581,9 +602,9 @@ rate.
 
 | Test | Observed statistic | How to simulate the null | p-value |
 |----|----|----|----|
-| One proportion | Count or proportion | `rbinom(1, n, pi_0)` | `mean(null >= obs)` |
-| Multiple proportions | Chi-squared: $`\sum(O-E)^2/E`$ | `rmultinom(1, n, expected_p)` | `mean(null >= obs)` |
-| Two means | $`\bar{x}_1 - \bar{x}_2`$ | `sample(combined)` then re-split | `mean(null >= obs)` or `mean(null <= obs)` |
-| More than two means | MAD of group means | `sample(group_labels)` | `mean(null >= obs)` |
-| Correlation | $`r = \text{cor}(x, y)`$ | `sample(x)` (shuffle one variable) | `mean(null >= obs)` or `mean(null <= obs)` |
-| Regression slope | $`\hat{\beta}_1`$ from [`lm()`](https://rdrr.io/r/stats/lm.html) | `sample(y)` (shuffle response) | `mean(null >= obs)` or `mean(null <= obs)` |
+| One proportion | Count or proportion | `do_it(n) * { rflip(n, pi_0) }` | `ptail(obs, null, lower.tail = FALSE)` |
+| Multiple proportions | Chi-squared: $`\sum(O-E)^2/E`$ | `do_it(n) * { rroll(n, expected_p) }` | `ptail(obs, null, lower.tail = FALSE)` |
+| Two means | $`\bar{x}_1 - \bar{x}_2`$ | `do_it(n) * { shuff <- shuffle(combined); ... }` | `ptail(obs, null, lower.tail = FALSE)` |
+| More than two means | MAD: [`get_MAD_stat()`](https://emeyers.github.io/SDS1000/reference/get_MAD_stat.md) | `do_it(n) * { get_MAD_stat(y, shuffle(groups)) }` | `ptail(obs, null, lower.tail = FALSE)` |
+| Correlation | $`r =`$`cor(x, y)` | `do_it(n) * { cor(shuffle(x), y) }` | `ptail(obs, null, lower.tail = FALSE)` |
+| Regression slope | $`\hat{\beta}_1`$ from [`lm()`](https://rdrr.io/r/stats/lm.html) | `do_it(n) * { coef(lm(shuffle(y) ~ x))[2] }` | `ptail(obs, null, lower.tail = FALSE)` |
