@@ -1,4 +1,4 @@
-# SDS1000 → Base R Cheat Sheet
+# SDS1000 to Base R Cheat Sheet
 
 ← Back to [Part 1: Simulation and Data
 Summaries](https://emeyers.github.io/SDS1000/articles/transitioning-simulation.md)
