@@ -24,8 +24,13 @@ navbar:
       menu:
         - text: "Randomization Hypothesis Tests"
           href: articles/class-summary-randomization-tests.html
+        - text: "Randomization Confidence Intervals"
+          href: articles/class-summary-randomization-cis.html
+        - text: "-------"
         - text: "Parametric Hypothesis Tests"
           href: articles/transitioning-parametric-tests.html
+        - text: "Parametric Confidence Intervals"
+          href: articles/class-summary-parametric-cis.html
 
 articles:
   - title: "Transitioning to Base R"

@@ -1,0 +1,372 @@
+---
+title: "Randomization (Bootstrap) Confidence Intervals"
+description: |
+  A reference guide covering every bootstrap confidence interval from S&DS 1000:
+  one proportion, one mean, difference of two means, and regression slope.
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Randomization (Bootstrap) Confidence Intervals}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.width = 6, fig.height = 3.5)
+library(SDS1000)
+
+# Shadow do_it() to avoid lazyeval rendering issue in knitr.
+# Behaviour is identical to the original.
+do_it <- function(n) structure(list(num_times = n), class = "do_it_knitr")
+`*.do_it_knitr` <- function(e1, e2) {
+  expr <- match.call()[[3]]
+  replicate(e1$num_times, eval(expr, envir = parent.frame()))
+}
+```
+
+<style>
+h2 {
+  margin-top:     3.5rem;
+  padding-top:    0.6rem;
+  padding-bottom: 0.4rem;
+  padding-left:   0.85rem;
+  border-left:    5px solid #286dc0;
+  border-bottom:  1px solid #dee2e6;
+  color: #1a3a5c;
+  font-size: 1.45rem;
+}
+h3 { margin-top: 2rem; color: #2c5282; font-size: 1.15rem; }
+hr { margin: 3rem 0 2rem 0; border: none; border-top: 2px solid #e2e8f0; }
+table {
+  margin: 1.25rem 0 1.75rem 0;
+  font-size: 0.93rem;
+  width: 100%;
+}
+table thead tr { background-color: #dbeafe; color: #1e3a5f; }
+table tbody tr:nth-child(even) { background-color: #f8fafc; }
+.guide-nav {
+  background-color: #f0f7ff; border: 1px solid #bfdbfe;
+  border-radius: 6px; padding: 1.1rem 1.4rem;
+  margin-bottom: 2rem; font-size: 0.95rem;
+}
+.guide-nav ul { margin-bottom: 0; padding-left: 1.2rem; }
+.guide-nav li { margin-bottom: 0.3rem; }
+.tip-box {
+  background-color: #f0fdf4; border-left: 4px solid #22c55e;
+  border-radius: 4px; padding: 0.75rem 1rem;
+  margin: 1.25rem 0; font-size: 0.93rem;
+}
+</style>
+
+## Overview
+
+A **bootstrap confidence interval** estimates the uncertainty of a statistic by
+repeatedly resampling the observed data *with replacement*. Because it relies on
+the data itself rather than a mathematical formula, it works for almost any
+statistic and requires very few distributional assumptions.
+
+Every bootstrap CI in this guide follows the same three steps:
+
+1. **Create a bootstrap distribution** — use `do_it()` to resample with replacement
+   many times, computing the statistic each time.
+2. **Calculate the bootstrap SE** — `SE_boot <- sd(boot_dist)`.
+3. **Construct the CI** — `obs_stat ± cnorm(C) × SE_boot`.
+
+<div class="guide-nav">
+**In this article:**
+
+- [One proportion](#one-proportion)
+- [One mean](#one-mean)
+- [Difference of two means](#difference-of-two-means)
+- [Regression slope](#regression-slope)
+- [Quick reference](#quick-reference)
+
+**Also in Class Summaries:**
+
+- [Parametric Confidence Intervals](class-summary-parametric-cis.html)
+- [Randomization Hypothesis Tests](class-summary-randomization-tests.html)
+</div>
+
+<div class="tip-box">
+**Key SDS1000 functions.** `do_it(n) * { expr }` repeats an expression `n`
+times. `sample(data, n, replace = TRUE)` resamples with replacement.
+`get_proportion(v, "cat")` computes a proportion. `resample_pairs(v1, v2)`
+resamples two paired vectors together. `cnorm(C)` gives the normal critical
+value for confidence level C.
+</div>
+
+---
+
+## One Proportion
+
+**When to use:** A single categorical variable with two outcomes; estimate the
+population proportion π.
+
+**Example (class 11):** A survey asked 2625 people whether they agreed with
+"There is only one true love for each person." 1812 disagreed. Compute a 90%
+bootstrap confidence interval for the proportion who disagreed.
+
+### Step 1: Compute the observed statistic
+
+```{r one_prop_obs}
+believes_in_true_love <- c(rep("FALSE", 1812), rep("TRUE", 2625 - 1812))
+
+obs_prop <- get_proportion(believes_in_true_love, "FALSE")
+obs_prop
+```
+
+### Step 2: Create the bootstrap distribution
+
+Resample the data with replacement 10,000 times, computing the proportion
+each time:
+
+```{r one_prop_boot}
+set.seed(2291)
+
+n <- length(believes_in_true_love)
+
+boot_dist <- do_it(10000) * {
+  boot_sample <- sample(believes_in_true_love, n, replace = TRUE)
+  get_proportion(boot_sample, "FALSE")
+}
+
+hist(boot_dist, breaks = 60,
+     main = "Bootstrap Distribution — Proportion Who Disagreed",
+     xlab = "Proportion",
+     col = "steelblue", border = "white")
+abline(v = obs_prop, col = "red", lwd = 2)
+```
+
+### Step 3: Compute the SE and construct the CI
+
+```{r one_prop_ci}
+SE_boot <- sd(boot_dist)
+
+# 90% CI
+CI <- c(obs_prop - cnorm(0.90) * SE_boot,
+        obs_prop + cnorm(0.90) * SE_boot)
+CI
+```
+
+We are 90% confident that the true proportion of people who disagree that
+there is only one true love for each person is between
+`r round(CI[1], 3)` and `r round(CI[2], 3)`.
+
+---
+
+## One Mean
+
+**When to use:** A single quantitative variable; estimate the population mean μ.
+The bootstrap is especially useful when the data is skewed or the sample is
+small, since it does not require a normality assumption.
+
+**Example (class 11/12):** A sample of 50 body temperatures from Mackowiak
+et al. (1992). Compute a 95% bootstrap confidence interval for the mean
+body temperature.
+
+### Step 1: Compute the observed statistic
+
+```{r one_mean_obs}
+set.seed(9910)
+# Simulated to match class 11 Lock5Data body temperature sample
+body_temps <- rnorm(50, mean = 98.25, sd = 0.73)
+
+obs_mean <- mean(body_temps)
+obs_mean
+```
+
+### Step 2: Create the bootstrap distribution
+
+```{r one_mean_boot}
+set.seed(4471)
+
+n <- length(body_temps)
+
+body_temps <- body_temps
+
+boot_dist <- do_it(10000) * {
+  boot_sample <- sample(body_temps, n, replace = TRUE)
+  mean(boot_sample)
+}
+
+hist(boot_dist, breaks = 80,
+     main = "Bootstrap Distribution — Mean Body Temperature",
+     xlab = "Mean Temperature (°F)",
+     col = "steelblue", border = "white")
+abline(v = obs_mean, col = "red", lwd = 2)
+```
+
+### Step 3: Compute the SE and construct the CI
+
+```{r one_mean_ci}
+SE_boot <- sd(boot_dist)
+
+# 95% CI
+CI_95 <- c(obs_mean - cnorm(0.95) * SE_boot,
+           obs_mean + cnorm(0.95) * SE_boot)
+
+# 80% CI
+CI_80 <- c(obs_mean - cnorm(0.80) * SE_boot,
+           obs_mean + cnorm(0.80) * SE_boot)
+
+# 99% CI
+CI_99 <- c(obs_mean - cnorm(0.99) * SE_boot,
+           obs_mean + cnorm(0.99) * SE_boot)
+
+CI_80
+CI_95
+CI_99
+```
+
+Notice how wider confidence levels produce wider intervals. We are 95% confident
+that the mean human body temperature is between `r round(CI_95[1], 2)`°F and
+`r round(CI_95[2], 2)`°F.
+
+<div class="tip-box">
+**Wider CI = more confident.** A 99% CI is wider than a 95% CI, which is wider
+than an 80% CI. There is always a trade-off: greater confidence requires
+sacrificing precision.
+</div>
+
+---
+
+## Difference of Two Means
+
+**When to use:** A quantitative variable measured in two independent groups;
+estimate $\mu_1 - \mu_2$. Resample each group separately with replacement,
+keeping group sizes fixed.
+
+**Example:** Using the calcium supplement study from class 17, compute a 95%
+bootstrap confidence interval for the difference in mean blood pressure
+decrease (treatment − control).
+
+### Step 1: Compute the observed statistic
+
+```{r two_means_obs}
+treat   <- c( 7, -4, 18, 17, -3, -5,  1, 10, 11, -2)
+control <- c(-1, 12, -1, -3,  3, -5,  5,  2, -11, -1, -3)
+
+obs_diff <- mean(treat) - mean(control)
+obs_diff
+```
+
+### Step 2: Create the bootstrap distribution
+
+Resample each group independently with replacement:
+
+```{r two_means_boot}
+set.seed(6174)
+
+n_treat   <- length(treat)
+n_control <- length(control)
+
+treat   <- treat
+control <- control
+
+boot_dist <- do_it(10000) * {
+  boot_treat   <- sample(treat,   n_treat,   replace = TRUE)
+  boot_control <- sample(control, n_control, replace = TRUE)
+  mean(boot_treat) - mean(boot_control)
+}
+
+hist(boot_dist, breaks = 80,
+     main = "Bootstrap Distribution — Difference in Means",
+     xlab = "Difference in mean blood pressure decrease (mmHg)",
+     col = "steelblue", border = "white")
+abline(v = obs_diff, col = "red", lwd = 2)
+```
+
+### Step 3: Compute the SE and construct the CI
+
+```{r two_means_ci}
+SE_boot <- sd(boot_dist)
+
+CI <- c(obs_diff - cnorm(0.95) * SE_boot,
+        obs_diff + cnorm(0.95) * SE_boot)
+CI
+```
+
+The 95% CI includes zero, consistent with the hypothesis test result. However,
+the interval also extends well above zero, meaning a meaningful calcium effect
+remains plausible.
+
+---
+
+## Regression Slope
+
+**When to use:** Two paired quantitative variables; estimate the slope β₁ of
+a simple linear regression model. Because x and y are paired, resample both
+together using `resample_pairs()` — this preserves the pairing structure.
+
+**Example (class 25):** Cigarette consumption per capita and lung cancer rates
+across 44 U.S. states. Compute a 95% bootstrap confidence interval for the
+regression slope.
+
+### Step 1: Compute the observed statistic
+
+```{r reg_obs}
+set.seed(2947)
+cigs_per_capita <- runif(44, min = 10, max = 45)
+cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
+
+lung_lm  <- lm(cancer_rate ~ cigs_per_capita)
+obs_slope <- coef(lung_lm)["cigs_per_capita"]
+obs_slope
+```
+
+### Step 2: Create the bootstrap distribution
+
+Use `resample_pairs()` to resample both variables together, keeping pairs
+intact:
+
+```{r reg_boot}
+set.seed(3109)
+
+cigs_per_capita <- cigs_per_capita
+cancer_rate     <- cancer_rate
+
+boot_dist <- do_it(10000) * {
+  resampled       <- resample_pairs(cigs_per_capita, cancer_rate)
+  resampled_cigs  <- resampled$vector1
+  resampled_cancer <- resampled$vector2
+  coef(lm(resampled_cancer ~ resampled_cigs))["resampled_cigs"]
+}
+
+hist(boot_dist, breaks = 80,
+     main = "Bootstrap Distribution — Regression Slope",
+     xlab = "Slope",
+     col = "steelblue", border = "white")
+abline(v = obs_slope, col = "red", lwd = 2)
+```
+
+### Step 3: Compute the SE and construct the CI
+
+```{r reg_ci}
+SE_boot <- sd(boot_dist)
+
+CI <- c(obs_slope - cnorm(0.95) * SE_boot,
+        obs_slope + cnorm(0.95) * SE_boot)
+CI
+```
+
+We are 95% confident that for each additional hundred cigarettes smoked per
+capita, the lung cancer rate increases by between `r round(CI[1], 4)` and
+`r round(CI[2], 4)` cases per 100,000 people.
+
+<div class="tip-box">
+**Why `resample_pairs()` and not `sample(..., replace = TRUE)`?** For paired
+data, we must resample observations (rows) together to preserve the
+relationship between x and y. Resampling x and y independently would
+destroy the very correlation we are trying to measure.
+</div>
+
+---
+
+## Quick Reference
+
+| Parameter | Resample method | CI formula |
+|---|---|---|
+| One proportion | `sample(data, n, replace=TRUE)` → `get_proportion()` | `obs ± cnorm(C) * sd(boot_dist)` |
+| One mean | `sample(data, n, replace=TRUE)` → `mean()` | `obs ± cnorm(C) * sd(boot_dist)` |
+| Diff. of two means | `sample(group, n, replace=TRUE)` for each group | `obs ± cnorm(C) * sd(boot_dist)` |
+| Regression slope | `resample_pairs(x, y)` → `coef(lm(...))` | `obs ± cnorm(C) * sd(boot_dist)` |
