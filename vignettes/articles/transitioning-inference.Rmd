@@ -1,0 +1,452 @@
+---
+title: "Transitioning to Base R: Inference and Visualization"
+description: |
+  Part 2 of 2. Covers ptail(), cnorm(), ct(), distribution plots, and a
+  complete worked example using only base R.
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Transitioning to Base R: Inference and Visualization}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(SDS1000)
+```
+
+<style>
+/* ── Section headers ─────────────────────────────────────────────────────── */
+h2 {
+  margin-top:     3.5rem;
+  padding-top:    0.6rem;
+  padding-bottom: 0.4rem;
+  padding-left:   0.85rem;
+  border-left:    5px solid #286dc0;
+  border-bottom:  1px solid #dee2e6;
+  color: #1a3a5c;
+  font-size: 1.45rem;
+}
+
+h3 {
+  margin-top: 2rem;
+  color: #2c5282;
+  font-size: 1.15rem;
+}
+
+hr {
+  margin:     3rem 0 2rem 0;
+  border:     none;
+  border-top: 2px solid #e2e8f0;
+}
+
+table {
+  margin:    1.25rem 0 1.75rem 0;
+  font-size: 0.93rem;
+  width:     100%;
+}
+
+table thead tr {
+  background-color: #dbeafe;
+  color: #1e3a5f;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.guide-nav {
+  background-color: #f0f7ff;
+  border:           1px solid #bfdbfe;
+  border-radius:    6px;
+  padding:          1.1rem 1.4rem;
+  margin-bottom:    2rem;
+  font-size:        0.95rem;
+}
+
+.guide-nav ul  { margin-bottom: 0; padding-left: 1.2rem; }
+.guide-nav li  { margin-bottom: 0.3rem; }
+
+.tip-box {
+  background-color: #f0fdf4;
+  border-left:      4px solid #22c55e;
+  border-radius:    4px;
+  padding:          0.75rem 1rem;
+  margin:           1.25rem 0;
+  font-size:        0.93rem;
+}
+</style>
+
+## Overview
+
+This is **Part 2** of a two-part guide on transitioning from the SDS1000
+package to base R. It covers the inference and visualization functions. If you
+haven't read Part 1, start there.
+
+<div class="guide-nav">
+**In this article:**
+
+- [Computing a p-value — `ptail()` → `mean()`](#computing-a-p-value-ptail-mean-with-a-logical-comparison)
+- [Finding critical values — `cnorm()` and `ct()` → `qnorm()` and `qt()`](#finding-critical-values-cnorm-and-ct-qnorm-and-qt)
+- [Plotting distributions — `plot_norm()` and friends](#plotting-distributions-plot_norm-and-friends-dnorm-and-friends)
+- [Putting it all together — a complete worked example](#putting-it-all-together)
+- [Complete cheat sheet](#complete-sds1000-base-r-cheat-sheet)
+
+**Also in this series:**
+
+- [Part 1: Simulation and Data Summaries](transitioning-simulation.html) —
+  `do_it()`, `get_proportion()`, `rflip()`, `rroll()`, `shuffle()`, `resample_pairs()`
+- [Cheat Sheet](transitioning-cheatsheet.html) — printable one-page summary
+</div>
+
+---
+
+## Computing a p-value: `ptail()` → `mean()` with a logical comparison
+
+### What `ptail()` does
+
+After building a null distribution with `replicate()`, the last step of a
+hypothesis test is to compute a p-value: the proportion of values in the null
+distribution that are *as extreme or more extreme* than the observed statistic.
+In S&DS 1000, you used `ptail()` for this:
+
+```{r ptail_signature, eval=FALSE}
+ptail(obs_value, x, lower.tail = TRUE)
+```
+
+- `obs_value` — the observed statistic from your real data
+- `x` — the null distribution (a vector of simulated statistics)
+- `lower.tail` — if `TRUE` (default), counts values **≤** `obs_value` (left tail);
+  if `FALSE`, counts values **≥** `obs_value` (right tail)
+
+For example, to test whether Paul the Octopus was psychic (11 correct out of 12):
+
+```{r ptail_example, eval=FALSE}
+# SDS1000 version — upper-tail p-value
+p_value <- ptail(paul_stat, null_distribution, lower.tail = FALSE)
+```
+
+### The base R equivalent: `mean()` with a logical comparison
+
+`ptail()` is just `sum(x >= obs) / length(x)` under the hood. The `mean()`
+trick — taking the mean of a logical vector — gives the same result in one step:
+
+```{r ptail_base_r, eval=FALSE}
+# Upper-tail p-value (was: ptail(obs, null, lower.tail = FALSE))
+p_value <- mean(null_distribution >= obs_stat)
+
+# Lower-tail p-value (was: ptail(obs, null, lower.tail = TRUE))
+p_value <- mean(null_distribution <= obs_stat)
+```
+
+### A worked example
+
+```{r worked_example}
+set.seed(4021)
+
+obs_heads    <- 57
+null_distribution <- replicate(10000, {
+  rbinom(1, size = 100, prob = 0.5)
+})
+
+hist(null_distribution,
+     main = "Null Distribution (fair coin, n = 100)",
+     xlab = "Number of Heads",
+     col = "steelblue", border = "white")
+abline(v = obs_heads, col = "red", lwd = 2)
+
+p_value <- mean(null_distribution >= obs_heads)
+p_value
+```
+
+<div class="tip-box">
+**Note on `pnull()`:** Earlier homeworks used `pnull()` instead of `ptail()`.
+The two functions are identical — `pnull()` has since been deprecated. Replace
+any `pnull()` calls with `ptail()`, or better yet, use `mean()` directly.
+</div>
+
+### Quick reference
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Upper-tail p-value (obs ≥ null) | `ptail(obs, null, lower.tail = FALSE)` | `mean(null >= obs)` |
+| Lower-tail p-value (obs ≤ null) | `ptail(obs, null, lower.tail = TRUE)` | `mean(null <= obs)` |
+
+---
+
+## Finding critical values: `cnorm()` and `ct()` → `qnorm()` and `qt()`
+
+### What these functions do
+
+`cnorm()` and `ct()` return the critical value z* or t* needed for a
+confidence interval at a given confidence level C:
+
+$$CI = \bar{x} \pm z^* \cdot SE$$
+
+### The base R equivalent: `qnorm()` and `qt()`
+
+For confidence level C, the upper critical value is at quantile
+$$q = 1 - \frac{1 - C}{2}$$
+
+So a 95% CI uses the 97.5th percentile (2.5% in each tail):
+
+```{r cnorm_equiv}
+# cnorm(0.95) — base R equivalent
+qnorm(0.975)        # = qnorm(1 - (1 - 0.95) / 2)
+```
+
+```{r ct_equiv}
+# ct(0.95, df = 15) — base R equivalent
+qt(0.975, df = 15)
+```
+
+Common critical values to know:
+
+| Confidence level | `qnorm()` call | z* |
+|---|---|---|
+| 90% | `qnorm(0.95)` | ≈ 1.645 |
+| 95% | `qnorm(0.975)` | ≈ 1.960 |
+| 99% | `qnorm(0.995)` | ≈ 2.576 |
+
+### Using `qnorm()` and `qt()` in confidence intervals
+
+**Bootstrap CI with normal critical value (class 11 style):**
+
+```{r cnorm_boot_ci}
+set.seed(2251)
+
+body_temps <- rnorm(50, mean = 98.25, sd = 0.73)
+obs_mean   <- mean(body_temps)
+
+boot_dist <- replicate(10000, mean(sample(body_temps, length(body_temps), replace = TRUE)))
+SE_boot   <- sd(boot_dist)
+
+z_star <- qnorm(0.975)             # was: cnorm(0.95)
+ci_95  <- c(obs_mean - z_star * SE_boot, obs_mean + z_star * SE_boot)
+ci_95
+```
+
+**Theory-based t CI (class 21 style):**
+
+```{r ct_theory_ci}
+n    <- 55;  xbar <- 7.0;  s <- 1.2
+SE   <- s / sqrt(n);  df <- n - 1
+
+t_star <- qt(0.975, df = df)       # was: ct(0.95, df)
+ci     <- c(xbar - t_star * SE, xbar + t_star * SE)
+ci
+```
+
+### Quick reference
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Normal critical value for C% CI | `cnorm(C)` | `qnorm(1 - (1 - C) / 2)` |
+| t critical value for C% CI | `ct(C, df)` | `qt(1 - (1 - C) / 2, df = df)` |
+| Both critical values (±) | `cnorm(C, side = "both")` | `c(qnorm((1-C)/2), qnorm(1-(1-C)/2))` |
+
+---
+
+## Plotting distributions: `plot_norm()` and friends → `dnorm()` and friends
+
+In base R, theoretical distributions are plotted using three steps: create x
+values with `seq()`, evaluate the density function, then call `plot()` with
+`type = "l"`. The class code uses this pattern from class 19 onwards.
+
+**The general pattern:**
+
+```{r density_pattern, eval=FALSE}
+x    <- seq(lower, upper, length.out = 1000)
+dens <- d___(x, ...)
+plot(x, dens, type = "l",
+     main = "...", xlab = "...", ylab = "Density")
+abline(v = obs_stat, col = "red", lwd = 2)   # mark the observed statistic
+```
+
+### Normal distribution (`plot_norm()` → `dnorm()`)
+
+From class 19 — the distribution of IQ scores:
+
+```{r plot_norm_base}
+x    <- seq(50, 150, length.out = 1000)
+dens <- dnorm(x, mean = 100, sd = 15)
+
+plot(x, dens, type = "l",
+     main = "Distribution of IQ Scores",
+     xlab = "IQ Score", ylab = "Density")
+```
+
+To overlay a density curve on a histogram, use `probability = TRUE` in
+`hist()` and then `lines()`:
+
+```{r plot_norm_overlay}
+iq_scores <- rnorm(500, mean = 100, sd = 15)
+
+hist(iq_scores, probability = TRUE, breaks = 30,
+     main = "IQ Scores with Density Overlay", xlab = "IQ Score")
+lines(x, dens, col = "red", lwd = 2)
+```
+
+### t-distribution (`plot_t()` → `dt()`)
+
+From class 21 and 22 — marking an observed t-statistic:
+
+```{r plot_t_base}
+df <- 54;  t_stat <- 2.1
+
+x    <- seq(-5, 5, length.out = 1000)
+dens <- dt(x, df = df)
+
+plot(x, dens, type = "l", col = "blue",
+     main = "Null Distribution of T-statistic",
+     xlab = "T-score", ylab = "Density")
+abline(v = t_stat, col = "red", lwd = 2)
+
+pt(t_stat, df = df, lower.tail = FALSE)   # p-value
+```
+
+### Chi-squared distribution (`plot_chisq()` → `dchisq()`)
+
+From class 23 and 24:
+
+```{r plot_chisq_base}
+df <- 11;  chi_sq_stat <- 15.3
+
+x    <- seq(0, 40, length.out = 1000)
+dens <- dchisq(x, df = df)
+
+plot(x, dens, type = "l", col = "blue",
+     main = "Null Distribution of Chi-squared Statistic",
+     xlab = "Chi-squared value", ylab = "Density")
+abline(v = chi_sq_stat, col = "red", lwd = 2)
+
+pchisq(chi_sq_stat, df = df, lower.tail = FALSE)   # p-value
+```
+
+### Quick reference
+
+| Distribution | Density function | p-value function | SDS1000 plot |
+|---|---|---|---|
+| Normal | `dnorm(x, mean, sd)` | `pnorm()` | `plot_norm()` |
+| t | `dt(x, df)` | `pt()` | `plot_t()` |
+| Chi-squared | `dchisq(x, df)` | `pchisq()` | `plot_chisq()` |
+| F | `df(x, df1, df2)` | `pf()` | `plot_f()` |
+
+---
+
+## Putting it all together
+
+A complete, base-R-only analysis using the **calcium supplement study** from
+the class 17 notes. Lyle et al. (1987) randomly assigned men to a treatment
+group (calcium supplement, n = 10) or a control group (placebo, n = 11) for
+12 weeks. The outcome is the decrease in blood pressure.
+
+### Step 1: Data and observed statistic
+
+```{r calcium_data}
+treat   <- c(7, -4, 18, 17, -3, -5,  1, 10, 11, -2)
+control <- c(-1, 12, -1, -3,  3, -5,  5,  2, -11, -1, -3)
+
+obs_stat <- mean(treat) - mean(control)
+obs_stat
+```
+
+### Step 2: Permutation test
+
+$$H_0: \mu_\text{treat} = \mu_\text{control} \qquad H_A: \mu_\text{treat} > \mu_\text{control}$$
+
+| SDS1000 | Base R |
+|---|---|
+| `do_it(10000) * { ... }` | `replicate(10000, { ... })` |
+| `shuffle(combined_data)` | `sample(combined_data)` |
+| `pnull(obs, null, lower.tail = FALSE)` | `mean(null >= obs)` |
+
+```{r calcium_null}
+set.seed(6174)
+combined_data <- c(treat, control)
+
+null_dist <- replicate(10000, {
+  shuff         <- sample(combined_data)
+  mean(shuff[1:10]) - mean(shuff[11:21])
+})
+
+hist(null_dist, breaks = 60,
+     main = "Null Distribution — Calcium Study",
+     xlab = "Difference in means (mmHg)",
+     col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+
+p_value <- mean(null_dist >= obs_stat)
+p_value
+```
+
+The p-value is just above 0.05: suggestive, but not conclusive at α = 0.05.
+
+### Step 3: Bootstrap confidence interval
+
+| SDS1000 | Base R |
+|---|---|
+| `do_it(10000) * { ... }` | `replicate(10000, { ... })` |
+| `cnorm(0.95)` | `qnorm(0.975)` |
+
+```{r calcium_boot}
+set.seed(6174)
+
+boot_dist <- replicate(10000, {
+  mean(sample(treat,   replace = TRUE)) -
+  mean(sample(control, replace = TRUE))
+})
+
+hist(boot_dist, breaks = 60,
+     main = "Bootstrap Distribution — Difference in Means",
+     xlab = "Difference in means (mmHg)",
+     col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+```
+
+**Method 1 — SE-based CI** (uses `qnorm()`, as in class 11):
+
+```{r calcium_se_ci}
+SE_boot <- sd(boot_dist)
+z_star  <- qnorm(0.975)               # was: cnorm(0.95)
+ci_se   <- c(obs_stat - z_star * SE_boot,
+             obs_stat + z_star * SE_boot)
+ci_se
+```
+
+**Method 2 — Percentile CI** (no normality assumption):
+
+```{r calcium_pct_ci}
+ci_pct <- quantile(boot_dist, c(0.025, 0.975))
+ci_pct
+```
+
+Both intervals include zero, consistent with the hypothesis test, but extend
+well above zero — a meaningful treatment effect remains plausible.
+
+---
+
+## Complete SDS1000 → Base R cheat sheet
+
+<div class="tip-box">
+All substitutions covered across both parts of this guide.
+See also the <a href="transitioning-cheatsheet.html">printable cheat sheet</a>.
+</div>
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Repeat a process *n* times | `do_it(n) * { expr }` | `replicate(n, { expr })` |
+| Proportion of one category | `get_proportion(v, "cat")` | `mean(v == "cat")` |
+| Proportions of all categories | — | `prop.table(table(v))` |
+| Randomly permute a vector | `shuffle(v)` | `sample(v)` |
+| Upper-tail p-value | `ptail(obs, null, lower.tail = FALSE)` | `mean(null >= obs)` |
+| Lower-tail p-value | `ptail(obs, null, lower.tail = TRUE)` | `mean(null <= obs)` |
+| Bootstrap resample (paired) | `resample_pairs(v1, v2)` | `idx <- sample(n, replace=TRUE); v1[idx]; v2[idx]` |
+| Bootstrap resample (independent) | — | `sample(v, length(v), replace = TRUE)` |
+| Normal critical value for C% CI | `cnorm(C)` | `qnorm(1 - (1 - C) / 2)` |
+| t critical value for C% CI | `ct(C, df)` | `qt(1 - (1 - C) / 2, df = df)` |
+| Count of heads from *n* flips | `rflip(n, prob)` | `rbinom(1, size = n, prob = prob)` |
+| Counts for each die face | `rroll(n, prob)` | `as.vector(rmultinom(1, size = n, prob = prob))` |
+| Plot a normal density curve | `plot_norm(mean, sd)` | `plot(x, dnorm(x, mean, sd), type = "l")` |
+| Plot a t density curve | `plot_t(df)` | `plot(x, dt(x, df), type = "l")` |
+| Plot a chi-squared density curve | `plot_chisq(df)` | `plot(x, dchisq(x, df), type = "l")` |

@@ -1,0 +1,184 @@
+---
+title: "SDS1000 → Base R Cheat Sheet"
+description: |
+  A printable one-page summary of every SDS1000 function and its base R
+  equivalent. Use File > Print (or Ctrl/Cmd + P) to save as PDF.
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SDS1000 -> Base R Cheat Sheet}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<style>
+/* ── Screen styles ───────────────────────────────────────────────────────── */
+body {
+  font-family: system-ui, sans-serif;
+  font-size:   0.95rem;
+  max-width:   900px;
+  margin:      0 auto;
+}
+
+h2 {
+  margin-top:     2rem;
+  padding-top:    0.5rem;
+  padding-bottom: 0.3rem;
+  padding-left:   0.75rem;
+  border-left:    5px solid #286dc0;
+  border-bottom:  1px solid #dee2e6;
+  color:          #1a3a5c;
+  font-size:      1.2rem;
+}
+
+table {
+  width:         100%;
+  border-collapse: collapse;
+  font-size:     0.88rem;
+  margin-bottom: 1.5rem;
+}
+
+th {
+  background-color: #dbeafe;
+  color:            #1e3a5f;
+  padding:          6px 10px;
+  text-align:       left;
+  font-weight:      600;
+}
+
+td {
+  padding:       5px 10px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: top;
+}
+
+tr:nth-child(even) td { background-color: #f8fafc; }
+
+code {
+  background-color: #f1f5f9;
+  border-radius:    3px;
+  padding:          1px 4px;
+  font-size:        0.85em;
+}
+
+.print-btn {
+  display:          inline-block;
+  margin:           0.75rem 0 1.5rem 0;
+  padding:          0.45rem 1.1rem;
+  background-color: #286dc0;
+  color:            #fff !important;
+  border-radius:    5px;
+  font-size:        0.9rem;
+  cursor:           pointer;
+  text-decoration:  none;
+  border:           none;
+}
+
+.print-btn:hover { background-color: #1a4f8f; }
+
+.back-links {
+  font-size:     0.88rem;
+  margin-bottom: 1.25rem;
+  color:         #555;
+}
+
+/* ── Print styles ────────────────────────────────────────────────────────── */
+@media print {
+  .print-btn, .back-links { display: none; }
+
+  body        { font-size: 9pt; max-width: 100%; }
+  h2          { font-size: 11pt; margin-top: 14pt; padding-top: 4pt; }
+  table       { font-size: 8pt; page-break-inside: avoid; }
+  th          { background-color: #cfe2ff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background-color: #f5f8ff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  code        { background: none; font-size: 7.5pt; }
+}
+</style>
+
+<p class="back-links">
+← Back to
+<a href="transitioning-simulation.html">Part 1: Simulation and Data Summaries</a>
+&nbsp;|&nbsp;
+<a href="transitioning-inference.html">Part 2: Inference and Visualization</a>
+</p>
+
+<button class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
+
+---
+
+## Repeating processes
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Repeat a process *n* times | `do_it(n) * { expr }` | `replicate(n, { expr })` |
+| Repeat with explicit indexing | — | `for (i in 1:n) { result[i] <- expr }` |
+
+---
+
+## Summarizing categorical data
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Proportion of one category | `get_proportion(v, "cat")` | `mean(v == "cat")` |
+| Proportions of all categories | — | `prop.table(table(v))` |
+| Counts of all categories | — | `table(v)` |
+
+---
+
+## Simulating random outcomes
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Count of heads from *n* flips | `rflip(n, prob)` | `rbinom(1, size = n, prob = prob)` |
+| Proportion of heads from *n* flips | `rflip(n, prob) / n` | `rbinom(1, n, prob) / n` |
+| Counts for each face of a die | `rroll(n, prob)` | `as.vector(rmultinom(1, size = n, prob = prob))` |
+
+---
+
+## Permutation tests and bootstrapping
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Randomly permute a vector | `shuffle(v)` | `sample(v)` |
+| Bootstrap resample (paired vectors) | `resample_pairs(v1, v2)` | `idx <- sample(n, replace=TRUE); v1[idx]; v2[idx]` |
+| Bootstrap resample (independent groups) | — | `sample(v, length(v), replace = TRUE)` |
+
+---
+
+## Computing p-values
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Upper-tail p-value | `ptail(obs, null, lower.tail = FALSE)` | `mean(null >= obs)` |
+| Lower-tail p-value | `ptail(obs, null, lower.tail = TRUE)` | `mean(null <= obs)` |
+
+---
+
+## Confidence interval critical values
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Normal critical value for C% CI | `cnorm(C)` | `qnorm(1 - (1 - C) / 2)` |
+| t critical value for C% CI | `ct(C, df)` | `qt(1 - (1 - C) / 2, df = df)` |
+| Both tails (±) | `cnorm(C, side = "both")` | `c(qnorm((1-C)/2), qnorm(1-(1-C)/2))` |
+
+Common z* values: 90% → 1.645 &nbsp;|&nbsp; 95% → 1.960 &nbsp;|&nbsp; 99% → 2.576
+
+---
+
+## Plotting theoretical distributions
+
+| Distribution | Density | p-value | SDS1000 |
+|---|---|---|---|
+| Normal | `dnorm(x, mean, sd)` | `pnorm()` | `plot_norm()` |
+| t | `dt(x, df)` | `pt()` | `plot_t()` |
+| Chi-squared | `dchisq(x, df)` | `pchisq()` | `plot_chisq()` |
+| F | `df(x, df1, df2)` | `pf()` | `plot_f()` |
+
+**Pattern for any distribution:**
+
+```r
+x    <- seq(lower, upper, length.out = 1000)
+dens <- d___(x, ...)
+plot(x, dens, type = "l", xlab = "...", ylab = "Density")
+abline(v = obs_stat, col = "red", lwd = 2)
+```

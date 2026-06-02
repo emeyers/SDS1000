@@ -2,6 +2,13 @@ url: https://emeyers.github.io/SDS1000/
 template:
   bootstrap: 5
 
+articles:
+  - title: "Transitioning to Base R"
+    desc: >
+      A two-part guide for students graduating from SDS1000 who want to analyze
+      data using standard R without relying on the SDS1000 package.
+    contents:
+      - starts_with("articles/transitioning")
 
 reference:
 - title: Analyze Data

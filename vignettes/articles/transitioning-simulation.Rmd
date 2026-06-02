@@ -1,0 +1,433 @@
+---
+title: "Transitioning to Base R: Simulation and Data Summaries"
+description: |
+  Part 1 of 2. Covers do_it(), get_proportion(), rflip(), rroll(),
+  shuffle(), and resample_pairs() and their base R equivalents.
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Transitioning to Base R: Simulation and Data Summaries}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(SDS1000)
+```
+
+<style>
+/* ── Section headers ─────────────────────────────────────────────────────── */
+h2 {
+  margin-top:     3.5rem;
+  padding-top:    0.6rem;
+  padding-bottom: 0.4rem;
+  padding-left:   0.85rem;
+  border-left:    5px solid #286dc0;
+  border-bottom:  1px solid #dee2e6;
+  color: #1a3a5c;
+  font-size: 1.45rem;
+}
+
+h3 {
+  margin-top: 2rem;
+  color: #2c5282;
+  font-size: 1.15rem;
+}
+
+hr {
+  margin:     3rem 0 2rem 0;
+  border:     none;
+  border-top: 2px solid #e2e8f0;
+}
+
+table {
+  margin:    1.25rem 0 1.75rem 0;
+  font-size: 0.93rem;
+  width:     100%;
+}
+
+table thead tr {
+  background-color: #dbeafe;
+  color: #1e3a5f;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.guide-nav {
+  background-color: #f0f7ff;
+  border:           1px solid #bfdbfe;
+  border-radius:    6px;
+  padding:          1.1rem 1.4rem;
+  margin-bottom:    2rem;
+  font-size:        0.95rem;
+}
+
+.guide-nav ul  { margin-bottom: 0; padding-left: 1.2rem; }
+.guide-nav li  { margin-bottom: 0.3rem; }
+
+.tip-box {
+  background-color: #f0fdf4;
+  border-left:      4px solid #22c55e;
+  border-radius:    4px;
+  padding:          0.75rem 1rem;
+  margin:           1.25rem 0;
+  font-size:        0.93rem;
+}
+</style>
+
+## Overview
+
+The SDS1000 package was designed to make it easier to learn the core ideas of
+statistics in R. Now that you have finished S&DS 1000, you are ready to analyze
+data using standard R tools that are available to every R user — no special
+package required.
+
+This is **Part 1** of a two-part guide. It covers the simulation and data
+summary functions. Part 2 covers inference and visualization.
+
+<div class="guide-nav">
+**In this article:**
+
+- [Repeating a process — `do_it()` → `replicate()`](#repeating-a-process-do_it-replicate)
+- [Calculating a proportion — `get_proportion()` → `mean()` or `table()`](#calculating-a-proportion-get_proportion-mean-or-table)
+- [Simulating coin flips and die rolls — `rflip()` and `rroll()`](#simulating-coin-flips-and-die-rolls-rflip-and-rroll)
+- [Permutation tests and bootstrapping — `shuffle()` and `resample_pairs()`](#permutation-tests-and-bootstrapping-shuffle-and-resample_pairs)
+
+**Also in this series:**
+
+- [Part 2: Inference and Visualization](transitioning-inference.html) —
+  `ptail()`, `cnorm()`, `ct()`, distribution plots, and a complete worked example
+- [Cheat Sheet](transitioning-cheatsheet.html) — printable one-page summary
+</div>
+
+---
+
+## Repeating a process: `do_it()` → `replicate()`
+
+### What `do_it()` does
+
+In S&DS 1000, you used `do_it(n)` to repeat a block of code `n` times and
+collect the results into a vector. For example, to build a **sampling
+distribution** of the proportion of red sprinkles from samples of size 100:
+
+```{r do_it_example, eval=FALSE}
+# SDS1000 version
+sampling_distribution <- do_it(10000) * {
+  get_proportion(rsprinkles(100), "red")
+}
+```
+
+You also used it to build a **bootstrap distribution**:
+
+```{r do_it_bootstrap, eval=FALSE}
+# SDS1000 version
+bootstrap_dist <- do_it(10000) * {
+  mean(sample(price_sample, length(price_sample), replace = TRUE))
+}
+```
+
+And to build a **null distribution** by shuffling:
+
+```{r do_it_null, eval=FALSE}
+# SDS1000 version
+null_distribution <- do_it(10000) * {
+  cor(shuffle(draft_numbers), birth_months)
+}
+```
+
+### The base R equivalent: `replicate()`
+
+The base R function `replicate(n, expr)` does exactly the same thing: it
+evaluates the expression `expr` a total of `n` times and returns the results
+as a vector.
+
+```{r replicate_pattern, eval=FALSE}
+results <- replicate(n, {
+  # your code here — the result of the last line is collected
+})
+```
+
+Here are the same three examples rewritten with `replicate()`:
+
+**Sampling distribution:**
+
+```{r replicate_sampling, eval=FALSE}
+sampling_distribution <- replicate(10000, {
+  mean(rsprinkles(100) == "red")   # get_proportion() → mean(v == "cat")
+})
+```
+
+**Bootstrap distribution:**
+
+```{r replicate_bootstrap, eval=FALSE}
+bootstrap_dist <- replicate(10000, {
+  mean(sample(price_sample, length(price_sample), replace = TRUE))
+})
+```
+
+**Null distribution (shuffling):**
+
+```{r replicate_null, eval=FALSE}
+null_distribution <- replicate(10000, {
+  cor(sample(draft_numbers), birth_months)  # sample() with no replace = shuffles
+})
+```
+
+### The `for` loop alternative
+
+You can also use a `for` loop, which makes the mechanics more explicit:
+
+```{r for_loop, eval=FALSE}
+n_repetitions <- 10000
+sampling_distribution <- numeric(n_repetitions)  # pre-allocate an empty vector
+
+for (i in 1:n_repetitions) {
+  sampling_distribution[i] <- mean(rsprinkles(100) == "red")
+}
+```
+
+The `replicate()` approach is more concise; the `for` loop makes the indexing
+transparent. Both produce identical results.
+
+### A working example
+
+```{r working_example}
+set.seed(1783)
+
+sampling_dist <- replicate(5000, {
+  mean(rnorm(30, mean = 0, sd = 1))
+})
+
+hist(sampling_dist,
+     main = "Sampling Distribution of the Mean (n = 30)",
+     xlab = "Sample Mean",
+     col = "steelblue", border = "white")
+```
+
+### Quick reference
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Repeat a process `n` times | `do_it(n) * { expr }` | `replicate(n, { expr })` |
+| Repeat with explicit indexing | — | `for (i in 1:n) { result[i] <- expr }` |
+
+---
+
+## Calculating a proportion: `get_proportion()` → `mean()` or `table()`
+
+### What `get_proportion()` does
+
+`get_proportion(v, category_name)` returns the proportion of elements in
+vector `v` that belong to a named category:
+
+```{r get_proportion_example, eval=FALSE}
+# SDS1000 version
+p_hat <- get_proportion(one_sample, "red")
+```
+
+### Base R approach 1: `mean()` with a logical comparison (recommended)
+
+Because `TRUE` and `FALSE` are stored as `1` and `0` in R, taking `mean()` of
+a logical vector gives the proportion of `TRUE` values:
+
+```{r mean_logical, eval=FALSE}
+p_hat <- mean(one_sample == "red")
+```
+
+This form is especially useful inside `replicate()` since it fits on one line:
+
+```{r replicate_with_mean, eval=FALSE}
+sampling_distribution <- replicate(10000, {
+  mean(rsprinkles(100) == "red")
+})
+```
+
+### Base R approach 2: `table()` and `prop.table()`
+
+Use these when you want to see all categories at once:
+
+```{r table_approach}
+one_sample <- rsprinkles(100)
+table(one_sample)         # raw counts
+```
+
+```{r prop_table_approach}
+prop.table(table(one_sample))   # proportions for every category
+```
+
+### Quick reference
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Proportion of one category | `get_proportion(v, "red")` | `mean(v == "red")` |
+| Proportions of all categories | — | `prop.table(table(v))` |
+| Counts of all categories | — | `table(v)` |
+
+---
+
+## Simulating coin flips and die rolls: `rflip()` and `rroll()`
+
+### `rflip()` → `rbinom()`
+
+`rflip(num_flips, prob)` simulates flipping a coin `num_flips` times and
+returns the **count** of heads. Under the hood it is one call to `rbinom()`:
+
+```{r rflip_def, eval=FALSE}
+rflip(num_flips, prob)
+rbinom(1, size = num_flips, prob = prob)   # equivalent
+```
+
+Simulating 100 fair coin flips (class 12 / 13 style):
+
+```{r rflip_example}
+set.seed(3341)
+rbinom(1, size = 100, prob = 0.5)
+```
+
+To build a null distribution of head counts inside `replicate()`:
+
+```{r rflip_null}
+set.seed(7823)
+
+null_dist <- replicate(10000, rbinom(1, size = 100, prob = 0.5))
+
+hist(null_dist,
+     main = "Null Distribution — Heads out of 100 Flips (p = 0.5)",
+     xlab = "Number of Heads",
+     col = "steelblue", border = "white")
+```
+
+To return a **proportion** instead of a count, divide by `num_flips`:
+
+```{r rflip_proportion, eval=FALSE}
+# rflip(48, prob = 0.6) / 48    ← SDS1000
+rbinom(1, size = 48, prob = 0.6) / 48   # Base R
+```
+
+### `rroll()` → `rmultinom()`
+
+`rroll(num_rolls, prob)` simulates rolling a die `num_rolls` times and
+returns the **count** of each face. It wraps `rmultinom()`:
+
+```{r rroll_def, eval=FALSE}
+rroll(100)                                                    # SDS1000
+as.vector(rmultinom(1, size = 100, prob = rep(1/6, 6)))      # Base R
+```
+
+`rmultinom()` returns a matrix, so `as.vector()` is needed for a plain vector.
+For a 12-sided die as used in class 23:
+
+```{r rroll_example}
+set.seed(3319)
+die_counts <- as.vector(rmultinom(1, size = 120, prob = rep(1/12, 12)))
+names(die_counts) <- 1:12
+die_counts
+```
+
+### Quick reference
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Count of heads from *n* flips | `rflip(n, prob)` | `rbinom(1, size = n, prob = prob)` |
+| Proportion of heads from *n* flips | `rflip(n, prob) / n` | `rbinom(1, n, prob) / n` |
+| Counts for each face of a die | `rroll(n, prob)` | `as.vector(rmultinom(1, size = n, prob = prob))` |
+
+---
+
+## Permutation tests and bootstrapping: `shuffle()` and `resample_pairs()`
+
+These two functions are the building blocks of simulation-based inference.
+`shuffle()` powers **permutation tests**; `resample_pairs()` powers
+**bootstrap confidence intervals** for paired variables.
+
+### `shuffle()` → `sample()`
+
+`shuffle(v)` is a direct wrapper around `sample(v)` — both return a random
+permutation of `v`:
+
+```{r shuffle_def, eval=FALSE}
+shuffle(v)   # SDS1000
+sample(v)    # Base R — identical
+```
+
+In a permutation test, shuffling one variable breaks its relationship with
+another, simulating the null hypothesis. For example, testing whether draft
+numbers were correlated with birth date:
+
+```{r permutation_test}
+set.seed(8812)
+
+n <- 100
+x <- rnorm(n)
+y <- 0.3 * x + rnorm(n)
+obs_stat <- cor(x, y)
+
+null_distribution <- replicate(10000, {
+  cor(sample(x), y)   # sample(x) = shuffle(x)
+})
+
+p_value <- mean(abs(null_distribution) >= abs(obs_stat))
+
+hist(null_distribution,
+     main = "Null Distribution of Correlation",
+     xlab = "Correlation", col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+p_value
+```
+
+### `resample_pairs()` → `sample()` with `replace = TRUE`
+
+`resample_pairs(vector1, vector2)` draws a bootstrap resample from two paired
+vectors, keeping each pair together. The key is generating one set of indices
+and applying them to both vectors:
+
+```{r resample_pairs_base, eval=FALSE}
+# SDS1000 version
+resampled_data   <- resample_pairs(cigs_per_capita, cancer_rate)
+resampled_cigs   <- resampled_data$vector1
+resampled_cancer <- resampled_data$vector2
+
+# Base R version
+n                <- length(cigs_per_capita)
+boot_inds        <- sample(n, replace = TRUE)
+resampled_cigs   <- cigs_per_capita[boot_inds]
+resampled_cancer <- cancer_rate[boot_inds]
+```
+
+A complete bootstrap for a regression slope in base R (class 25 style):
+
+```{r bootstrap_slope}
+set.seed(3047)
+
+cigs_per_capita <- runif(50, 10, 40)
+cancer_rate     <- 2 + 0.8 * cigs_per_capita + rnorm(50, sd = 5)
+obs_slope       <- coef(lm(cancer_rate ~ cigs_per_capita))[2]
+
+boot_dist <- replicate(10000, {
+  n         <- length(cigs_per_capita)
+  boot_inds <- sample(n, replace = TRUE)
+  coef(lm(cancer_rate[boot_inds] ~ cigs_per_capita[boot_inds]))[2]
+})
+
+hist(boot_dist,
+     main = "Bootstrap Distribution of Regression Slope",
+     xlab = "Slope", col = "steelblue", border = "white")
+abline(v = obs_slope, col = "red", lwd = 2)
+
+quantile(boot_dist, c(0.025, 0.975))
+```
+
+### Quick reference
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Randomly permute a vector | `shuffle(v)` | `sample(v)` |
+| Bootstrap resample two paired vectors | `resample_pairs(v1, v2)` | `idx <- sample(n, replace=TRUE); v1[idx]; v2[idx]` |
+
+<div class="tip-box">
+**Continue to Part 2:** [Inference and Visualization](transitioning-inference.html) covers
+`ptail()`, `cnorm()`, `ct()`, distribution plots, and a complete worked example
+tying everything together.
+</div>

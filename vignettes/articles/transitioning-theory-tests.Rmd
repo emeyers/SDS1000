@@ -1,0 +1,479 @@
+---
+title: "Transitioning to Base R: Theory-Based Hypothesis Tests"
+description: |
+  Part 3 of the transitioning series. Covers t.test(), cor.test(), aov(),
+  chisq.test(), and lm() as complete base R replacements for the SDS1000
+  wrapper functions.
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Transitioning to Base R: Theory-Based Hypothesis Tests}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+<style>
+h2 {
+  margin-top:     3.5rem;
+  padding-top:    0.6rem;
+  padding-bottom: 0.4rem;
+  padding-left:   0.85rem;
+  border-left:    5px solid #286dc0;
+  border-bottom:  1px solid #dee2e6;
+  color: #1a3a5c;
+  font-size: 1.45rem;
+}
+
+h3 {
+  margin-top: 2rem;
+  color: #2c5282;
+  font-size: 1.15rem;
+}
+
+hr {
+  margin:     3rem 0 2rem 0;
+  border:     none;
+  border-top: 2px solid #e2e8f0;
+}
+
+table {
+  margin:    1.25rem 0 1.75rem 0;
+  font-size: 0.93rem;
+  width:     100%;
+}
+
+table thead tr {
+  background-color: #dbeafe;
+  color: #1e3a5f;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.guide-nav {
+  background-color: #f0f7ff;
+  border:           1px solid #bfdbfe;
+  border-radius:    6px;
+  padding:          1.1rem 1.4rem;
+  margin-bottom:    2rem;
+  font-size:        0.95rem;
+}
+
+.guide-nav ul  { margin-bottom: 0; padding-left: 1.2rem; }
+.guide-nav li  { margin-bottom: 0.3rem; }
+
+.tip-box {
+  background-color: #f0fdf4;
+  border-left:      4px solid #22c55e;
+  border-radius:    4px;
+  padding:          0.75rem 1rem;
+  margin:           1.25rem 0;
+  font-size:        0.93rem;
+}
+
+.warn-box {
+  background-color: #fffbeb;
+  border-left:      4px solid #f59e0b;
+  border-radius:    4px;
+  padding:          0.75rem 1rem;
+  margin:           1.25rem 0;
+  font-size:        0.93rem;
+}
+</style>
+
+## Overview
+
+In S&DS 1000, you built null distributions by simulation (using `do_it()` and
+`shuffle()` / `rflip()`) and computed p-values by counting. That
+**randomization** approach works for almost any statistic and requires very
+few assumptions.
+
+For many common situations — comparing means, testing correlations, comparing
+proportions — statisticians have worked out what the null distribution looks
+like *mathematically*. Base R provides dedicated functions for these
+**theory-based** tests that return p-values, confidence intervals, and test
+statistics in a single call.
+
+<div class="guide-nav">
+**In this article:**
+
+- [t-tests — `t.test()`](#t-tests-comparing-means)
+- [Correlation — `cor.test()`](#correlation-cor.test)
+- [ANOVA — `aov()` and `summary()`](#one-way-anova-aov)
+- [Chi-squared test — `chisq.test()`](#chi-squared-test-chisq.test)
+- [Linear regression — `lm()` and `summary()`](#linear-regression-lm)
+
+**Also in this series:**
+
+- [Part 1: Simulation and Data Summaries](transitioning-simulation.html)
+- [Part 2: Inference and Visualization](transitioning-inference.html)
+- [Cheat Sheet](transitioning-cheatsheet.html)
+</div>
+
+<div class="warn-box">
+**A note on assumptions.** Theory-based tests rely on mathematical
+approximations that are only valid when certain assumptions hold (e.g.,
+approximate normality, independence). Always check that assumptions are
+reasonable before trusting a p-value. The randomization approach from
+Parts 1 and 2 is more robust when assumptions are uncertain.
+</div>
+
+---
+
+## t-tests: Comparing Means
+
+`t.test()` covers three common scenarios: testing a single mean against a
+reference value, comparing two independent groups, and comparing paired
+measurements. All three return the same type of output — a t-statistic,
+degrees of freedom, p-value, and confidence interval.
+
+### One-sample t-test
+
+Tests whether a population mean equals a specified value $\mu_0$.
+
+$$H_0: \mu = \mu_0 \qquad H_A: \mu \ne \mu_0$$
+
+```{r one_sample_t}
+# Are Yale students' average sleep different from the national average of 7 hrs?
+set.seed(5502)
+sleep_hours <- c(6.1, 7.3, 5.8, 6.5, 7.0, 6.8, 5.5, 7.2, 6.9, 6.3,
+                 7.1, 5.9, 6.4, 7.4, 6.0, 6.7, 5.6, 7.5, 6.2, 6.6)
+
+t.test(sleep_hours, mu = 7)
+```
+
+Reading the output:
+
+- **t** — the test statistic
+- **df** — degrees of freedom (n − 1)
+- **p-value** — probability of observing a result this extreme if H₀ were true
+- **95% confidence interval** — a range of plausible values for the true mean
+- **sample mean** — your observed mean
+
+### Two-sample independent t-test
+
+Tests whether two group means are equal. This is the theory-based equivalent
+of the permutation test in Part 2. Using the **calcium supplement study** from
+class 17:
+
+$$H_0: \mu_\text{treat} = \mu_\text{control} \qquad H_A: \mu_\text{treat} > \mu_\text{control}$$
+
+```{r two_sample_t}
+treat   <- c(7, -4, 18, 17, -3, -5,  1, 10, 11, -2)
+control <- c(-1, 12, -1, -3,  3, -5,  5,  2, -11, -1, -3)
+
+t.test(treat, control, alternative = "greater")
+```
+
+The `alternative` argument controls the direction of the test:
+
+| Value | Hypothesis |
+|---|---|
+| `"two.sided"` (default) | $H_A: \mu_1 \ne \mu_2$ |
+| `"greater"` | $H_A: \mu_1 > \mu_2$ |
+| `"less"` | $H_A: \mu_1 < \mu_2$ |
+
+<div class="tip-box">
+By default `t.test()` uses Welch's correction (it does **not** assume equal
+variances). This is the safer choice for most real data. If you have strong
+reason to assume equal variances, add `var.equal = TRUE`, but this is rarely
+necessary.
+</div>
+
+### Paired t-test
+
+When observations come in natural pairs (e.g., the same car measured on both
+sides), use `paired = TRUE`. This is more powerful than an independent t-test
+because it removes the variation between pairs. Based on the **tire wear**
+example from class 23:
+
+$$H_0: \mu_\text{diff} = 0 \qquad H_A: \mu_\text{diff} \ne 0$$
+
+```{r paired_t}
+# Tread wear (mm) on left and right tires of the same 14 cars
+set.seed(7731)
+left_tire  <- c(3.1, 4.2, 2.8, 3.9, 4.5, 3.3, 2.6, 4.8, 3.7, 4.1,
+                2.9, 3.5, 4.4, 3.0)
+right_tire <- left_tire + rnorm(14, mean = 0.2, sd = 0.3)  # right wears slightly more
+
+# Independent t-test (ignores pairing — less powerful)
+t.test(left_tire, right_tire)
+
+# Paired t-test (accounts for pairing — more powerful)
+t.test(left_tire, right_tire, paired = TRUE)
+```
+
+Notice the paired test gives a smaller p-value — it is more sensitive because
+it focuses on the *within-car* differences rather than being diluted by
+variation between cars.
+
+### Quick reference
+
+| Task | Base R |
+|---|---|
+| One-sample t-test | `t.test(x, mu = mu_0)` |
+| Two-sample independent t-test | `t.test(x, y, alternative = "two.sided")` |
+| Paired t-test | `t.test(x, y, paired = TRUE)` |
+| Extract the p-value | `t.test(...)$p.value` |
+| Extract the CI | `t.test(...)$conf.int` |
+
+---
+
+## Correlation: `cor.test()`
+
+`cor.test()` tests whether the correlation between two quantitative variables
+is significantly different from zero. This is the theory-based counterpart to
+the permutation test for correlation that you built using `shuffle()` in Part 1.
+
+$$H_0: \rho = 0 \qquad H_A: \rho \ne 0$$
+
+Using simulated data inspired by the **cigarette consumption and lung cancer**
+example from class 25:
+
+```{r cor_test}
+set.seed(2947)
+cigs_per_capita <- runif(44, min = 10, max = 45)
+cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
+
+cor.test(cigs_per_capita, cancer_rate)
+```
+
+The output includes:
+
+- **t** and **df** — the t-statistic and degrees of freedom used for the test
+- **p-value** — for H₀: ρ = 0
+- **95% confidence interval** — a range of plausible values for the true
+  correlation ρ
+- **cor** — the sample correlation r
+
+You can also compute the correlation alone with `cor()`:
+
+```{r cor_only}
+cor(cigs_per_capita, cancer_rate)
+```
+
+### Quick reference
+
+| Task | Base R |
+|---|---|
+| Test H₀: ρ = 0 | `cor.test(x, y)` |
+| Compute correlation only | `cor(x, y)` |
+| Spearman (rank-based) correlation | `cor.test(x, y, method = "spearman")` |
+
+---
+
+## One-way ANOVA: `aov()`
+
+A one-way analysis of variance tests whether the means of three or more groups
+are all equal. In S&DS 1000, you used `get_F_stat()` to compute the F-statistic
+for a randomization test. `get_F_stat()` is itself a thin wrapper around
+`aov()`:
+
+```{r get_F_stat_source, eval=FALSE}
+# What get_F_stat() does internally:
+get_F_stat <- function(data, grouping) {
+  fit         <- aov(data ~ grouping)
+  fit_summary <- summary(fit)
+  fit_summary[[1]]$`F value`[1]   # extract just the F-statistic
+}
+```
+
+Calling `aov()` directly gives you the full picture — not just the F-statistic,
+but the p-value, degrees of freedom, and more, all in one step.
+
+### Running the ANOVA
+
+Based on the **Sudoku completion times by major** from class 24:
+
+$$H_0: \mu_\text{bio} = \mu_\text{cs} = \mu_\text{econ} = \mu_\text{psych}
+\qquad H_A: \text{at least one mean differs}$$
+
+```{r anova}
+set.seed(1142)
+completion_times <- c(rnorm(10, mean = 22, sd = 4),   # Biology
+                      rnorm(10, mean = 20, sd = 4),   # CS
+                      rnorm(10, mean = 25, sd = 4),   # Econ
+                      rnorm(10, mean = 21, sd = 4))   # Psychology
+majors <- rep(c("Biology", "CS", "Econ", "Psychology"), each = 10)
+
+fit <- aov(completion_times ~ majors)
+summary(fit)
+```
+
+Reading the `summary()` output:
+
+| Column | Meaning |
+|---|---|
+| `Df` | Degrees of freedom (groups − 1; then N − groups) |
+| `Sum Sq` | Sum of squares (between-group; within-group) |
+| `Mean Sq` | Sum Sq / Df |
+| `F value` | The F-statistic — equivalent to `get_F_stat()` |
+| `Pr(>F)` | The p-value |
+
+### Post-hoc comparisons with `TukeyHSD()`
+
+A significant ANOVA F-test tells you that *some* group means differ, but not
+*which* ones. Use `TukeyHSD()` (Tukey's Honest Significant Difference) to make
+all pairwise comparisons while controlling for multiple testing:
+
+```{r tukey}
+TukeyHSD(fit)
+```
+
+Each row compares two groups. The `p adj` column gives p-values adjusted for
+the number of comparisons — use these rather than raw p-values to avoid false
+positives.
+
+<div class="tip-box">
+`aov()` assumes approximately normal residuals and equal variance across
+groups. For a quick check of the equal-variance assumption, look at whether
+the group standard deviations are roughly similar. The randomization F-test
+from Part 1 (using `get_F_stat()` inside `replicate()`) makes neither
+assumption and is a robust alternative.
+</div>
+
+### Quick reference
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Compute F-statistic only | `get_F_stat(data, group)` | `summary(aov(data ~ group))[[1]]$'F value'[1]` |
+| Full ANOVA with p-value | — | `summary(aov(data ~ group))` |
+| Pairwise group comparisons | — | `TukeyHSD(aov(data ~ group))` |
+
+---
+
+## Chi-squared test: `chisq.test()`
+
+A chi-squared goodness-of-fit test asks whether the observed counts across
+categories match a set of expected proportions. `get_chisqr_stat()` in SDS1000
+is a direct wrapper — it simply calls `chisq.test()` and returns the statistic:
+
+```{r get_chisqr_source, eval=FALSE}
+# What get_chisqr_stat() does internally:
+get_chisqr_stat <- function(observed_counts, expected_proportions) {
+  test_output <- chisq.test(observed_counts, p = expected_proportions)
+  test_output$statistic   # extract just the chi-squared value
+}
+```
+
+Calling `chisq.test()` directly gives you the full test result.
+
+### Goodness-of-fit test
+
+Based on the **Yale student birth months** example from class 23 — are students
+equally likely to be born in any month?
+
+$$H_0: \text{birth months are uniformly distributed}
+\qquad H_A: \text{some months are more common than others}$$
+
+```{r chisq_gof}
+# Observed birth month counts for 198 Yale students (class 23)
+observed_counts <- c(14, 11, 21, 17, 15, 13, 19, 16, 18, 22, 14, 18)
+names(observed_counts) <- month.abb
+
+# Test against uniform distribution (equal probability for each month)
+chisq.test(observed_counts, p = rep(1/12, 12))
+```
+
+Reading the output:
+
+- **X-squared** — the chi-squared test statistic (same value `get_chisqr_stat()` returns)
+- **df** — degrees of freedom (number of categories − 1)
+- **p-value** — probability of observing this much deviation from uniform if H₀ were true
+
+### Chi-squared test of independence
+
+`chisq.test()` also tests whether two categorical variables are *independent*
+of each other (i.e., whether they are associated). Pass a contingency table
+instead of a count vector:
+
+```{r chisq_independence}
+# Are vaccination status and illness related?
+vaccine_table <- matrix(c(45, 15, 20, 70),
+                        nrow = 2,
+                        dimnames = list(c("Vaccinated", "Unvaccinated"),
+                                        c("Got Ill", "Stayed Healthy")))
+vaccine_table
+
+chisq.test(vaccine_table)
+```
+
+### Quick reference
+
+| Task | SDS1000 | Base R |
+|---|---|---|
+| Chi-squared statistic only | `get_chisqr_stat(obs, expected_p)` | `chisq.test(obs, p = expected_p)$statistic` |
+| Full goodness-of-fit test | — | `chisq.test(obs, p = expected_p)` |
+| Test of independence | — | `chisq.test(contingency_table)` |
+
+---
+
+## Linear regression: `lm()` and `summary()`
+
+`lm()` fits a linear regression model. `summary()` reports the theory-based
+hypothesis test for each coefficient — whether the slope (or intercept) is
+significantly different from zero — and `confint()` gives confidence intervals.
+
+Using the **cigarette consumption and lung cancer** data from class 25:
+
+$$H_0: \beta_1 = 0 \qquad H_A: \beta_1 \ne 0$$
+
+```{r lm_full}
+set.seed(2947)
+cigs_per_capita <- runif(44, min = 10, max = 45)
+cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
+
+lung_lm <- lm(cancer_rate ~ cigs_per_capita)
+summary(lung_lm)
+```
+
+Reading the `summary()` output:
+
+| Column | Meaning |
+|---|---|
+| `Estimate` | The fitted intercept (β₀) and slope (β₁) |
+| `Std. Error` | Standard error of each estimate |
+| `t value` | Test statistic for H₀: coefficient = 0 |
+| `Pr(>|t|)` | p-value (two-sided) |
+| `R-squared` | Proportion of variance in y explained by x |
+
+### Confidence intervals for the coefficients
+
+```{r lm_confint}
+confint(lung_lm, level = 0.95)
+```
+
+The row for `cigs_per_capita` gives a 95% CI for the slope. This is the
+theory-based alternative to the bootstrap CI built in Part 1.
+
+### Connecting to the bootstrap
+
+In class 25, you estimated the slope's uncertainty using `resample_pairs()`
+inside `do_it()`. The theory-based CI from `confint()` will give a very similar
+interval when the regression assumptions (linearity, normality of residuals,
+constant variance) are met. When they're not, the bootstrap is more reliable.
+
+| Task | SDS1000 (bootstrap) | Base R (theory-based) |
+|---|---|---|
+| Slope estimate | `coef(lm(...))["x"]` | `coef(lm(...))["x"]` |
+| CI for slope | `resample_pairs()` + `quantile()` | `confint(lm(...))` |
+| p-value for slope | `mean(null_dist >= obs)` | `summary(lm(...))$coefficients[2, 4]` |
+
+---
+
+## Putting it all together: which test when?
+
+| Research question | Data types | Test |
+|---|---|---|
+| Is the mean different from a reference value? | One quantitative variable | `t.test(x, mu = mu_0)` |
+| Are two independent group means different? | Quantitative + binary group | `t.test(x, y)` |
+| Are two paired measurements different? | Two quantitative variables (paired) | `t.test(x, y, paired = TRUE)` |
+| Are three or more group means different? | Quantitative + categorical group | `summary(aov(y ~ group))` |
+| Is there a linear association between two variables? | Two quantitative variables | `cor.test(x, y)` |
+| Do observed counts match expected proportions? | One categorical variable | `chisq.test(counts, p = expected_p)` |
+| Are two categorical variables associated? | Two categorical variables | `chisq.test(table)` |
+| How does y change with x (and what is the uncertainty)? | Two quantitative variables | `summary(lm(y ~ x))` + `confint(lm(y ~ x))` |
