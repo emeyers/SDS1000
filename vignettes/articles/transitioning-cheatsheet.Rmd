@@ -1,11 +1,11 @@
 ---
-title: "SDS1000 → Base R Cheat Sheet"
+title: "SDS1000 to Base R Cheat Sheet"
 description: |
   A printable one-page summary of every SDS1000 function and its base R
   equivalent. Use File > Print (or Ctrl/Cmd + P) to save as PDF.
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{SDS1000 -> Base R Cheat Sheet}
+  %\VignetteIndexEntry{SDS1000 to Base R Cheat Sheet}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -99,6 +99,8 @@ code {
 <a href="transitioning-simulation.html">Part 1: Simulation and Data Summaries</a>
 &nbsp;|&nbsp;
 <a href="transitioning-inference.html">Part 2: Inference and Visualization</a>
+&nbsp;|&nbsp;
+<a href="transitioning-parametric-tests.html">Part 3: Parametric Tests</a>
 </p>
 
 <button class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>

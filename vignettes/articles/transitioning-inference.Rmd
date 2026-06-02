@@ -96,6 +96,8 @@ haven't read Part 1, start there.
 
 - [Part 1: Simulation and Data Summaries](transitioning-simulation.html) —
   `do_it()`, `get_proportion()`, `rflip()`, `rroll()`, `shuffle()`, `resample_pairs()`
+- [Part 3: Parametric Hypothesis Tests](transitioning-parametric-tests.html) —
+  t-tests, chi-squared, ANOVA, correlation, and regression
 - [Cheat Sheet](transitioning-cheatsheet.html) — printable one-page summary
 </div>
 

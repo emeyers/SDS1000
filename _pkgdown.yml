@@ -2,13 +2,48 @@ url: https://emeyers.github.io/SDS1000/
 template:
   bootstrap: 5
 
+navbar:
+  structure:
+    left:  [intro, reference, transitioning, class_summaries]
+    right: [github]
+  components:
+    transitioning:
+      text: "Transitioning to Base R"
+      menu:
+        - text: "Part 1: Simulation and Data Summaries"
+          href: articles/transitioning-simulation.html
+        - text: "Part 2: Inference and Visualization"
+          href: articles/transitioning-inference.html
+        - text: "Part 3: Theory-Based Tests"
+          href: articles/transitioning-theory-tests.html
+        - text: "-------"
+        - text: "Cheat Sheet"
+          href: articles/transitioning-cheatsheet.html
+    class_summaries:
+      text: "Class Summaries"
+      menu:
+        - text: "Randomization Hypothesis Tests"
+          href: articles/class-summary-randomization-tests.html
+        - text: "Parametric Hypothesis Tests"
+          href: articles/transitioning-parametric-tests.html
+
 articles:
   - title: "Transitioning to Base R"
     desc: >
-      A two-part guide for students graduating from SDS1000 who want to analyze
-      data using standard R without relying on the SDS1000 package.
+      A guide for students graduating from SDS1000 who want to analyze data
+      using standard R without relying on the SDS1000 package.
     contents:
-      - starts_with("articles/transitioning")
+      - starts_with("articles/transitioning-s")
+      - starts_with("articles/transitioning-i")
+      - starts_with("articles/transitioning-t")
+      - starts_with("articles/transitioning-c")
+  - title: "Class Summaries"
+    desc: >
+      Reference guides showing how to run each type of analysis covered in
+      S&DS 1000 using base R.
+    contents:
+      - starts_with("articles/class-summary")
+      - starts_with("articles/transitioning-p")
 
 reference:
 - title: Analyze Data
@@ -64,4 +99,3 @@ reference:
   - set_class_material_root_path
   - get_class_material_root_path
   - update_installed_packages
-
