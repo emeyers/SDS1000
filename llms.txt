@@ -204,6 +204,14 @@ using standard R without relying on the SDS1000 package.
 Reference guides showing how to run each type of analysis covered in
 S&DS 1000 using base R.
 
+- [Randomization Hypothesis
+  Tests](https://emeyers.github.io/SDS1000/articles/class-summary-randomization-tests.md):
+
+  A reference guide covering every randomization (simulation-based)
+  hypothesis test from S&DS 1000: one proportion, multiple proportions,
+  two means, more than two means, correlation, and simple linear
+  regression.
+
 - [Transitioning to Base R: Parametric Hypothesis
   Tests](https://emeyers.github.io/SDS1000/articles/transitioning-parametric-tests.md):
 

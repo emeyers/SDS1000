@@ -1,0 +1,589 @@
+# Randomization Hypothesis Tests
+
+## Overview
+
+This guide covers every randomization (simulation-based) hypothesis test
+from S&DS 1000. Each test follows the same five steps used in class:
+
+1.  **State** the null and alternative hypotheses
+2.  **Calculate** the observed test statistic
+3.  **Create** a null distribution by simulation
+4.  **Calculate** the p-value
+5.  **Make a decision**
+
+The core idea is the same for every test: if the null hypothesis were
+true, how extreme would our observed result be? We answer this by
+repeatedly simulating data under the null and seeing where our observed
+statistic falls.
+
+**In this article:**
+
+- [One proportion](#one-proportion)
+- [More than two proportions](#more-than-two-proportions)
+- [Two means](#two-means)
+- [More than two means](#more-than-two-means)
+- [Correlation](#correlation)
+- [Simple linear regression](#simple-linear-regression)
+- [Quick reference table](#quick-reference)
+
+**Also in Class Summaries:**
+
+- [Parametric Hypothesis
+  Tests](https://emeyers.github.io/SDS1000/articles/transitioning-parametric-tests.md)
+
+**Base R note.** The class code uses
+[`do_it()`](https://emeyers.github.io/SDS1000/reference/do_it.md) and
+[`pnull()`](https://emeyers.github.io/SDS1000/reference/pnull.md) from
+the SDS1000 package. This guide uses the base R equivalents throughout:
+[`replicate()`](https://rdrr.io/r/base/lapply.html) to build null
+distributions, and `mean(null_dist >= obs_stat)` to compute p-values.
+See the [Transitioning to Base
+R](https://emeyers.github.io/SDS1000/articles/transitioning-simulation.md)
+series for more detail on these substitutions.
+
+------------------------------------------------------------------------
+
+## One Proportion
+
+**When to use:** One categorical variable with two outcomes; test
+whether the population proportion π equals a specific value π₀. The null
+distribution is created by simulating coin flips under the assumption
+that H₀ is true.
+
+**Null distribution:** Simulate `n` coin flips with probability π₀ using
+[`rbinom()`](https://rdrr.io/r/stats/Binomial.html), repeat many times.
+
+**Example (class 12):** Doris the dolphin and Buzz the dolphin were
+tested to see whether Buzz could identify which lever Doris was pointing
+to. In 16 trials, Buzz got the correct answer 15 times. Is there
+evidence that Buzz is doing better than random chance?
+
+### Step 1: State the hypotheses
+
+``` math
+H_0: \pi = 0.50 \qquad H_A: \pi > 0.50
+```
+
+### Step 2: Calculate the observed statistic
+
+``` r
+
+n_trials <- 16
+obs_stat <- 15   # number of correct answers
+obs_stat
+```
+
+    ## [1] 15
+
+### Step 3: Create the null distribution
+
+Under H₀, each trial is like a fair coin flip. Simulate 10,000
+experiments:
+
+``` r
+
+set.seed(5731)
+
+null_dist <- replicate(10000, {
+  rbinom(1, size = n_trials, prob = 0.50)
+})
+
+hist(null_dist, breaks = 50,
+     main = "Null Distribution — Number of Correct Answers",
+     xlab = "Number Correct (out of 16)",
+     col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+```
+
+![](class-summary-randomization-tests_files/figure-html/one_prop_null-1.png)
+
+### Step 4: Calculate the p-value
+
+``` r
+
+p_value <- mean(null_dist >= obs_stat)
+p_value
+```
+
+    ## [1] 5e-04
+
+### Step 5: Make a decision
+
+Since p = 5^{-4} \< 0.05, we **reject** H₀ and conclude that Buzz
+appears to be doing better than random chance.
+
+------------------------------------------------------------------------
+
+**Second example (class 13):** A lie detector correctly identified 31
+out of 48 participants as lying. Is this evidence the detector is more
+than 60% accurate?
+
+``` math
+H_0: \pi = 0.60 \qquad H_A: \pi > 0.60
+```
+
+``` r
+
+set.seed(9021)
+
+n       <- 48
+obs_phat <- 31 / 48
+
+null_dist <- replicate(10000, {
+  rbinom(1, size = n, prob = 0.60) / n
+})
+
+hist(null_dist, breaks = 60,
+     main = "Null Distribution — Proportion Correct",
+     xlab = "Proportion Correct",
+     col = "steelblue", border = "white")
+abline(v = obs_phat, col = "red", lwd = 2)
+```
+
+![](class-summary-randomization-tests_files/figure-html/one_prop_lie-1.png)
+
+``` r
+
+p_value <- mean(null_dist >= obs_phat)
+p_value
+```
+
+    ## [1] 0.3084
+
+Since p = 0.308 \> 0.05, we **fail to reject** H₀. There is not
+sufficient evidence that the lie detector exceeds 60% accuracy.
+
+------------------------------------------------------------------------
+
+## More Than Two Proportions
+
+**When to use:** One categorical variable with three or more outcomes;
+test whether the population proportions match a set of expected values.
+The observed statistic is the chi-squared statistic; the null
+distribution is created by simulating random samples from the expected
+distribution using
+[`rmultinom()`](https://rdrr.io/r/stats/Multinom.html).
+
+**Example (class 23):** A Yale professor examined the birth months of
+198 randomly selected Yale students. Are students equally likely to be
+born in any month?
+
+### Step 1: State the hypotheses
+
+``` math
+H_0: \pi_{Jan} = \pi_{Feb} = \cdots = \pi_{Dec} = \tfrac{1}{12}
+```
+``` math
+H_A: \text{at least one monthly proportion differs from } \tfrac{1}{12}
+```
+
+### Step 2: Calculate the observed statistic
+
+``` r
+
+observed_counts <- c(14, 11, 21, 17, 15, 13, 19, 16, 18, 22, 14, 18)
+names(observed_counts) <- month.abb
+
+expected_counts <- rep(sum(observed_counts) / 12, 12)
+
+obs_stat <- sum((observed_counts - expected_counts)^2 / expected_counts)
+obs_stat
+```
+
+    ## [1] 7.212121
+
+### Step 3: Create the null distribution
+
+Under H₀, birth months are equally likely. Simulate 10,000 samples of
+198 students from a uniform distribution across 12 months:
+
+``` r
+
+set.seed(3341)
+
+n_students <- sum(observed_counts)
+
+null_dist <- replicate(10000, {
+  sim_counts <- as.vector(rmultinom(1, size = n_students, prob = rep(1/12, 12)))
+  sum((sim_counts - expected_counts)^2 / expected_counts)
+})
+
+hist(null_dist, breaks = 60,
+     main = "Null Distribution — Chi-squared Statistic",
+     xlab = "Chi-squared value",
+     col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+```
+
+![](class-summary-randomization-tests_files/figure-html/multi_prop_null-1.png)
+
+### Step 4: Calculate the p-value
+
+``` r
+
+p_value <- mean(null_dist >= obs_stat)
+p_value
+```
+
+    ## [1] 0.7917
+
+### Step 5: Make a decision
+
+Since p = 0.792 \>\> 0.05, we **fail to reject** H₀. There is no
+evidence that Yale students’ birth months deviate from a uniform
+distribution.
+
+------------------------------------------------------------------------
+
+## Two Means
+
+**When to use:** A quantitative variable measured in two independent
+groups; test whether the two group means are equal. The null
+distribution is created by shuffling the group labels — under H₀, group
+membership doesn’t matter.
+
+**Observed statistic:** Difference in group means:
+$`\bar{x}_1 - \bar{x}_2`$
+
+**Example (class 17):** A randomized controlled trial (Lyle et al.,
+1987) gave calcium supplements to 10 men (treatment) and a placebo to 11
+men (control). The outcome is the decrease in blood pressure. Is there
+evidence that calcium produces a greater decrease?
+
+### Step 1: State the hypotheses
+
+``` math
+H_0: \mu_\text{treat} = \mu_\text{control} \qquad H_A: \mu_\text{treat} > \mu_\text{control}
+```
+
+### Step 2: Calculate the observed statistic
+
+``` r
+
+treat   <- c( 7, -4, 18, 17, -3, -5,  1, 10, 11, -2)
+control <- c(-1, 12, -1, -3,  3, -5,  5,  2, -11, -1, -3)
+
+obs_stat <- mean(treat) - mean(control)
+obs_stat
+```
+
+    ## [1] 5.272727
+
+### Step 3: Create the null distribution
+
+Combine both groups into one vector and shuffle the labels 10,000 times:
+
+``` r
+
+set.seed(6174)
+
+combined_data <- c(treat, control)
+
+null_dist <- replicate(10000, {
+  shuff         <- sample(combined_data)
+  shuff_treat   <- shuff[1:10]
+  shuff_control <- shuff[11:21]
+  mean(shuff_treat) - mean(shuff_control)
+})
+
+hist(null_dist, breaks = 100,
+     main = "Null Distribution — Difference in Means",
+     xlab = "Difference in mean blood pressure decrease (mmHg)",
+     col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+```
+
+![](class-summary-randomization-tests_files/figure-html/two_means_null-1.png)
+
+### Step 4: Calculate the p-value
+
+``` r
+
+p_value <- mean(null_dist >= obs_stat)
+p_value
+```
+
+    ## [1] 0.0605
+
+### Step 5: Make a decision
+
+Since p = 0.06 is just above 0.05, we **fail to reject** H₀ at the α =
+0.05 level. The evidence for a calcium effect is suggestive but not
+conclusive.
+
+------------------------------------------------------------------------
+
+## More Than Two Means
+
+**When to use:** A quantitative variable measured across three or more
+independent groups; test whether all group means are equal. The observed
+statistic is the **mean absolute deviation (MAD)** of group means — the
+average of all pairwise absolute differences between group means. The
+null distribution is created by shuffling the group labels.
+
+**Example (class 17/18):** Hope College students were timed completing a
+Sudoku-like puzzle, grouped into four majors. Is there a difference in
+mean completion time?
+
+### Step 1: State the hypotheses
+
+``` math
+H_0: \mu_{as} = \mu_{ns} = \mu_{ss} = \mu_{ah}
+```
+``` math
+H_A: \text{at least one group mean differs}
+```
+
+### Step 2: Calculate the observed statistic
+
+``` r
+
+set.seed(4455)
+completion_times <- c(rnorm(10, mean = 22, sd = 5),
+                      rnorm(10, mean = 20, sd = 5),
+                      rnorm(10, mean = 26, sd = 5),
+                      rnorm(10, mean = 21, sd = 5))
+majors <- rep(c("Applied Sci", "Natural Sci", "Social Sci", "Arts/Hum"),
+              each = 10)
+
+# Visualize the data
+boxplot(completion_times ~ majors,
+        main  = "Completion Time by Major",
+        ylab  = "Time (seconds)",
+        col   = c("lightblue", "lightgreen", "lightpink", "lightyellow"))
+```
+
+![](class-summary-randomization-tests_files/figure-html/multi_means_obs-1.png)
+
+``` r
+
+obs_stat <- get_MAD_stat(completion_times, majors)
+obs_stat
+```
+
+    ## [1] 3.354879
+
+### Step 3: Create the null distribution
+
+Shuffle the group labels to break any real association:
+
+``` r
+
+set.seed(8812)
+
+null_dist <- replicate(10000, {
+  shuffled_majors <- sample(majors)
+  get_MAD_stat(completion_times, shuffled_majors)
+})
+
+hist(null_dist, breaks = 100,
+     main = "Null Distribution — MAD Statistic",
+     xlab = "Mean absolute deviation of group means",
+     col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+```
+
+![](class-summary-randomization-tests_files/figure-html/multi_means_null-1.png)
+
+### Step 4: Calculate the p-value
+
+``` r
+
+p_value <- mean(null_dist >= obs_stat)
+p_value
+```
+
+    ## [1] 0.0416
+
+### Step 5: Make a decision
+
+Since p = 0.042, we **reject** H₀ at the α = 0.05 level.
+
+**What is the MAD statistic?**
+[`get_MAD_stat()`](https://emeyers.github.io/SDS1000/reference/get_MAD_stat.md)
+computes the mean of all pairwise absolute differences between group
+means:
+``` math
+MAD = \frac{1}{\binom{k}{2}} \sum_{i < j} |\bar{x}_i - \bar{x}_j|
+```
+It is sensitive to any difference between group means, making it a
+natural choice for a general alternative hypothesis.
+
+------------------------------------------------------------------------
+
+## Correlation
+
+**When to use:** Two quantitative variables; test whether the population
+correlation ρ equals zero. The null distribution is created by shuffling
+one of the two variables — this breaks any real relationship while
+preserving the marginal distributions.
+
+**Example (class 18):** A dataset of 77 breakfast cereals recorded sugar
+content and calorie content. Is there evidence of a positive
+correlation?
+
+### Step 1: State the hypotheses
+
+``` math
+H_0: \rho = 0 \qquad H_A: \rho > 0
+```
+
+### Step 2: Calculate the observed statistic
+
+``` r
+
+set.seed(1123)
+# Simulated to match class 18 cereal data structure
+n       <- 77
+sugar   <- runif(n, 0, 15)
+calories <- 90 + 3.5 * sugar + rnorm(n, sd = 12)
+
+plot(sugar, calories,
+     main = "Calories vs Sugar in Cereals",
+     xlab = "Sugar (grams)", ylab = "Calories")
+```
+
+![](class-summary-randomization-tests_files/figure-html/corr_obs-1.png)
+
+``` r
+
+obs_stat <- cor(sugar, calories)
+obs_stat
+```
+
+    ## [1] 0.8149169
+
+### Step 3: Create the null distribution
+
+Shuffle the sugar values to destroy any correlation with calories:
+
+``` r
+
+set.seed(5671)
+
+null_dist <- replicate(10000, {
+  cor(sample(sugar), calories)
+})
+
+hist(null_dist, breaks = 80,
+     main = "Null Distribution — Correlation",
+     xlab = "Correlation",
+     col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+```
+
+![](class-summary-randomization-tests_files/figure-html/corr_null-1.png)
+
+### Step 4: Calculate the p-value
+
+``` r
+
+p_value <- mean(null_dist >= obs_stat)
+p_value
+```
+
+    ## [1] 0
+
+### Step 5: Make a decision
+
+Since p ≈ 0, we **reject** H₀ and conclude that there is evidence of a
+positive correlation between sugar and calorie content in cereals.
+
+------------------------------------------------------------------------
+
+## Simple Linear Regression
+
+**When to use:** Two quantitative variables where you want to test
+whether the slope of a linear regression model is significantly
+different from zero. The null distribution is created by shuffling the
+response variable — under H₀ (no relationship), the pairing between x
+and y is arbitrary.
+
+**Example (class 25):** Data on cigarette consumption per capita and
+lung cancer rates across U.S. states. Is there evidence of a positive
+slope?
+
+### Step 1: State the hypotheses
+
+``` math
+H_0: \beta_1 = 0 \qquad H_A: \beta_1 > 0
+```
+
+### Step 2: Calculate the observed statistic
+
+``` r
+
+set.seed(2947)
+cigs_per_capita <- runif(44, min = 10, max = 45)
+cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
+
+plot(cigs_per_capita, cancer_rate,
+     xlab = "Cigarettes per Capita (hundreds)",
+     ylab = "Lung Cancer Rate per 100,000",
+     main = "Lung Cancer Rate vs. Cigarette Consumption")
+```
+
+![](class-summary-randomization-tests_files/figure-html/reg_obs-1.png)
+
+``` r
+
+lung_lm  <- lm(cancer_rate ~ cigs_per_capita)
+obs_slope <- coef(lung_lm)["cigs_per_capita"]
+obs_slope
+```
+
+    ## cigs_per_capita 
+    ##        4.997922
+
+### Step 3: Create the null distribution
+
+Shuffle the cancer rate values — this breaks the association with
+`cigs_per_capita` while keeping both variables’ distributions intact:
+
+``` r
+
+set.seed(3318)
+
+null_dist <- replicate(10000, {
+  shuffled_cancer <- sample(cancer_rate)
+  null_lm <- lm(shuffled_cancer ~ cigs_per_capita)
+  coef(null_lm)["cigs_per_capita"]
+})
+
+hist(null_dist, breaks = 80,
+     main = "Null Distribution — Regression Slope",
+     xlab = "Slope",
+     col = "steelblue", border = "white")
+abline(v = obs_slope, col = "red", lwd = 2)
+```
+
+![](class-summary-randomization-tests_files/figure-html/reg_null-1.png)
+
+### Step 4: Calculate the p-value
+
+``` r
+
+p_value <- mean(null_dist >= obs_slope)
+p_value
+```
+
+    ## [1] 0
+
+### Step 5: Make a decision
+
+Since p ≈ 0, we **reject** H₀ and conclude there is evidence of a
+positive relationship between cigarette consumption and lung cancer
+rate.
+
+------------------------------------------------------------------------
+
+## Quick Reference
+
+| Test | Observed statistic | How to simulate the null | p-value |
+|----|----|----|----|
+| One proportion | Count or proportion | `rbinom(1, n, pi_0)` | `mean(null >= obs)` |
+| Multiple proportions | Chi-squared: $`\sum(O-E)^2/E`$ | `rmultinom(1, n, expected_p)` | `mean(null >= obs)` |
+| Two means | $`\bar{x}_1 - \bar{x}_2`$ | `sample(combined)` then re-split | `mean(null >= obs)` or `mean(null <= obs)` |
+| More than two means | MAD of group means | `sample(group_labels)` | `mean(null >= obs)` |
+| Correlation | $`r = \text{cor}(x, y)`$ | `sample(x)` (shuffle one variable) | `mean(null >= obs)` or `mean(null <= obs)` |
+| Regression slope | $`\hat{\beta}_1`$ from [`lm()`](https://rdrr.io/r/stats/lm.html) | `sample(y)` (shuffle response) | `mean(null >= obs)` or `mean(null <= obs)` |
