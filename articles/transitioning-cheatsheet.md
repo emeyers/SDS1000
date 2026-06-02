@@ -4,6 +4,8 @@
 Summaries](https://emeyers.github.io/SDS1000/articles/transitioning-simulation.md)
  \|  [Part 2: Inference and
 Visualization](https://emeyers.github.io/SDS1000/articles/transitioning-inference.md)
+ \|  [Part 3: Parametric
+Tests](https://emeyers.github.io/SDS1000/articles/transitioning-parametric-tests.md)
 
 🖨 Print / Save as PDF
 

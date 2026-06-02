@@ -186,6 +186,14 @@ analyze data using standard R without relying on the SDS1000 package.
   Part 2 of 2. Covers ptail(), cnorm(), ct(), distribution plots, and a
   complete worked example using only base R.
 
+- [Transitioning to Base R: Parametric Hypothesis
+  Tests](https://emeyers.github.io/SDS1000/articles/transitioning-parametric-tests.md):
+
+  A reference guide covering every parametric hypothesis test from S&DS
+  1000: one and two proportions, multiple proportions (chi-squared), one
+  mean, two means (independent and paired), multiple means (ANOVA),
+  correlation, and simple linear regression.
+
 - [Transitioning to Base R: Simulation and Data
   Summaries](https://emeyers.github.io/SDS1000/articles/transitioning-simulation.md):
 
