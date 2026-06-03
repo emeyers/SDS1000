@@ -19,8 +19,9 @@ statistic falls.
 **In this article:**
 
 - [One proportion](#one-proportion)
-- [One mean](#one-mean)
+- [Two proportions](#two-proportions)
 - [More than two proportions](#more-than-two-proportions)
+- [One mean](#one-mean)
 - [Two means](#two-means)
 - [More than two means](#more-than-two-means)
 - [Correlation](#correlation)
@@ -152,94 +153,99 @@ sufficient evidence that the lie detector exceeds 60% accuracy.
 
 ------------------------------------------------------------------------
 
-## One Mean
+## Two Proportions
 
-**When to use:** A single quantitative variable; test whether the
-population mean μ equals a specific value μ₀. Unlike the proportion
-test, there is no natural coin-flip simulation for a mean. Instead, we
-use a **bootstrap-based procedure**: shift the data so that its mean
-equals μ₀ (making it consistent with H₀), then resample from that
-shifted data.
+**When to use:** A binary outcome measured in two independent groups;
+test whether the two population proportions are equal.
 
-**Key idea:** Subtracting the sample mean and adding μ₀ centres the data
-at the null value without changing its spread or shape:
+**Key idea:** Under H₀ (π₁ = π₂), both groups share the same true
+proportion. We estimate this **overall proportion** by pooling the two
+samples:
 
-``` r
-
-data_H0 <- my_data - mean(my_data) + mu_0
+``` math
+\hat{p}_\text{overall} = \frac{x_1 + x_2}{n_1 + n_2}
 ```
 
-Resampling with replacement from `data_H0` then generates statistics
-that reflect what we would expect under H₀.
+We then simulate each group independently using this pooled rate with
+[`rflip()`](https://emeyers.github.io/SDS1000/reference/rflip.md),
+mimicking what we would observe if H₀ were true.
 
-**Example:** It is widely assumed that the average human body
-temperature is 98.6°F. A sample of 50 body temperatures from Mackowiak
-et al. (1992) had a mean of 98.25°F. Is there evidence that the true
-mean differs from 98.6°F?
+**Example:** In a clinical trial, 245 patients received a new vaccine
+and 255 received a placebo. Of the vaccinated group 32 got the flu; of
+the placebo group 56 got the flu. Is there evidence that the vaccine
+reduces the flu rate?
 
 ### Step 1: State the hypotheses
 
+Let group 1 = vaccine, group 2 = placebo.
 ``` math
-H_0: \mu = 98.6 \qquad H_A: \mu \ne 98.6
+H_0: \pi_1 = \pi_2 \qquad H_A: \pi_1 < \pi_2
 ```
 
 ### Step 2: Calculate the observed statistic
 
 ``` r
 
-set.seed(9910)
-body_temps <- rnorm(50, mean = 98.25, sd = 0.73)   # class 11 structure
+n1 <- 245;  x1 <- 32   # vaccinated
+n2 <- 255;  x2 <- 56   # placebo
 
-obs_mean <- mean(body_temps)
-obs_mean
+obs_phat1 <- x1 / n1
+obs_phat2 <- x2 / n2
+
+obs_stat  <- obs_phat1 - obs_phat2   # negative if vaccine reduces flu
+obs_stat
 ```
 
-    ## [1] 98.37283
+    ## [1] -0.0889956
 
 ### Step 3: Create the null distribution
 
-Shift the data to have mean exactly equal to μ₀ = 98.6, then resample
-with replacement 10,000 times:
+Compute the overall proportion, then simulate each group with
+[`rflip()`](https://emeyers.github.io/SDS1000/reference/rflip.md) at
+that pooled rate:
 
 ``` r
 
-set.seed(3345)
+set.seed(4412)
 
-mu_0       <- 98.6
-data_H0    <- body_temps - mean(body_temps) + mu_0   # shift to be consistent with H0
-n          <- length(body_temps)
+overall_prop <- (x1 + x2) / (n1 + n2)
+overall_prop
+```
+
+    ## [1] 0.176
+
+``` r
 
 null_dist <- do_it(10000) * {
-  resampled_data <- sample(data_H0, n, replace = TRUE)
-  mean(resampled_data)
+  sim_phat1 <- rflip(n1, overall_prop) / n1
+  sim_phat2 <- rflip(n2, overall_prop) / n2
+  sim_phat1 - sim_phat2
 }
 
 hist(null_dist, breaks = 80,
-     main = "Null Distribution — Mean Body Temperature",
-     xlab = "Mean Temperature (°F)",
+     main = "Null Distribution — Difference in Proportions",
+     xlab = expression(hat(p)[1] - hat(p)[2]),
      col = "steelblue", border = "white")
-abline(v = obs_mean, col = "red", lwd = 2)
+abline(v = obs_stat, col = "red", lwd = 2)
 ```
 
-![](class-summary-randomization-tests_files/figure-html/one_mean_null-1.png)
+![](class-summary-randomization-tests_files/figure-html/two_prop_null-1.png)
 
 ### Step 4: Calculate the p-value
 
-This is a two-sided test (H₀: μ ≠ 98.6), so we count values in both
-tails that are at least as far from μ₀ as the observed mean:
-
 ``` r
 
-p_value <- ptail(abs(obs_mean - mu_0), abs(null_dist - mu_0), lower.tail = FALSE)
+# Lower-tail: H_A is that the vaccinated proportion is smaller
+p_value <- ptail(obs_stat, null_dist, lower.tail = TRUE)
 p_value
 ```
 
-    ## [1] 0.0114
+    ## [1] 0.0034
 
 ### Step 5: Make a decision
 
-Since p = 0.0114 \< 0.05, we **reject** H₀ and conclude that there is
-evidence the true mean body temperature differs from 98.6°F.
+Since p = 0.0034 \< 0.05, we **reject** H₀ and conclude that the vaccine
+is associated with a significantly lower flu rate.
 
 ------------------------------------------------------------------------
 
@@ -323,6 +329,97 @@ p_value
 Since p = 0.792 \>\> 0.05, we **fail to reject** H₀. There is no
 evidence that Yale students’ birth months deviate from a uniform
 distribution.
+
+------------------------------------------------------------------------
+
+## One Mean
+
+**When to use:** A single quantitative variable; test whether the
+population mean μ equals a specific value μ₀. Unlike the proportion
+test, there is no natural coin-flip simulation for a mean. Instead, we
+use a **bootstrap-based procedure**: shift the data so that its mean
+equals μ₀ (making it consistent with H₀), then resample from that
+shifted data.
+
+**Key idea:** Subtracting the sample mean and adding μ₀ centres the data
+at the null value without changing its spread or shape:
+
+``` r
+
+data_H0 <- my_data - mean(my_data) + mu_0
+```
+
+Resampling with replacement from `data_H0` then generates statistics
+that reflect what we would expect under H₀.
+
+**Example:** It is widely assumed that the average human body
+temperature is 98.6°F. A sample of 50 body temperatures from Mackowiak
+et al. (1992) had a mean of 98.25°F. Is there evidence that the true
+mean differs from 98.6°F?
+
+### Step 1: State the hypotheses
+
+``` math
+H_0: \mu = 98.6 \qquad H_A: \mu \ne 98.6
+```
+
+### Step 2: Calculate the observed statistic
+
+``` r
+
+set.seed(9910)
+body_temps <- rnorm(50, mean = 98.25, sd = 0.73)   # class 11 structure
+
+obs_mean <- mean(body_temps)
+obs_mean
+```
+
+    ## [1] 98.37283
+
+### Step 3: Create the null distribution
+
+Shift the data to have mean exactly equal to μ₀ = 98.6, then resample
+with replacement 10,000 times:
+
+``` r
+
+set.seed(3345)
+
+mu_0    <- 98.6
+data_H0 <- body_temps - mean(body_temps) + mu_0   # shift to be consistent with H0
+n       <- length(body_temps)
+
+null_dist <- do_it(10000) * {
+  resampled_data <- sample(data_H0, n, replace = TRUE)
+  mean(resampled_data)
+}
+
+hist(null_dist, breaks = 80,
+     main = "Null Distribution — Mean Body Temperature",
+     xlab = "Mean Temperature (°F)",
+     col = "steelblue", border = "white")
+abline(v = obs_mean, col = "red", lwd = 2)
+```
+
+![](class-summary-randomization-tests_files/figure-html/one_mean_null-1.png)
+
+### Step 4: Calculate the p-value
+
+This is a two-sided test (H₀: μ ≠ 98.6), so we count values in both
+tails that are at least as far from μ₀ as the observed mean:
+
+``` r
+
+p_value <- ptail(abs(obs_mean - mu_0), abs(null_dist - mu_0), lower.tail = FALSE)
+p_value
+```
+
+    ## [1] 0.0114
+
+### Step 5: Make a decision
+
+Since p = 0.0114 \< 0.05, we **reject** H₀ and conclude that there is
+evidence the true mean body temperature differs from 98.6°F.
 
 ------------------------------------------------------------------------
 
@@ -694,10 +791,11 @@ rate.
 
 | Test | Observed statistic | How to simulate the null | p-value |
 |----|----|----|----|
-| One proportion | Count or proportion | `do_it(n) * { rflip(n, pi_0) }` | `ptail(obs, null, lower.tail = FALSE)` |
-| One mean | $`\bar{x}`$ | Shift data to H₀ mean, resample: `data_H0 <- x - mean(x) + mu_0` | `ptail(abs(obs-mu_0), abs(null-mu_0), lower.tail=FALSE)` |
+| One proportion | Count or proportion | `do_it(n) * { rflip(n, pi_0) }` | `ptail(obs, null, lower.tail = ...)` |
+| Two proportions | $`\hat{p}_1 - \hat{p}_2`$ | `do_it(n) * { rflip(n1, p_pool)/n1 - rflip(n2, p_pool)/n2 }` | `ptail(obs, null, lower.tail = ...)` |
 | Multiple proportions | Chi-squared: $`\sum(O-E)^2/E`$ | `do_it(n) * { rroll(n, expected_p) }` | `ptail(obs, null, lower.tail = FALSE)` |
-| Two means | $`\bar{x}_1 - \bar{x}_2`$ | `do_it(n) * { shuff <- shuffle(combined); ... }` | `ptail(obs, null, lower.tail = FALSE)` |
+| One mean | $`\bar{x}`$ | Shift: `data_H0 <- x - mean(x) + mu_0`, then resample | `ptail(abs(obs-mu_0), abs(null-mu_0), lower.tail=FALSE)` |
+| Two means | $`\bar{x}_1 - \bar{x}_2`$ | `do_it(n) * { shuff <- shuffle(combined); ... }` | `ptail(obs, null, lower.tail = ...)` |
 | More than two means | MAD: [`get_MAD_stat()`](https://emeyers.github.io/SDS1000/reference/get_MAD_stat.md) | `do_it(n) * { get_MAD_stat(y, shuffle(groups)) }` | `ptail(obs, null, lower.tail = FALSE)` |
-| Correlation | $`r =`$`cor(x, y)` | `do_it(n) * { cor(shuffle(x), y) }` | `ptail(obs, null, lower.tail = FALSE)` |
-| Regression slope | $`\hat{\beta}_1`$ from [`lm()`](https://rdrr.io/r/stats/lm.html) | `do_it(n) * { coef(lm(shuffle(y) ~ x))[2] }` | `ptail(obs, null, lower.tail = FALSE)` |
+| Correlation | $`r =`$`cor(x, y)` | `do_it(n) * { cor(shuffle(x), y) }` | `ptail(obs, null, lower.tail = ...)` |
+| Regression slope | $`\hat{\beta}_1`$ from [`lm()`](https://rdrr.io/r/stats/lm.html) | `do_it(n) * { coef(lm(shuffle(y) ~ x))[2] }` | `ptail(obs, null, lower.tail = ...)` |
