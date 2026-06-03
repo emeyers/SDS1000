@@ -303,13 +303,12 @@ content in cereals is between 0.723 and 0.879. Since the interval lies
 entirely above zero, the data provide good evidence of a positive
 association.
 
-**Manual calculation:** You can reproduce the CI by hand using the
-Fisher z-transformation. This is useful to see how the formula works:
+**Manual calculation using the Fisher z-transformation:**
 
 ``` r
 
-r   <- corr_result$estimate
-z   <- atanh(r)                      # Fisher z-transform of r
+r    <- corr_result$estimate
+z    <- atanh(r)                     # Fisher z-transform of r
 SE_z <- 1 / sqrt(n - 3)             # SE in z-space
 
 z_star <- qnorm(0.975)              # critical value for 95% CI

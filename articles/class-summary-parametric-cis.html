@@ -346,13 +346,11 @@ interval for the correlation.</p>
 calorie content in cereals is between 0.723 and 0.879. Since the
 interval lies entirely above zero, the data provide good evidence of a
 positive association.</p>
-<div class="tip-box">
-<p><strong>Manual calculation:</strong> You can reproduce the CI by hand
-using the Fisher z-transformation. This is useful to see how the formula
-works:</p>
+<p><strong>Manual calculation using the Fisher
+z-transformation:</strong></p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">r</span>   <span class="op">&lt;-</span> <span class="va">corr_result</span><span class="op">$</span><span class="va">estimate</span></span>
-<span><span class="va">z</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">atanh</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>                      <span class="co"># Fisher z-transform of r</span></span>
+<code class="sourceCode R"><span><span class="va">r</span>    <span class="op">&lt;-</span> <span class="va">corr_result</span><span class="op">$</span><span class="va">estimate</span></span>
+<span><span class="va">z</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">atanh</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>                     <span class="co"># Fisher z-transform of r</span></span>
 <span><span class="va">SE_z</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">n</span> <span class="op">-</span> <span class="fl">3</span><span class="op">)</span>             <span class="co"># SE in z-space</span></span>
 <span></span>
 <span><span class="va">z_star</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.975</span><span class="op">)</span>              <span class="co"># critical value for 95% CI</span></span>
@@ -361,7 +359,6 @@ works:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">tanh</a></span><span class="op">(</span><span class="va">ci_z</span><span class="op">)</span>                          <span class="co"># transform back to correlation scale</span></span></code></pre></div>
 <pre><code><span><span class="co">##       cor       cor </span></span>
 <span><span class="co">## 0.7228814 0.8785408</span></span></code></pre>
-</div>
 <hr>
 </div>
 <div class="section level2">
