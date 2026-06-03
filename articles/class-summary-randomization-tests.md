@@ -113,7 +113,7 @@ p_value
 
 ### Step 5: Make a decision
 
-Since p = 5^{-4} \< 0.05, we **reject** H₀ and conclude that Buzz
+Since p = 0.0005 \< 0.05, we **reject** H₀ and conclude that Buzz
 appears to be doing better than random chance.
 
 ------------------------------------------------------------------------
@@ -192,8 +192,11 @@ H_0: \pi_1 = \pi_2 \qquad H_A: \pi_1 < \pi_2
 
 ``` r
 
-n1 <- 245;  x1 <- 32   # vaccinated
-n2 <- 255;  x2 <- 56   # placebo
+x1 <- 32   # vaccinated
+n1 <- 245  
+
+x2 <- 56   # placebo
+n2 <- 255;  
 
 obs_phat1 <- x1 / n1
 obs_phat2 <- x2 / n2
@@ -332,9 +335,8 @@ p_value
 
 ### Step 5: Make a decision
 
-Since p = 0.792 \>\> 0.05, we **fail to reject** H₀. There is no
-evidence that Yale students’ birth months deviate from a uniform
-distribution.
+Since p = 0.792 \> 0.05, we **fail to reject** H₀. There is no evidence
+that Yale students’ birth months deviate from a uniform distribution.
 
 ------------------------------------------------------------------------
 
@@ -347,7 +349,7 @@ use a **bootstrap-based procedure**: shift the data so that its mean
 equals μ₀ (making it consistent with H₀), then resample from that
 shifted data.
 
-**Key idea:** Subtracting the sample mean and adding μ₀ centres the data
+**Key idea:** Subtracting the sample mean and adding μ₀ centers the data
 at the null value without changing its spread or shape:
 
 ``` r
@@ -374,7 +376,7 @@ H_0: \mu = 98.6 \qquad H_A: \mu \ne 98.6
 ``` r
 
 set.seed(9910)
-body_temps <- rnorm(50, mean = 98.25, sd = 0.73)   # class 11 structure
+body_temps <- rnorm(50, mean = 98.25, sd = 0.73)   # fake simulated data with mu = 98.25
 
 obs_mean <- mean(body_temps)
 obs_mean
@@ -416,7 +418,12 @@ tails that are at least as far from μ₀ as the observed mean:
 
 ``` r
 
-p_value <- ptail(abs(obs_mean - mu_0), abs(null_dist - mu_0), lower.tail = FALSE)
+param_stat_margin <- abs(obs_mean - mu_0)
+
+p_value_left <- ptail(mu_0 - param_stat_margin, null_dist, lower.tail = TRUE)
+p_value_right <- ptail(mu_0 + param_stat_margin, null_dist, lower.tail = FALSE)
+
+p_value <- p_value_left + p_value_right
 p_value
 ```
 
@@ -613,6 +620,16 @@ MAD = \frac{1}{\binom{k}{2}} \sum_{i < j} |\bar{x}_i - \bar{x}_j|
 It is sensitive to any difference between group means, making it a
 natural choice for a general alternative hypothesis.
 
+**Note**: when running randomization tests, we can use any statistic
+that captures the aspect of the data we want to test. For example, here
+we could have used the ANOVA F-statistic instead of MAD, and the
+procedure would be the same — just replace
+[`get_MAD_stat()`](https://emeyers.github.io/SDS1000/reference/get_MAD_stat.md)
+with a function that computes the F-statistic
+[`get_F_stat()`](https://emeyers.github.io/SDS1000/reference/get_F_stat.md).
+The choice of statistic is flexible, but it should be chosen
+thoughtfully to reflect the research question.
+
 ------------------------------------------------------------------------
 
 ## Correlation
@@ -725,7 +742,7 @@ H_0: \beta_1 = 0 \qquad H_A: \beta_1 > 0
 ``` r
 
 set.seed(2947)
-cigs_per_capita <- runif(44, min = 10, max = 45)
+cigs_per_capita <- runif(44, min = 10, max = 45)   # create fake simulated data
 cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
 
 plot(cigs_per_capita, cancer_rate,
@@ -756,9 +773,6 @@ the cancer rate values — this breaks the association with
 ``` r
 
 set.seed(3318)
-
-cancer_rate     <- cancer_rate
-cigs_per_capita <- cigs_per_capita
 
 null_dist <- do_it(10000) * {
   shuffled_cancer <- shuffle(cancer_rate)

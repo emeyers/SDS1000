@@ -81,14 +81,14 @@ one proportion, one mean, difference of two means, and regression slope.
     
 <style>
 h2 {
-  margin-top:     3.5rem;
+  margin-top:     5rem;
   padding-top:    0.6rem;
   padding-bottom: 0.4rem;
   border-bottom:  1px solid #dee2e6;
-  color: #1a3a5c;
-  font-size: 1.45rem;
+  color: #00A86B;
+  font-size: 2rem;
 }
-h3 { margin-top: 2rem; color: #2c5282; font-size: 1.15rem; }
+h3 { margin-top: 3rem; color: #2c5282; font-size: 1.15rem; border-bottom: 0px}
 hr { margin: 3rem 0 2rem 0; border: none; border-top: 2px solid #e2e8f0; }
 table {
   margin: 1.25rem 0 1.75rem 0;
@@ -189,7 +189,7 @@ proportion who disagreed.</p>
 <p>Resample the data with replacement 10,000 times, computing the
 proportion each time:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2291</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2292</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">believes_in_true_love</span><span class="op">)</span></span>
 <span></span>
@@ -198,11 +198,10 @@ proportion each time:</p>
 <span>  <span class="fu"><a href="../reference/get_proportion.html">get_proportion</a></span><span class="op">(</span><span class="va">boot_sample</span>, <span class="st">"FALSE"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">boot_dist</span>, breaks <span class="op">=</span> <span class="fl">60</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">boot_dist</span>, breaks <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Bootstrap Distribution — Proportion Who Disagreed"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Proportion"</span>,</span>
-<span>     col <span class="op">=</span> <span class="st">"steelblue"</span>, border <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">obs_prop</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span>     col <span class="op">=</span> <span class="st">"steelblue"</span>, border <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-randomization-cis_files/figure-html/one_prop_boot-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
@@ -216,7 +215,7 @@ proportion each time:</p>
 <span>        <span class="va">obs_prop</span> <span class="op">+</span> <span class="fu"><a href="../reference/cnorm.html">cnorm</a></span><span class="op">(</span><span class="fl">0.90</span><span class="op">)</span> <span class="op">*</span> <span class="va">SE_boot</span><span class="op">)</span></span>
 <span><span class="va">CI</span></span></code></pre></div>
 <pre><code><span><span class="co">##     FALSE     FALSE </span></span>
-<span><span class="co">## 0.6754240 0.7051474</span></span></code></pre>
+<span><span class="co">## 0.6754056 0.7051658</span></span></code></pre>
 <p>We are 90% confident that the true proportion of people who disagree
 that there is only one true love for each person is between 0.675 and
 0.705.</p>
@@ -253,8 +252,6 @@ confidence interval for the mean body temperature.</p>
 <span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">body_temps</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">body_temps</span> <span class="op">&lt;-</span> <span class="va">body_temps</span></span>
-<span></span>
 <span><span class="va">boot_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
 <span>  <span class="va">boot_sample</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">body_temps</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">boot_sample</span><span class="op">)</span></span>
@@ -263,8 +260,7 @@ confidence interval for the mean body temperature.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">boot_dist</span>, breaks <span class="op">=</span> <span class="fl">80</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Bootstrap Distribution — Mean Body Temperature"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Mean Temperature (°F)"</span>,</span>
-<span>     col <span class="op">=</span> <span class="st">"steelblue"</span>, border <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">obs_mean</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span>     col <span class="op">=</span> <span class="st">"steelblue"</span>, border <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-randomization-cis_files/figure-html/one_mean_boot-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
@@ -336,8 +332,6 @@ in mean blood pressure decrease (treatment − control).</p>
 <span><span class="va">n_treat</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">treat</span><span class="op">)</span></span>
 <span><span class="va">n_control</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">control</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">treat</span>   <span class="op">&lt;-</span> <span class="va">treat</span></span>
-<span><span class="va">control</span> <span class="op">&lt;-</span> <span class="va">control</span></span>
 <span></span>
 <span><span class="va">boot_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
 <span>  <span class="va">boot_treat</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">treat</span>,   <span class="va">n_treat</span>,   replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -348,8 +342,7 @@ in mean blood pressure decrease (treatment − control).</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">boot_dist</span>, breaks <span class="op">=</span> <span class="fl">80</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Bootstrap Distribution — Difference in Means"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Difference in mean blood pressure decrease (mmHg)"</span>,</span>
-<span>     col <span class="op">=</span> <span class="st">"steelblue"</span>, border <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">obs_diff</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span>     col <span class="op">=</span> <span class="st">"steelblue"</span>, border <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-randomization-cis_files/figure-html/two_means_boot-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
@@ -375,7 +368,7 @@ calcium effect remains plausible.</p>
 estimate the population correlation ρ between them. Because x and y are
 paired, we must resample both together using
 <code><a href="../reference/resample_pairs.html">resample_pairs()</a></code> so that every resampled (x, y) pair stays
-matched — exactly the same approach as for the regression slope.</p>
+matched — this preserves the pairing structure.</p>
 <p><strong>Example (class 18):</strong> Sugar content and calorie
 content for a sample of 77 breakfast cereals. Compute a 95% bootstrap
 confidence interval for the correlation between sugar and calories.</p>
@@ -385,7 +378,7 @@ confidence interval for the correlation between sugar and calories.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1123</span><span class="op">)</span></span>
 <span><span class="va">n</span>        <span class="op">&lt;-</span> <span class="fl">77</span></span>
-<span><span class="va">sugar</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">15</span><span class="op">)</span></span>
+<span><span class="va">sugar</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">15</span><span class="op">)</span>   <span class="co"># fake simulated data</span></span>
 <span><span class="va">calories</span> <span class="op">&lt;-</span> <span class="fl">90</span> <span class="op">+</span> <span class="fl">3.5</span> <span class="op">*</span> <span class="va">sugar</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, sd <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">obs_cor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">sugar</span>, <span class="va">calories</span><span class="op">)</span></span>
@@ -400,9 +393,6 @@ together, then recompute <code><a href="https://rdrr.io/r/stats/cor.html" class=
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">8833</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">sugar</span>    <span class="op">&lt;-</span> <span class="va">sugar</span></span>
-<span><span class="va">calories</span> <span class="op">&lt;-</span> <span class="va">calories</span></span>
-<span></span>
 <span><span class="va">boot_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
 <span>  <span class="va">resampled</span>          <span class="op">&lt;-</span> <span class="fu"><a href="../reference/resample_pairs.html">resample_pairs</a></span><span class="op">(</span><span class="va">sugar</span>, <span class="va">calories</span><span class="op">)</span></span>
 <span>  <span class="va">resampled_sugar</span>    <span class="op">&lt;-</span> <span class="va">resampled</span><span class="op">$</span><span class="va">vector1</span></span>
@@ -413,8 +403,7 @@ together, then recompute <code><a href="https://rdrr.io/r/stats/cor.html" class=
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">boot_dist</span>, breaks <span class="op">=</span> <span class="fl">80</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Bootstrap Distribution — Correlation"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Correlation"</span>,</span>
-<span>     col <span class="op">=</span> <span class="st">"steelblue"</span>, border <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">obs_cor</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span>     col <span class="op">=</span> <span class="st">"steelblue"</span>, border <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-randomization-cis_files/figure-html/corr_boot-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
@@ -431,6 +420,13 @@ together, then recompute <code><a href="https://rdrr.io/r/stats/cor.html" class=
 calorie content in cereals is between 0.749 and 0.881. Since the
 interval lies entirely above zero, the data provide good evidence of a
 positive association.</p>
+<div class="tip-box">
+<p><strong>Why <code><a href="../reference/resample_pairs.html">resample_pairs()</a></code> and not
+<code>sample(..., replace = TRUE)</code>?</strong> For paired data, we
+must resample observations (rows) together to preserve the relationship
+between x and y. Resampling x and y independently would destroy the very
+correlation we are trying to measure.</p>
+</div>
 <hr>
 </div>
 </div>
@@ -440,7 +436,7 @@ positive association.</p>
 <p><strong>When to use:</strong> Two paired quantitative variables;
 estimate the slope β₁ of a simple linear regression model. Because x and
 y are paired, resample both together using <code><a href="../reference/resample_pairs.html">resample_pairs()</a></code>
-— this preserves the pairing structure.</p>
+— exactly the same approach as for the regression slope.</p>
 <p><strong>Example (class 25):</strong> Cigarette consumption per capita
 and lung cancer rates across 44 U.S. states. Compute a 95% bootstrap
 confidence interval for the regression slope.</p>
@@ -449,7 +445,7 @@ confidence interval for the regression slope.</p>
 </h3>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2947</span><span class="op">)</span></span>
-<span><span class="va">cigs_per_capita</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">44</span>, min <span class="op">=</span> <span class="fl">10</span>, max <span class="op">=</span> <span class="fl">45</span><span class="op">)</span></span>
+<span><span class="va">cigs_per_capita</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">44</span>, min <span class="op">=</span> <span class="fl">10</span>, max <span class="op">=</span> <span class="fl">45</span><span class="op">)</span>  <span class="co"># create fake simulated data</span></span>
 <span><span class="va">cancer_rate</span>     <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">0.005</span> <span class="op">*</span> <span class="va">cigs_per_capita</span> <span class="op">*</span> <span class="fl">1000</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">44</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">lung_lm</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">cancer_rate</span> <span class="op">~</span> <span class="va">cigs_per_capita</span><span class="op">)</span></span>
@@ -466,9 +462,6 @@ together, keeping pairs intact:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">3109</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">cigs_per_capita</span> <span class="op">&lt;-</span> <span class="va">cigs_per_capita</span></span>
-<span><span class="va">cancer_rate</span>     <span class="op">&lt;-</span> <span class="va">cancer_rate</span></span>
-<span></span>
 <span><span class="va">boot_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
 <span>  <span class="va">resampled</span>       <span class="op">&lt;-</span> <span class="fu"><a href="../reference/resample_pairs.html">resample_pairs</a></span><span class="op">(</span><span class="va">cigs_per_capita</span>, <span class="va">cancer_rate</span><span class="op">)</span></span>
 <span>  <span class="va">resampled_cigs</span>  <span class="op">&lt;-</span> <span class="va">resampled</span><span class="op">$</span><span class="va">vector1</span></span>
@@ -479,8 +472,7 @@ together, keeping pairs intact:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">boot_dist</span>, breaks <span class="op">=</span> <span class="fl">80</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Bootstrap Distribution — Regression Slope"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Slope"</span>,</span>
-<span>     col <span class="op">=</span> <span class="st">"steelblue"</span>, border <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">obs_slope</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<span>     col <span class="op">=</span> <span class="st">"steelblue"</span>, border <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-randomization-cis_files/figure-html/reg_boot-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
@@ -497,13 +489,6 @@ together, keeping pairs intact:</p>
 <p>We are 95% confident that for each additional hundred cigarettes
 smoked per capita, the lung cancer rate increases by between 4.8441 and
 5.1518 cases per 100,000 people.</p>
-<div class="tip-box">
-<p><strong>Why <code><a href="../reference/resample_pairs.html">resample_pairs()</a></code> and not
-<code>sample(..., replace = TRUE)</code>?</strong> For paired data, we
-must resample observations (rows) together to preserve the relationship
-between x and y. Resampling x and y independently would destroy the very
-correlation we are trying to measure.</p>
-</div>
 <hr>
 </div>
 </div>

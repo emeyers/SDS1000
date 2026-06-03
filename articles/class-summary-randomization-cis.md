@@ -75,7 +75,7 @@ proportion each time:
 
 ``` r
 
-set.seed(2291)
+set.seed(2292)
 
 n <- length(believes_in_true_love)
 
@@ -84,11 +84,10 @@ boot_dist <- do_it(10000) * {
   get_proportion(boot_sample, "FALSE")
 }
 
-hist(boot_dist, breaks = 60,
+hist(boot_dist, breaks = 30,
      main = "Bootstrap Distribution — Proportion Who Disagreed",
      xlab = "Proportion",
      col = "steelblue", border = "white")
-abline(v = obs_prop, col = "red", lwd = 2)
 ```
 
 ![](class-summary-randomization-cis_files/figure-html/one_prop_boot-1.png)
@@ -106,7 +105,7 @@ CI
 ```
 
     ##     FALSE     FALSE 
-    ## 0.6754240 0.7051474
+    ## 0.6754056 0.7051658
 
 We are 90% confident that the true proportion of people who disagree
 that there is only one true love for each person is between 0.675 and
@@ -146,8 +145,6 @@ set.seed(4471)
 
 n <- length(body_temps)
 
-body_temps <- body_temps
-
 boot_dist <- do_it(10000) * {
   boot_sample <- sample(body_temps, n, replace = TRUE)
   mean(boot_sample)
@@ -157,7 +154,6 @@ hist(boot_dist, breaks = 80,
      main = "Bootstrap Distribution — Mean Body Temperature",
      xlab = "Mean Temperature (°F)",
      col = "steelblue", border = "white")
-abline(v = obs_mean, col = "red", lwd = 2)
 ```
 
 ![](class-summary-randomization-cis_files/figure-html/one_mean_boot-1.png)
@@ -243,8 +239,6 @@ set.seed(6174)
 n_treat   <- length(treat)
 n_control <- length(control)
 
-treat   <- treat
-control <- control
 
 boot_dist <- do_it(10000) * {
   boot_treat   <- sample(treat,   n_treat,   replace = TRUE)
@@ -256,7 +250,6 @@ hist(boot_dist, breaks = 80,
      main = "Bootstrap Distribution — Difference in Means",
      xlab = "Difference in mean blood pressure decrease (mmHg)",
      col = "steelblue", border = "white")
-abline(v = obs_diff, col = "red", lwd = 2)
 ```
 
 ![](class-summary-randomization-cis_files/figure-html/two_means_boot-1.png)
@@ -286,8 +279,8 @@ calcium effect remains plausible.
 population correlation ρ between them. Because x and y are paired, we
 must resample both together using
 [`resample_pairs()`](https://emeyers.github.io/SDS1000/reference/resample_pairs.md)
-so that every resampled (x, y) pair stays matched — exactly the same
-approach as for the regression slope.
+so that every resampled (x, y) pair stays matched — this preserves the
+pairing structure.
 
 **Example (class 18):** Sugar content and calorie content for a sample
 of 77 breakfast cereals. Compute a 95% bootstrap confidence interval for
@@ -299,7 +292,7 @@ the correlation between sugar and calories.
 
 set.seed(1123)
 n        <- 77
-sugar    <- runif(n, 0, 15)
+sugar    <- runif(n, 0, 15)   # fake simulated data
 calories <- 90 + 3.5 * sugar + rnorm(n, sd = 12)
 
 obs_cor <- cor(sugar, calories)
@@ -319,9 +312,6 @@ to resample both variables together, then recompute
 
 set.seed(8833)
 
-sugar    <- sugar
-calories <- calories
-
 boot_dist <- do_it(10000) * {
   resampled          <- resample_pairs(sugar, calories)
   resampled_sugar    <- resampled$vector1
@@ -333,7 +323,6 @@ hist(boot_dist, breaks = 80,
      main = "Bootstrap Distribution — Correlation",
      xlab = "Correlation",
      col = "steelblue", border = "white")
-abline(v = obs_cor, col = "red", lwd = 2)
 ```
 
 ![](class-summary-randomization-cis_files/figure-html/corr_boot-1.png)
@@ -356,6 +345,13 @@ content in cereals is between 0.749 and 0.881. Since the interval lies
 entirely above zero, the data provide good evidence of a positive
 association.
 
+**Why
+[`resample_pairs()`](https://emeyers.github.io/SDS1000/reference/resample_pairs.md)
+and not `sample(..., replace = TRUE)`?** For paired data, we must
+resample observations (rows) together to preserve the relationship
+between x and y. Resampling x and y independently would destroy the very
+correlation we are trying to measure.
+
 ------------------------------------------------------------------------
 
 ## Regression Slope
@@ -364,7 +360,7 @@ association.
 β₁ of a simple linear regression model. Because x and y are paired,
 resample both together using
 [`resample_pairs()`](https://emeyers.github.io/SDS1000/reference/resample_pairs.md)
-— this preserves the pairing structure.
+— exactly the same approach as for the regression slope.
 
 **Example (class 25):** Cigarette consumption per capita and lung cancer
 rates across 44 U.S. states. Compute a 95% bootstrap confidence interval
@@ -375,7 +371,7 @@ for the regression slope.
 ``` r
 
 set.seed(2947)
-cigs_per_capita <- runif(44, min = 10, max = 45)
+cigs_per_capita <- runif(44, min = 10, max = 45)  # create fake simulated data
 cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
 
 lung_lm  <- lm(cancer_rate ~ cigs_per_capita)
@@ -396,9 +392,6 @@ to resample both variables together, keeping pairs intact:
 
 set.seed(3109)
 
-cigs_per_capita <- cigs_per_capita
-cancer_rate     <- cancer_rate
-
 boot_dist <- do_it(10000) * {
   resampled       <- resample_pairs(cigs_per_capita, cancer_rate)
   resampled_cigs  <- resampled$vector1
@@ -410,7 +403,6 @@ hist(boot_dist, breaks = 80,
      main = "Bootstrap Distribution — Regression Slope",
      xlab = "Slope",
      col = "steelblue", border = "white")
-abline(v = obs_slope, col = "red", lwd = 2)
 ```
 
 ![](class-summary-randomization-cis_files/figure-html/reg_boot-1.png)
@@ -432,13 +424,6 @@ CI
 We are 95% confident that for each additional hundred cigarettes smoked
 per capita, the lung cancer rate increases by between 4.8441 and 5.1518
 cases per 100,000 people.
-
-**Why
-[`resample_pairs()`](https://emeyers.github.io/SDS1000/reference/resample_pairs.md)
-and not `sample(..., replace = TRUE)`?** For paired data, we must
-resample observations (rows) together to preserve the relationship
-between x and y. Resampling x and y independently would destroy the very
-correlation we are trying to measure.
 
 ------------------------------------------------------------------------
 
