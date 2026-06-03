@@ -1,5 +1,5 @@
 ---
-title: "Transitioning to Base R: Parametric Hypothesis Tests"
+title: "Parametric Hypothesis Tests"
 description: |
   A reference guide covering every parametric hypothesis test from S&DS 1000:
   one and two proportions, multiple proportions (chi-squared), one mean, two
@@ -7,7 +7,7 @@ description: |
   simple linear regression.
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Transitioning to Base R: Parametric Hypothesis Tests}
+  %\VignetteIndexEntry{Parametric Hypothesis Tests}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -116,11 +116,13 @@ follows the same five steps used in class:
 - [Simple linear regression](#simple-linear-regression)
 - [Quick reference table](#quick-reference)
 
-**Also in this series:**
+<br>
 
-- [Part 1: Simulation and Data Summaries](transitioning-simulation.html)
-- [Part 2: Inference and Visualization](transitioning-inference.html)
-- [Cheat Sheet](transitioning-cheatsheet.html)
+**Also in Class Summaries:**
+
+- [Randomization Hypothesis Tests](class-summary-randomization-tests.html)
+- [Randomization Confidence Intervals](class-summary-randomization-cis.html)
+- [Parametric Confidence Intervals](class-summary-parametric-cis.html)
 </div>
 
 <div class="warn-box">

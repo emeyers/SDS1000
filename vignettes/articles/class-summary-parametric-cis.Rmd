@@ -66,13 +66,17 @@ The **critical value** comes from a normal or t-distribution and is found using
 - [One proportion](#one-proportion)
 - [One mean](#one-mean)
 - [Difference of two means](#difference-of-two-means)
+- [Correlation](#correlation)
 - [Regression slope](#regression-slope)
 - [Quick reference](#quick-reference)
 
+<br>
+
 **Also in Class Summaries:**
 
+- [Randomization Hypothesis Tests](class-summary-randomization-tests.html)
 - [Randomization Confidence Intervals](class-summary-randomization-cis.html)
-- [Parametric Hypothesis Tests](transitioning-parametric-tests.html)
+- [Parametric Hypothesis Tests](class-summary-parametric-tests.html)
 </div>
 
 ---
@@ -224,6 +228,62 @@ difference in mean fiber intake between males and females.
 
 ---
 
+## Correlation
+
+**When to use:** Two quantitative variables; construct a confidence interval
+for the population correlation ρ.
+
+**Method:** `cor.test()` returns both a p-value and a confidence interval.
+Internally it uses **Fisher's z-transformation**: the sample correlation r is
+transformed to $z = \tanh^{-1}(r)$, a CI is built in z-space (where the
+distribution is approximately normal), and the endpoints are transformed back
+via $r = \tanh(z)$.
+
+$$z = \tanh^{-1}(r), \quad SE_z = \frac{1}{\sqrt{n-3}}, \quad
+CI_z = z \pm z^* \cdot SE_z, \quad
+CI_r = \tanh(CI_z)$$
+
+In practice, calling `cor.test()` handles all of this in one step.
+
+**Example (class 18/25):** Sugar content and calorie content for a sample of
+77 breakfast cereals. Compute a 95% confidence interval for the correlation.
+
+```{r corr_ci}
+set.seed(1123)
+n        <- 77
+sugar    <- runif(n, 0, 15)
+calories <- 90 + 3.5 * sugar + rnorm(n, sd = 12)
+
+# cor.test() gives both the CI and the hypothesis test in one call
+corr_result <- cor.test(sugar, calories, conf.level = 0.95)
+
+# Point estimate
+corr_result$estimate
+
+# 95% confidence interval
+corr_result$conf.int
+```
+
+We are 95% confident that the true correlation between sugar and calorie
+content in cereals is between `r round(corr_result$conf.int[1], 3)` and
+`r round(corr_result$conf.int[2], 3)`. Since the interval lies entirely above
+zero, the data provide good evidence of a positive association.
+
+**Manual calculation using the Fisher z-transformation:**
+
+```{r corr_manual}
+r    <- corr_result$estimate
+z    <- atanh(r)                     # Fisher z-transform of r
+SE_z <- 1 / sqrt(n - 3)             # SE in z-space
+
+z_star <- qnorm(0.975)              # critical value for 95% CI
+
+ci_z <- c(z - z_star * SE_z, z + z_star * SE_z)
+tanh(ci_z)                          # transform back to correlation scale
+```
+
+---
+
 ## Regression Slope
 
 **When to use:** Two quantitative variables; estimate how much y changes on
@@ -273,4 +333,5 @@ regression output from `summary(lung_lm)`. The SE of the slope is in the
 | One proportion π | $\hat{p} \pm z^* \sqrt{\hat{p}(1-\hat{p})/n}$ | `cnorm(C)` | `cnorm()` |
 | One mean μ | $\bar{x} \pm t^* \cdot s/\sqrt{n}$ | `ct(C, n-1)` | `ct()` |
 | Difference μ₁ − μ₂ | $(\bar{x}_1-\bar{x}_2) \pm t^* \cdot SE_{diff}$ | `ct(C, min(n₁,n₂)-1)` | `ct()` |
+| Correlation ρ | `cor.test(x, y, conf.level=C)$conf.int` | Fisher z-transform | — |
 | Regression slope β₁ | from `confint(lm(...), level = C)` | `qt(1-(1-C)/2, n-2)` | — |

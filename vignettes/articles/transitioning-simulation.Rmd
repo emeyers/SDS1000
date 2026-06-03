@@ -97,7 +97,7 @@ summary functions. Part 2 covers inference and visualization.
 
 - [Part 2: Inference and Visualization](transitioning-inference.html) —
   `ptail()`, `cnorm()`, `ct()`, distribution plots, and a complete worked example
-- [Part 3: Parametric Hypothesis Tests](transitioning-parametric-tests.html) —
+- [Parametric Hypothesis Tests](class-summary-parametric-tests.html) —
   t-tests, chi-squared, ANOVA, correlation, and regression
 - [Cheat Sheet](transitioning-cheatsheet.html) — printable one-page summary
 </div>

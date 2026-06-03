@@ -98,7 +98,7 @@ code {
 &nbsp;|&nbsp;
 <a href="transitioning-inference.html">Part 2: Inference and Visualization</a>
 &nbsp;|&nbsp;
-<a href="transitioning-parametric-tests.html">Part 3: Parametric Tests</a>
+<a href="class-summary-parametric-tests.html">Parametric Tests</a>
 </p>
 
 <button class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
