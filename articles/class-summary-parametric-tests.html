@@ -257,12 +257,9 @@ direction 41% of the time. Test whether goalies guessed correctly
 <pre><code><span><span class="co">## [1] -2.036468</span></span></code></pre>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 3: Visualize the null distribution</span></span>
-<span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">4</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">dens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">dens</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
-<span>     main <span class="op">=</span> <span class="st">"Null Distribution — Z-statistic"</span>,</span>
-<span>     xlab <span class="op">=</span> <span class="st">"Z-score"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot_norm.html">plot_norm</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"blue"</span>,</span>
+<span>          main <span class="op">=</span> <span class="st">"Null Distribution — Z-statistic"</span>,</span>
+<span>          xlab <span class="op">=</span> <span class="st">"Z-score"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">z_stat</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-parametric-tests_files/figure-html/one_prop-1.png" class="r-plt" alt="" width="576"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -307,8 +304,10 @@ the flu; of the placebo group 56 got the flu. Test whether the vaccine
 </h3>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 2: Calculate the z-statistic</span></span>
-<span><span class="va">n1</span> <span class="op">&lt;-</span> <span class="fl">245</span>;  <span class="va">x1</span> <span class="op">&lt;-</span> <span class="fl">32</span>   <span class="co"># vaccinated</span></span>
-<span><span class="va">n2</span> <span class="op">&lt;-</span> <span class="fl">255</span>;  <span class="va">x2</span> <span class="op">&lt;-</span> <span class="fl">56</span>   <span class="co"># placebo</span></span>
+<span><span class="va">x1</span> <span class="op">&lt;-</span> <span class="fl">32</span>   <span class="co"># vaccinated</span></span>
+<span><span class="va">n1</span> <span class="op">&lt;-</span> <span class="fl">245</span>;</span>
+<span><span class="va">x2</span> <span class="op">&lt;-</span> <span class="fl">56</span>   <span class="co"># placebo</span></span>
+<span><span class="va">n2</span> <span class="op">&lt;-</span> <span class="fl">255</span>;  </span>
 <span></span>
 <span><span class="va">p_hat1</span> <span class="op">&lt;-</span> <span class="va">x1</span> <span class="op">/</span> <span class="va">n1</span></span>
 <span><span class="va">p_hat2</span> <span class="op">&lt;-</span> <span class="va">x2</span> <span class="op">/</span> <span class="va">n2</span></span>
@@ -325,12 +324,9 @@ the flu; of the placebo group 56 got the flu. Test whether the vaccine
 <pre><code><span><span class="co">## [1] -2.64097</span></span></code></pre>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 3: Visualize the null distribution</span></span>
-<span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">4</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">dens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">dens</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
-<span>     main <span class="op">=</span> <span class="st">"Null Distribution — Z-statistic"</span>,</span>
-<span>     xlab <span class="op">=</span> <span class="st">"Z-score"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot_norm.html">plot_norm</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"blue"</span>,</span>
+<span>          main <span class="op">=</span> <span class="st">"Null Distribution — Z-statistic"</span>,</span>
+<span>          xlab <span class="op">=</span> <span class="st">"Z-score"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">z_stat</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-parametric-tests_files/figure-html/two_prop-1.png" class="r-plt" alt="" width="576"></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -388,12 +384,9 @@ equally likely to be born in any month?</p>
 <code class="sourceCode R"><span><span class="co"># Step 3: Visualize the null distribution</span></span>
 <span><span class="va">df</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">observed_counts</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>   <span class="co"># k - 1 = 11</span></span>
 <span></span>
-<span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">30</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">dens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Chisquare.html" class="external-link">dchisq</a></span><span class="op">(</span><span class="va">x</span>, df <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">dens</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
-<span>     main <span class="op">=</span> <span class="st">"Null Distribution — Chi-squared Statistic"</span>,</span>
-<span>     xlab <span class="op">=</span> <span class="st">"Chi-squared value"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot_chisq.html">plot_chisq</a></span><span class="op">(</span>df <span class="op">=</span> <span class="va">df</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
+<span>           main <span class="op">=</span> <span class="st">"Null Distribution — Chi-squared Statistic"</span>,</span>
+<span>           xlab <span class="op">=</span> <span class="st">"Chi-squared value"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">chi_sq_stat</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-parametric-tests_files/figure-html/chisq_gof-1.png" class="r-plt" alt="" width="576"></p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
@@ -405,10 +398,10 @@ equally likely to be born in any month?</p>
 <div class="section level3">
 <h3 id="step-5-make-a-decision-2">Step 5: Make a decision<a class="anchor" aria-label="anchor" href="#step-5-make-a-decision-2"></a>
 </h3>
-<p>Since p = 0.782 &gt;&gt; 0.05, we <strong>fail to reject</strong>
+<p>Since p = 0.782 &gt; 0.05, we <strong>fail to reject</strong>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mn>0</mn></msub><annotation encoding="application/x-tex">H_0</annotation></semantics></math>.
-There is no evidence that Yale students’ birth months deviate from a
-uniform distribution.</p>
+There is not sufficient evidence that Yale students’ birth months
+deviate from a uniform distribution.</p>
 <hr>
 </div>
 </div>
@@ -447,13 +440,9 @@ Test whether the mean exceeds 1000.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 3: Visualize the null distribution</span></span>
 <span><span class="va">df</span>   <span class="op">&lt;-</span> <span class="va">n</span> <span class="op">-</span> <span class="fl">1</span></span>
-<span></span>
-<span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">t_stat</span> <span class="op">+</span> <span class="fl">0.5</span>, <span class="fl">5</span><span class="op">)</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">dens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">dt</a></span><span class="op">(</span><span class="va">x</span>, df <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">dens</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
-<span>     main <span class="op">=</span> <span class="st">"Null Distribution — T-statistic"</span>,</span>
-<span>     xlab <span class="op">=</span> <span class="st">"T-score"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot_t.html">plot_t</a></span><span class="op">(</span><span class="va">df</span>, to <span class="op">=</span> <span class="fl">15</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
+<span>       main <span class="op">=</span> <span class="st">"Null Distribution — T-statistic"</span>,</span>
+<span>       xlab <span class="op">=</span> <span class="st">"T-score"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">t_stat</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-parametric-tests_files/figure-html/one_mean-1.png" class="r-plt" alt="" width="576"></p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
@@ -510,12 +499,9 @@ difference in earnings.</p>
 <code class="sourceCode R"><span><span class="co"># Step 3: Visualize the null distribution</span></span>
 <span><span class="va">df</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">n1</span> <span class="op">-</span> <span class="fl">1</span>, <span class="va">n2</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">dens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">dt</a></span><span class="op">(</span><span class="va">x</span>, df <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">dens</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
-<span>     main <span class="op">=</span> <span class="st">"Null Distribution — T-statistic"</span>,</span>
-<span>     xlab <span class="op">=</span> <span class="st">"T-score"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot_t.html">plot_t</a></span><span class="op">(</span><span class="va">df</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
+<span>       main <span class="op">=</span> <span class="st">"Null Distribution — T-statistic"</span>,</span>
+<span>       xlab <span class="op">=</span> <span class="st">"T-score"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span>  <span class="va">t_stat</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="op">-</span><span class="va">t_stat</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>   <span class="co"># two-sided: mark both tails</span></span></code></pre></div>
 <p><img src="class-summary-parametric-tests_files/figure-html/two_means_indep-1.png" class="r-plt" alt="" width="576"></p>
@@ -569,10 +555,7 @@ average.</p>
 <code class="sourceCode R"><span><span class="co"># Step 3: Visualize the null distribution</span></span>
 <span><span class="va">df</span>   <span class="op">&lt;-</span> <span class="va">n</span> <span class="op">-</span> <span class="fl">1</span></span>
 <span></span>
-<span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">dens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">dt</a></span><span class="op">(</span><span class="va">x</span>, df <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">dens</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
+<span><span class="fu"><a href="../reference/plot_t.html">plot_t</a></span><span class="op">(</span><span class="va">df</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Null Distribution — T-statistic (Paired)"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"T-score"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">t_stat</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
@@ -603,9 +586,8 @@ equal variance across groups; independent observations.</p>
 <p><strong>Test statistic:</strong>
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mfrac><mrow><mi>M</mi><mi>S</mi><mi>G</mi></mrow><mrow><mi>M</mi><mi>S</mi><mi>E</mi></mrow></mfrac><mo>,</mo><mspace width="2.0em"></mspace><mi>d</mi><msub><mi>f</mi><mn>1</mn></msub><mo>=</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo>,</mo><mspace width="1.0em"></mspace><mi>d</mi><msub><mi>f</mi><mn>2</mn></msub><mo>=</mo><mi>N</mi><mo>−</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">F = \frac{MSG}{MSE}, \qquad df_1 = k - 1, \quad df_2 = N - k</annotation></semantics></math></p>
 <p>A large F means between-group variation is large relative to
-within-group variation. <code><a href="../reference/get_F_stat.html">get_F_stat()</a></code> in SDS1000 is a thin
-wrapper around <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>; calling <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> directly
-gives the full test result.</p>
+within-group variation. The SDS1000 function <code><a href="../reference/get_F_stat.html">get_F_stat()</a></code>
+returns the value of the F-statistic.</p>
 <p><strong>Example (class 24):</strong> Hope College students were timed
 completing a Sudoku-like puzzle. Majors were grouped into four
 categories. Is mean completion time the same across majors?</p>
@@ -620,7 +602,7 @@ H_A: \text{at least one mean differs}</annotation></semantics></math></p>
 </h3>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 2: Load data and calculate the F-statistic</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">4455</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">4455</span><span class="op">)</span>  <span class="co"># generate fake data</span></span>
 <span><span class="va">completion_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, mean <span class="op">=</span> <span class="fl">22</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
 <span>                      <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, mean <span class="op">=</span> <span class="fl">20</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
 <span>                      <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, mean <span class="op">=</span> <span class="fl">26</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
@@ -636,31 +618,21 @@ H_A: \text{at least one mean differs}</annotation></semantics></math></p>
 <p><img src="class-summary-parametric-tests_files/figure-html/anova-1.png" class="r-plt" alt="" width="576"></p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fit the model and extract the F-statistic</span></span>
-<span><span class="va">fit</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov</a></span><span class="op">(</span><span class="va">completion_times</span> <span class="op">~</span> <span class="va">majors</span><span class="op">)</span></span>
-<span><span class="va">fit_sum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
-<span><span class="va">fit_sum</span></span></code></pre></div>
-<pre><code><span><span class="co">##             Df Sum Sq Mean Sq F value Pr(&gt;F)  </span></span>
-<span><span class="co">## majors       3  281.7   93.89   4.197  0.012 *</span></span>
-<span><span class="co">## Residuals   36  805.4   22.37                 </span></span>
-<span><span class="co">## ---</span></span>
-<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre>
+<span><span class="va">f_stat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_F_stat.html">get_F_stat</a></span><span class="op">(</span><span class="va">completion_times</span>, <span class="va">majors</span><span class="op">)</span></span>
+<span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">majors</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>   <span class="co"># k - 1</span></span>
+<span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">completion_times</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">majors</span><span class="op">)</span><span class="op">)</span>  <span class="co"># N - k</span></span>
+<span><span class="va">f_stat</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 4.196999</span></span></code></pre>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">f_stat</span> <span class="op">&lt;-</span> <span class="va">fit_sum</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">`F value`</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span><span class="va">df1</span>    <span class="op">&lt;-</span> <span class="va">fit_sum</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Df</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span><span class="va">df2</span>    <span class="op">&lt;-</span> <span class="va">fit_sum</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Df</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
-<span></span>
-<span><span class="co"># Step 3: Visualize the null distribution</span></span>
-<span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">8</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">dens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Fdist.html" class="external-link">df</a></span><span class="op">(</span><span class="va">x</span>, df1 <span class="op">=</span> <span class="va">df1</span>, df2 <span class="op">=</span> <span class="va">df2</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">dens</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
+<code class="sourceCode R"><span><span class="co"># Step 3: Visualize the null distribution</span></span>
+<span><span class="fu"><a href="../reference/plot_f.html">plot_f</a></span><span class="op">(</span><span class="va">df1</span>, <span class="va">df2</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Null Distribution — F-statistic"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"F value"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">f_stat</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-parametric-tests_files/figure-html/anova-2.png" class="r-plt" alt="" width="576"></p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 4: p-value (always upper tail for F)</span></span>
-<span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Fdist.html" class="external-link">pf</a></span><span class="op">(</span><span class="va">f_stat</span>, df1 <span class="op">=</span> <span class="va">df1</span>, df2 <span class="op">=</span> <span class="va">df2</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Fdist.html" class="external-link">pf</a></span><span class="op">(</span><span class="va">f_stat</span>, <span class="va">df1</span>, <span class="va">df2</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.01204589</span></span></code></pre>
 </div>
@@ -668,25 +640,6 @@ H_A: \text{at least one mean differs}</annotation></semantics></math></p>
 <h3 id="step-5-make-a-decision-and-follow-up">Step 5: Make a decision and follow-up<a class="anchor" aria-label="anchor" href="#step-5-make-a-decision-and-follow-up"></a>
 </h3>
 <p>p = 0.012: we reject H₀ — at least one group mean differs.</p>
-<p>If
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mn>0</mn></msub><annotation encoding="application/x-tex">H_0</annotation></semantics></math>
-is rejected, use <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> to find <strong>which</strong>
-groups differ while controlling for multiple comparisons:</p>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   Tukey multiple comparisons of means</span></span>
-<span><span class="co">##     95% family-wise confidence level</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## Fit: aov(formula = completion_times ~ majors)</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $majors</span></span>
-<span><span class="co">##                               diff        lwr       upr     p adj</span></span>
-<span><span class="co">## Arts/Hum-Applied Sci    -0.9575406 -6.6544184  4.739337 0.9686795</span></span>
-<span><span class="co">## Natural Sci-Applied Sci -0.7868728 -6.4837506  4.910005 0.9821522</span></span>
-<span><span class="co">## Social Sci-Applied Sci   5.4899260 -0.2069518 11.186804 0.0623807</span></span>
-<span><span class="co">## Natural Sci-Arts/Hum     0.1706678 -5.5262100  5.867546 0.9998080</span></span>
-<span><span class="co">## Social Sci-Arts/Hum      6.4474666  0.7505888 12.144344 0.0213677</span></span>
-<span><span class="co">## Social Sci-Natural Sci   6.2767988  0.5799210 11.973677 0.0260839</span></span></code></pre>
 <hr>
 </div>
 </div>
@@ -713,10 +666,10 @@ evidence of a positive linear association?</p>
 <div class="section level3">
 <h3 id="steps-24-calculate-visualize-p-value-7">Steps 2–4: Calculate, visualize, p-value<a class="anchor" aria-label="anchor" href="#steps-24-calculate-visualize-p-value-7"></a>
 </h3>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Data simulated to match the class 25 states_smoking dataset</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2947</span><span class="op">)</span></span>
-<span><span class="va">cigs_per_capita</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">44</span>, min <span class="op">=</span> <span class="fl">10</span>, max <span class="op">=</span> <span class="fl">45</span><span class="op">)</span></span>
+<span><span class="va">cigs_per_capita</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">44</span>, min <span class="op">=</span> <span class="fl">10</span>, max <span class="op">=</span> <span class="fl">45</span><span class="op">)</span>  <span class="co"># create fake data</span></span>
 <span><span class="va">cancer_rate</span>     <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">0.005</span> <span class="op">*</span> <span class="va">cigs_per_capita</span> <span class="op">*</span> <span class="fl">1000</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">44</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Visualize the data</span></span>
@@ -725,29 +678,26 @@ evidence of a positive linear association?</p>
 <span>     ylab <span class="op">=</span> <span class="st">"Lung Cancer Rate per 100,000"</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Lung Cancer Rate vs. Cigarette Consumption"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-parametric-tests_files/figure-html/correlation-1.png" class="r-plt" alt="" width="576"></p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 2: Calculate the t-statistic</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">cigs_per_capita</span><span class="op">)</span></span>
 <span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">cigs_per_capita</span>, <span class="va">cancer_rate</span><span class="op">)</span></span>
 <span><span class="va">r</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.9945126</span></span></code></pre>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t_stat</span> <span class="op">&lt;-</span> <span class="va">r</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">n</span> <span class="op">-</span> <span class="fl">2</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">r</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">t_stat</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 61.60758</span></span></code></pre>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 3: Visualize the null distribution</span></span>
 <span><span class="va">df</span>   <span class="op">&lt;-</span> <span class="va">n</span> <span class="op">-</span> <span class="fl">2</span></span>
 <span></span>
-<span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">dens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">dt</a></span><span class="op">(</span><span class="va">x</span>, df <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">dens</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
+<span><span class="fu"><a href="../reference/plot_t.html">plot_t</a></span><span class="op">(</span><span class="va">df</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Null Distribution — T-statistic"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"T-score"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">t_stat</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-parametric-tests_files/figure-html/correlation-2.png" class="r-plt" alt="" width="576"></p>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 4: p-value (upper tail, H_A: rho &gt; 0)</span></span>
 <span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">pt</a></span><span class="op">(</span><span class="va">t_stat</span>, df <span class="op">=</span> <span class="va">df</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
@@ -793,7 +743,7 @@ significantly positive.</p>
 <div class="section level3">
 <h3 id="steps-24-fit-the-model-visualize-p-value">Steps 2–4: Fit the model, visualize, p-value<a class="anchor" aria-label="anchor" href="#steps-24-fit-the-model-visualize-p-value"></a>
 </h3>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fit the linear model (using same data from correlation section above)</span></span>
 <span><span class="va">lung_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">cancer_rate</span> <span class="op">~</span> <span class="va">cigs_per_capita</span><span class="op">)</span></span>
 <span></span>
@@ -842,22 +792,19 @@ significantly positive.</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 3: Visualize the null distribution and the observed t-statistic</span></span>
 <span><span class="co"># (The t-stat and df for the slope are extracted from the model summary)</span></span>
 <span><span class="va">fit_sum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">lung_lm</span><span class="op">)</span></span>
 <span><span class="va">t_stat</span>  <span class="op">&lt;-</span> <span class="va">fit_sum</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"cigs_per_capita"</span>, <span class="st">"t value"</span><span class="op">]</span></span>
 <span><span class="va">df</span>      <span class="op">&lt;-</span> <span class="va">lung_lm</span><span class="op">$</span><span class="va">df.residual</span>   <span class="co"># n - 2</span></span>
 <span></span>
-<span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">dens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">dt</a></span><span class="op">(</span><span class="va">x</span>, df <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">dens</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
+<span><span class="fu"><a href="../reference/plot_t.html">plot_t</a></span><span class="op">(</span><span class="va">df</span>, col <span class="op">=</span> <span class="st">"blue"</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Null Distribution — T-statistic for Slope"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"T-score"</span>, ylab <span class="op">=</span> <span class="st">"Density"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">t_stat</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-parametric-tests_files/figure-html/regression_viz-1.png" class="r-plt" alt="" width="576"></p>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step 4: p-value (upper tail; summary() reports two-sided, so divide by 2)</span></span>
 <span><span class="va">p_two_sided</span> <span class="op">&lt;-</span> <span class="va">fit_sum</span><span class="op">$</span><span class="va">coefficients</span><span class="op">[</span><span class="st">"cigs_per_capita"</span>, <span class="st">"Pr(&gt;|t|)"</span><span class="op">]</span></span>
 <span><span class="va">p_value</span>     <span class="op">&lt;-</span> <span class="va">p_two_sided</span> <span class="op">/</span> <span class="fl">2</span>   <span class="co"># one-sided upper-tail p-value</span></span>
@@ -878,7 +825,7 @@ cigarette consumption and lung cancer rate.</p>
 <p><code><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint()</a></code> gives theory-based confidence intervals for
 each coefficient — the parametric alternative to the bootstrap CI from
 class 25:</p>
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">lung_lm</span>, level <span class="op">=</span> <span class="fl">0.90</span><span class="op">)</span>   <span class="co"># 90% CI, as used in class 25</span></span></code></pre></div>
 <pre><code><span><span class="co">##                        5 %     95 %</span></span>
 <span><span class="co">## (Intercept)     -0.9206509 6.866724</span></span>
