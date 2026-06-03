@@ -108,7 +108,7 @@ plot_t <- function(df,
                    n = 1000,
                    add = FALSE,
                    type = "l",
-                   xlab = expression(F),
+                   xlab = expression(T),
                    ylab = "Probability Density",
                    xlim = NULL,
                    ...) {
@@ -123,7 +123,7 @@ plot_t <- function(df,
   }
   
   
-  curve(df(x, df1, df2), 
+  curve(dt(x, df), 
         from = from, 
         to = to,
         n = n,
