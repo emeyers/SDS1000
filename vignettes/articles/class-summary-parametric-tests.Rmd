@@ -15,6 +15,9 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
                       fig.width = 6, fig.height = 3.5)
+
+library(SDS1000)
+
 ```
 
 <style>
@@ -170,13 +173,11 @@ SE     <- sqrt(pi_0 * (1 - pi_0) / n)
 z_stat <- (p_hat - pi_0) / SE
 z_stat
 
-# Step 3: Visualize the null distribution
-x    <- seq(-4, 4, length.out = 1000)
-dens <- dnorm(x, mean = 0, sd = 1)
 
-plot(x, dens, type = "l", col = "blue",
-     main = "Null Distribution — Z-statistic",
-     xlab = "Z-score", ylab = "Density")
+# Step 3: Visualize the null distribution
+plot_norm(col = "blue",
+          main = "Null Distribution — Z-statistic",
+          xlab = "Z-score", ylab = "Density")
 abline(v = z_stat, col = "red", lwd = 2)
 
 # Step 4: p-value (lower tail, H_A: pi < pi_0)
@@ -216,8 +217,10 @@ $$H_0: \pi_1 = \pi_2 \qquad H_A: \pi_1 < \pi_2$$
 
 ```{r two_prop}
 # Step 2: Calculate the z-statistic
-n1 <- 245;  x1 <- 32   # vaccinated
-n2 <- 255;  x2 <- 56   # placebo
+x1 <- 32   # vaccinated
+n1 <- 245;
+x2 <- 56   # placebo
+n2 <- 255;  
 
 p_hat1 <- x1 / n1
 p_hat2 <- x2 / n2
@@ -232,12 +235,9 @@ z_stat <- (p_hat1 - p_hat2) / SE
 z_stat
 
 # Step 3: Visualize the null distribution
-x    <- seq(-4, 4, length.out = 1000)
-dens <- dnorm(x, mean = 0, sd = 1)
-
-plot(x, dens, type = "l", col = "blue",
-     main = "Null Distribution — Z-statistic",
-     xlab = "Z-score", ylab = "Density")
+plot_norm(col = "blue",
+          main = "Null Distribution — Z-statistic",
+          xlab = "Z-score", ylab = "Density")
 abline(v = z_stat, col = "red", lwd = 2)
 
 # Step 4: p-value (lower tail, H_A: pi_1 < pi_2)
@@ -289,12 +289,9 @@ chi_sq_stat
 # Step 3: Visualize the null distribution
 df   <- length(observed_counts) - 1   # k - 1 = 11
 
-x    <- seq(0, 30, length.out = 1000)
-dens <- dchisq(x, df = df)
-
-plot(x, dens, type = "l", col = "blue",
-     main = "Null Distribution — Chi-squared Statistic",
-     xlab = "Chi-squared value", ylab = "Density")
+plot_chisq(df = df, col = "blue",
+           main = "Null Distribution — Chi-squared Statistic",
+           xlab = "Chi-squared value", ylab = "Density")
 abline(v = chi_sq_stat, col = "red", lwd = 2)
 
 # Step 4: p-value (always upper tail for chi-squared)
@@ -304,9 +301,9 @@ p_value
 
 ### Step 5: Make a decision
 
-Since p = `r round(p_value, 3)` >> 0.05, we **fail to reject** $H_0$. There
-is no evidence that Yale students' birth months deviate from a uniform
-distribution.
+Since p = `r round(p_value, 3)` > 0.05, we **fail to reject** $H_0$. There
+is not sufficient evidence that Yale students' birth months deviate from a 
+uniform distribution.
 
 ---
 
@@ -343,13 +340,9 @@ t_stat
 
 # Step 3: Visualize the null distribution
 df   <- n - 1
-
-x    <- seq(-5, max(t_stat + 0.5, 5), length.out = 1000)
-dens <- dt(x, df = df)
-
-plot(x, dens, type = "l", col = "blue",
-     main = "Null Distribution — T-statistic",
-     xlab = "T-score", ylab = "Density")
+plot_t(df, to = 15, col = "blue",
+       main = "Null Distribution — T-statistic",
+       xlab = "T-score", ylab = "Density")
 abline(v = t_stat, col = "red", lwd = 2)
 
 # Step 4: p-value (upper tail, H_A: mu > mu_0)
@@ -400,12 +393,9 @@ t_stat
 # Step 3: Visualize the null distribution
 df   <- min(n1 - 1, n2 - 1)
 
-x    <- seq(-5, 5, length.out = 1000)
-dens <- dt(x, df = df)
-
-plot(x, dens, type = "l", col = "blue",
-     main = "Null Distribution — T-statistic",
-     xlab = "T-score", ylab = "Density")
+plot_t(df, col = "blue",
+       main = "Null Distribution — T-statistic",
+       xlab = "T-score", ylab = "Density")
 abline(v =  t_stat, col = "red", lwd = 2)
 abline(v = -t_stat, col = "red", lwd = 2)   # two-sided: mark both tails
 
@@ -454,10 +444,7 @@ t_stat
 # Step 3: Visualize the null distribution
 df   <- n - 1
 
-x    <- seq(-5, 5, length.out = 1000)
-dens <- dt(x, df = df)
-
-plot(x, dens, type = "l", col = "blue",
+plot_t(df, col = "blue",
      main = "Null Distribution — T-statistic (Paired)",
      xlab = "T-score", ylab = "Density")
 abline(v = t_stat, col = "red", lwd = 2)
@@ -486,8 +473,7 @@ groups; independent observations.
 $$F = \frac{MSG}{MSE}, \qquad df_1 = k - 1, \quad df_2 = N - k$$
 
 A large F means between-group variation is large relative to within-group
-variation. `get_F_stat()` in SDS1000 is a thin wrapper around `aov()`; calling
-`aov()` directly gives the full test result.
+variation. The SDS1000 function `get_F_stat()` returns the value of the F-statistic.
 
 **Example (class 24):** Hope College students were timed completing a
 Sudoku-like puzzle. Majors were grouped into four categories. Is mean
@@ -502,7 +488,7 @@ H_A: \text{at least one mean differs}$$
 
 ```{r anova}
 # Step 2: Load data and calculate the F-statistic
-set.seed(4455)
+set.seed(4455)  # generate fake data
 completion_times <- c(rnorm(10, mean = 22, sd = 5),
                       rnorm(10, mean = 20, sd = 5),
                       rnorm(10, mean = 26, sd = 5),
@@ -517,25 +503,19 @@ boxplot(completion_times ~ majors,
         col   = c("lightblue", "lightgreen", "lightpink", "lightyellow"))
 
 # Fit the model and extract the F-statistic
-fit     <- aov(completion_times ~ majors)
-fit_sum <- summary(fit)
-fit_sum
-
-f_stat <- fit_sum[[1]]$`F value`[1]
-df1    <- fit_sum[[1]]$Df[1]
-df2    <- fit_sum[[1]]$Df[2]
+f_stat <- get_F_stat(completion_times, majors)
+df1 <- length(unique(majors)) - 1   # k - 1
+df2 <- length(completion_times) - length(unique(majors))  # N - k
+f_stat
 
 # Step 3: Visualize the null distribution
-x    <- seq(0, 8, length.out = 1000)
-dens <- df(x, df1 = df1, df2 = df2)
-
-plot(x, dens, type = "l", col = "blue",
+plot_f(df1, df2, col = "blue",
      main = "Null Distribution — F-statistic",
      xlab = "F value", ylab = "Density")
 abline(v = f_stat, col = "red", lwd = 2)
 
 # Step 4: p-value (always upper tail for F)
-p_value <- pf(f_stat, df1 = df1, df2 = df2, lower.tail = FALSE)
+p_value <- pf(f_stat, df1, df2, lower.tail = FALSE)
 p_value
 ```
 
@@ -549,12 +529,6 @@ dec <- ifelse(p_value < 0.05,
 
 p = `r round(p_value, 3)`: we `r dec`.
 
-If $H_0$ is rejected, use `TukeyHSD()` to find **which** groups differ while
-controlling for multiple comparisons:
-
-```{r tukey}
-TukeyHSD(fit)
-```
 
 ---
 
@@ -582,7 +556,7 @@ $$H_0: \rho = 0 \qquad H_A: \rho > 0$$
 ```{r correlation}
 # Data simulated to match the class 25 states_smoking dataset
 set.seed(2947)
-cigs_per_capita <- runif(44, min = 10, max = 45)
+cigs_per_capita <- runif(44, min = 10, max = 45)  # create fake data
 cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
 
 # Visualize the data
@@ -602,10 +576,7 @@ t_stat
 # Step 3: Visualize the null distribution
 df   <- n - 2
 
-x    <- seq(-5, 5, length.out = 1000)
-dens <- dt(x, df = df)
-
-plot(x, dens, type = "l", col = "blue",
+plot_t(df, col = "blue",
      main = "Null Distribution — T-statistic",
      xlab = "T-score", ylab = "Density")
 abline(v = t_stat, col = "red", lwd = 2)
@@ -674,10 +645,7 @@ fit_sum <- summary(lung_lm)
 t_stat  <- fit_sum$coefficients["cigs_per_capita", "t value"]
 df      <- lung_lm$df.residual   # n - 2
 
-x    <- seq(-5, 5, length.out = 1000)
-dens <- dt(x, df = df)
-
-plot(x, dens, type = "l", col = "blue",
+plot_t(df, col = "blue",
      main = "Null Distribution — T-statistic for Slope",
      xlab = "T-score", ylab = "Density")
 abline(v = t_stat, col = "red", lwd = 2)
