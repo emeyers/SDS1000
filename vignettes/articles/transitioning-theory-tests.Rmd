@@ -20,8 +20,6 @@ h2 {
   margin-top:     3.5rem;
   padding-top:    0.6rem;
   padding-bottom: 0.4rem;
-  padding-left:   0.85rem;
-  border-left:    5px solid #286dc0;
   border-bottom:  1px solid #dee2e6;
   color: #1a3a5c;
   font-size: 1.45rem;
