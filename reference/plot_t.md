@@ -68,12 +68,11 @@ plot_t(
 
 ``` r
 plot_t(20)
-#> Error in eval(expr, envir = ll, enclos = parent.frame()): object 'df1' not found
+
 
 set.seed(200)
 hist(rt(200, 20), prob = TRUE)
-
 plot_t(20, add = TRUE, col = "blue", lwd = 2)
-#> Error in eval(expr, envir = ll, enclos = parent.frame()): object 'df1' not found
+
       
 ```
