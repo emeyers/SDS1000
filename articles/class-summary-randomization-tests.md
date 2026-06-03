@@ -207,7 +207,6 @@ set.seed(3345)
 
 mu_0       <- 98.6
 data_H0    <- body_temps - mean(body_temps) + mu_0   # shift to be consistent with H0
-data_H0    <- data_H0                                 # restate so do_it() can capture it
 n          <- length(body_temps)
 
 null_dist <- do_it(10000) * {

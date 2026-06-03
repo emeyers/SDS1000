@@ -137,6 +137,7 @@ the statistic each time.</li>
 <li><a href="#one-proportion">One proportion</a></li>
 <li><a href="#one-mean">One mean</a></li>
 <li><a href="#difference-of-two-means">Difference of two means</a></li>
+<li><a href="#correlation">Correlation</a></li>
 <li><a href="#regression-slope">Regression slope</a></li>
 <li><a href="#quick-reference">Quick reference</a></li>
 </ul>
@@ -365,6 +366,72 @@ calcium effect remains plausible.</p>
 </div>
 </div>
 <div class="section level2">
+<h2 id="correlation">Correlation<a class="anchor" aria-label="anchor" href="#correlation"></a>
+</h2>
+<p><strong>When to use:</strong> Two paired quantitative variables;
+estimate the population correlation ρ between them. Because x and y are
+paired, we must resample both together using
+<code><a href="../reference/resample_pairs.html">resample_pairs()</a></code> so that every resampled (x, y) pair stays
+matched — exactly the same approach as for the regression slope.</p>
+<p><strong>Example (class 18):</strong> Sugar content and calorie
+content for a sample of 77 breakfast cereals. Compute a 95% bootstrap
+confidence interval for the correlation between sugar and calories.</p>
+<div class="section level3">
+<h3 id="step-1-compute-the-observed-statistic-3">Step 1: Compute the observed statistic<a class="anchor" aria-label="anchor" href="#step-1-compute-the-observed-statistic-3"></a>
+</h3>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1123</span><span class="op">)</span></span>
+<span><span class="va">n</span>        <span class="op">&lt;-</span> <span class="fl">77</span></span>
+<span><span class="va">sugar</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">15</span><span class="op">)</span></span>
+<span><span class="va">calories</span> <span class="op">&lt;-</span> <span class="fl">90</span> <span class="op">+</span> <span class="fl">3.5</span> <span class="op">*</span> <span class="va">sugar</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, sd <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">obs_cor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">sugar</span>, <span class="va">calories</span><span class="op">)</span></span>
+<span><span class="va">obs_cor</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 0.8149169</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="step-2-create-the-bootstrap-distribution-3">Step 2: Create the bootstrap distribution<a class="anchor" aria-label="anchor" href="#step-2-create-the-bootstrap-distribution-3"></a>
+</h3>
+<p>Use <code><a href="../reference/resample_pairs.html">resample_pairs()</a></code> to resample both variables
+together, then recompute <code><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor()</a></code> each time:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">8833</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sugar</span>    <span class="op">&lt;-</span> <span class="va">sugar</span></span>
+<span><span class="va">calories</span> <span class="op">&lt;-</span> <span class="va">calories</span></span>
+<span></span>
+<span><span class="va">boot_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
+<span>  <span class="va">resampled</span>          <span class="op">&lt;-</span> <span class="fu"><a href="../reference/resample_pairs.html">resample_pairs</a></span><span class="op">(</span><span class="va">sugar</span>, <span class="va">calories</span><span class="op">)</span></span>
+<span>  <span class="va">resampled_sugar</span>    <span class="op">&lt;-</span> <span class="va">resampled</span><span class="op">$</span><span class="va">vector1</span></span>
+<span>  <span class="va">resampled_calories</span> <span class="op">&lt;-</span> <span class="va">resampled</span><span class="op">$</span><span class="va">vector2</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">resampled_sugar</span>, <span class="va">resampled_calories</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">boot_dist</span>, breaks <span class="op">=</span> <span class="fl">80</span>,</span>
+<span>     main <span class="op">=</span> <span class="st">"Bootstrap Distribution — Correlation"</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"Correlation"</span>,</span>
+<span>     col <span class="op">=</span> <span class="st">"steelblue"</span>, border <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">obs_cor</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="class-summary-randomization-cis_files/figure-html/corr_boot-1.png" class="r-plt" alt="" width="576"></p>
+</div>
+<div class="section level3">
+<h3 id="step-3-compute-the-se-and-construct-the-ci-3">Step 3: Compute the SE and construct the CI<a class="anchor" aria-label="anchor" href="#step-3-compute-the-se-and-construct-the-ci-3"></a>
+</h3>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">SE_boot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">boot_dist</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">CI</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">obs_cor</span> <span class="op">-</span> <span class="fu"><a href="../reference/cnorm.html">cnorm</a></span><span class="op">(</span><span class="fl">0.95</span><span class="op">)</span> <span class="op">*</span> <span class="va">SE_boot</span>,</span>
+<span>        <span class="va">obs_cor</span> <span class="op">+</span> <span class="fu"><a href="../reference/cnorm.html">cnorm</a></span><span class="op">(</span><span class="fl">0.95</span><span class="op">)</span> <span class="op">*</span> <span class="va">SE_boot</span><span class="op">)</span></span>
+<span><span class="va">CI</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 0.7485002 0.8813337</span></span></code></pre>
+<p>We are 95% confident that the true correlation between sugar and
+calorie content in cereals is between 0.749 and 0.881. Since the
+interval lies entirely above zero, the data provide good evidence of a
+positive association.</p>
+<hr>
+</div>
+</div>
+<div class="section level2">
 <h2 id="regression-slope">Regression Slope<a class="anchor" aria-label="anchor" href="#regression-slope"></a>
 </h2>
 <p><strong>When to use:</strong> Two paired quantitative variables;
@@ -375,9 +442,9 @@ y are paired, resample both together using <code><a href="../reference/resample_
 and lung cancer rates across 44 U.S. states. Compute a 95% bootstrap
 confidence interval for the regression slope.</p>
 <div class="section level3">
-<h3 id="step-1-compute-the-observed-statistic-3">Step 1: Compute the observed statistic<a class="anchor" aria-label="anchor" href="#step-1-compute-the-observed-statistic-3"></a>
+<h3 id="step-1-compute-the-observed-statistic-4">Step 1: Compute the observed statistic<a class="anchor" aria-label="anchor" href="#step-1-compute-the-observed-statistic-4"></a>
 </h3>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2947</span><span class="op">)</span></span>
 <span><span class="va">cigs_per_capita</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">44</span>, min <span class="op">=</span> <span class="fl">10</span>, max <span class="op">=</span> <span class="fl">45</span><span class="op">)</span></span>
 <span><span class="va">cancer_rate</span>     <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">0.005</span> <span class="op">*</span> <span class="va">cigs_per_capita</span> <span class="op">*</span> <span class="fl">1000</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">44</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
@@ -389,11 +456,11 @@ confidence interval for the regression slope.</p>
 <span><span class="co">##        4.997922</span></span></code></pre>
 </div>
 <div class="section level3">
-<h3 id="step-2-create-the-bootstrap-distribution-3">Step 2: Create the bootstrap distribution<a class="anchor" aria-label="anchor" href="#step-2-create-the-bootstrap-distribution-3"></a>
+<h3 id="step-2-create-the-bootstrap-distribution-4">Step 2: Create the bootstrap distribution<a class="anchor" aria-label="anchor" href="#step-2-create-the-bootstrap-distribution-4"></a>
 </h3>
 <p>Use <code><a href="../reference/resample_pairs.html">resample_pairs()</a></code> to resample both variables
 together, keeping pairs intact:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">3109</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cigs_per_capita</span> <span class="op">&lt;-</span> <span class="va">cigs_per_capita</span></span>
@@ -414,9 +481,9 @@ together, keeping pairs intact:</p>
 <p><img src="class-summary-randomization-cis_files/figure-html/reg_boot-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
-<h3 id="step-3-compute-the-se-and-construct-the-ci-3">Step 3: Compute the SE and construct the CI<a class="anchor" aria-label="anchor" href="#step-3-compute-the-se-and-construct-the-ci-3"></a>
+<h3 id="step-3-compute-the-se-and-construct-the-ci-4">Step 3: Compute the SE and construct the CI<a class="anchor" aria-label="anchor" href="#step-3-compute-the-se-and-construct-the-ci-4"></a>
 </h3>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">SE_boot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">boot_dist</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">CI</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">obs_slope</span> <span class="op">-</span> <span class="fu"><a href="../reference/cnorm.html">cnorm</a></span><span class="op">(</span><span class="fl">0.95</span><span class="op">)</span> <span class="op">*</span> <span class="va">SE_boot</span>,</span>
@@ -475,6 +542,13 @@ correlation we are trying to measure.</p>
 <td><code>obs ± cnorm(C) * sd(boot_dist)</code></td>
 </tr>
 <tr class="even">
+<td>Correlation</td>
+<td>
+<code>resample_pairs(x, y)</code> → <code><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor()</a></code>
+</td>
+<td><code>obs ± cnorm(C) * sd(boot_dist)</code></td>
+</tr>
+<tr class="odd">
 <td>Regression slope</td>
 <td>
 <code>resample_pairs(x, y)</code> → <code>coef(lm(...))</code>

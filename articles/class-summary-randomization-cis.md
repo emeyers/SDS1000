@@ -22,6 +22,7 @@ Every bootstrap CI in this guide follows the same three steps:
 - [One proportion](#one-proportion)
 - [One mean](#one-mean)
 - [Difference of two means](#difference-of-two-means)
+- [Correlation](#correlation)
 - [Regression slope](#regression-slope)
 - [Quick reference](#quick-reference)
 
@@ -275,6 +276,84 @@ calcium effect remains plausible.
 
 ------------------------------------------------------------------------
 
+## Correlation
+
+**When to use:** Two paired quantitative variables; estimate the
+population correlation ρ between them. Because x and y are paired, we
+must resample both together using
+[`resample_pairs()`](https://emeyers.github.io/SDS1000/reference/resample_pairs.md)
+so that every resampled (x, y) pair stays matched — exactly the same
+approach as for the regression slope.
+
+**Example (class 18):** Sugar content and calorie content for a sample
+of 77 breakfast cereals. Compute a 95% bootstrap confidence interval for
+the correlation between sugar and calories.
+
+### Step 1: Compute the observed statistic
+
+``` r
+
+set.seed(1123)
+n        <- 77
+sugar    <- runif(n, 0, 15)
+calories <- 90 + 3.5 * sugar + rnorm(n, sd = 12)
+
+obs_cor <- cor(sugar, calories)
+obs_cor
+```
+
+    ## [1] 0.8149169
+
+### Step 2: Create the bootstrap distribution
+
+Use
+[`resample_pairs()`](https://emeyers.github.io/SDS1000/reference/resample_pairs.md)
+to resample both variables together, then recompute
+[`cor()`](https://rdrr.io/r/stats/cor.html) each time:
+
+``` r
+
+set.seed(8833)
+
+sugar    <- sugar
+calories <- calories
+
+boot_dist <- do_it(10000) * {
+  resampled          <- resample_pairs(sugar, calories)
+  resampled_sugar    <- resampled$vector1
+  resampled_calories <- resampled$vector2
+  cor(resampled_sugar, resampled_calories)
+}
+
+hist(boot_dist, breaks = 80,
+     main = "Bootstrap Distribution — Correlation",
+     xlab = "Correlation",
+     col = "steelblue", border = "white")
+abline(v = obs_cor, col = "red", lwd = 2)
+```
+
+![](class-summary-randomization-cis_files/figure-html/corr_boot-1.png)
+
+### Step 3: Compute the SE and construct the CI
+
+``` r
+
+SE_boot <- sd(boot_dist)
+
+CI <- c(obs_cor - cnorm(0.95) * SE_boot,
+        obs_cor + cnorm(0.95) * SE_boot)
+CI
+```
+
+    ## [1] 0.7485002 0.8813337
+
+We are 95% confident that the true correlation between sugar and calorie
+content in cereals is between 0.749 and 0.881. Since the interval lies
+entirely above zero, the data provide good evidence of a positive
+association.
+
+------------------------------------------------------------------------
+
 ## Regression Slope
 
 **When to use:** Two paired quantitative variables; estimate the slope
@@ -366,4 +445,5 @@ correlation we are trying to measure.
 | One proportion | `sample(data, n, replace=TRUE)` → [`get_proportion()`](https://emeyers.github.io/SDS1000/reference/get_proportion.md) | `obs ± cnorm(C) * sd(boot_dist)` |
 | One mean | `sample(data, n, replace=TRUE)` → [`mean()`](https://rdrr.io/r/base/mean.html) | `obs ± cnorm(C) * sd(boot_dist)` |
 | Diff. of two means | `sample(group, n, replace=TRUE)` for each group | `obs ± cnorm(C) * sd(boot_dist)` |
+| Correlation | `resample_pairs(x, y)` → [`cor()`](https://rdrr.io/r/stats/cor.html) | `obs ± cnorm(C) * sd(boot_dist)` |
 | Regression slope | `resample_pairs(x, y)` → `coef(lm(...))` | `obs ± cnorm(C) * sd(boot_dist)` |
