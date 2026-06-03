@@ -86,8 +86,6 @@ h2 {
   margin-top:     3.5rem;
   padding-top:    0.6rem;
   padding-bottom: 0.4rem;
-  padding-left:   0.85rem;
-  border-left:    5px solid #286dc0;
   border-bottom:  1px solid #dee2e6;
   color: #1a3a5c;
   font-size: 1.45rem;
@@ -172,6 +170,7 @@ statistic falls.</p>
 <p><strong>In this article:</strong></p>
 <ul>
 <li><a href="#one-proportion">One proportion</a></li>
+<li><a href="#one-mean">One mean</a></li>
 <li><a href="#more-than-two-proportions">More than two
 proportions</a></li>
 <li><a href="#two-means">Two means</a></li>
@@ -288,6 +287,86 @@ accuracy.</p>
 </div>
 </div>
 <div class="section level2">
+<h2 id="one-mean">One Mean<a class="anchor" aria-label="anchor" href="#one-mean"></a>
+</h2>
+<p><strong>When to use:</strong> A single quantitative variable; test
+whether the population mean μ equals a specific value μ₀. Unlike the
+proportion test, there is no natural coin-flip simulation for a mean.
+Instead, we use a <strong>bootstrap-based procedure</strong>: shift the
+data so that its mean equals μ₀ (making it consistent with H₀), then
+resample from that shifted data.</p>
+<p><strong>Key idea:</strong> Subtracting the sample mean and adding μ₀
+centres the data at the null value without changing its spread or
+shape:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data_H0</span> <span class="op">&lt;-</span> <span class="va">my_data</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span> <span class="op">+</span> <span class="va">mu_0</span></span></code></pre></div>
+<p>Resampling with replacement from <code>data_H0</code> then generates
+statistics that reflect what we would expect under H₀.</p>
+<p><strong>Example:</strong> It is widely assumed that the average human
+body temperature is 98.6°F. A sample of 50 body temperatures from
+Mackowiak et al. (1992) had a mean of 98.25°F. Is there evidence that
+the true mean differs from 98.6°F?</p>
+<div class="section level3">
+<h3 id="step-1-state-the-hypotheses-1">Step 1: State the hypotheses<a class="anchor" aria-label="anchor" href="#step-1-state-the-hypotheses-1"></a>
+</h3>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub><mo>:</mo><mi>μ</mi><mo>=</mo><mn>98.6</mn><mspace width="2.0em"></mspace><msub><mi>H</mi><mi>A</mi></msub><mo>:</mo><mi>μ</mi><mo>≠</mo><mn>98.6</mn></mrow><annotation encoding="application/x-tex">H_0: \mu = 98.6 \qquad H_A: \mu \ne 98.6</annotation></semantics></math></p>
+</div>
+<div class="section level3">
+<h3 id="step-2-calculate-the-observed-statistic-1">Step 2: Calculate the observed statistic<a class="anchor" aria-label="anchor" href="#step-2-calculate-the-observed-statistic-1"></a>
+</h3>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">9910</span><span class="op">)</span></span>
+<span><span class="va">body_temps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span>, mean <span class="op">=</span> <span class="fl">98.25</span>, sd <span class="op">=</span> <span class="fl">0.73</span><span class="op">)</span>   <span class="co"># class 11 structure</span></span>
+<span></span>
+<span><span class="va">obs_mean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">body_temps</span><span class="op">)</span></span>
+<span><span class="va">obs_mean</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 98.37283</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="step-3-create-the-null-distribution-1">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-1"></a>
+</h3>
+<p>Shift the data to have mean exactly equal to μ₀ = 98.6, then resample
+with replacement 10,000 times:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">3345</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mu_0</span>       <span class="op">&lt;-</span> <span class="fl">98.6</span></span>
+<span><span class="va">data_H0</span>    <span class="op">&lt;-</span> <span class="va">body_temps</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">body_temps</span><span class="op">)</span> <span class="op">+</span> <span class="va">mu_0</span>   <span class="co"># shift to be consistent with H0</span></span>
+<span><span class="va">data_H0</span>    <span class="op">&lt;-</span> <span class="va">data_H0</span>                                 <span class="co"># restate so do_it() can capture it</span></span>
+<span><span class="va">n</span>          <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">body_temps</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">null_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
+<span>  <span class="va">resampled_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">data_H0</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">resampled_data</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">null_dist</span>, breaks <span class="op">=</span> <span class="fl">80</span>,</span>
+<span>     main <span class="op">=</span> <span class="st">"Null Distribution — Mean Body Temperature"</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"Mean Temperature (°F)"</span>,</span>
+<span>     col <span class="op">=</span> <span class="st">"steelblue"</span>, border <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">obs_mean</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="class-summary-randomization-tests_files/figure-html/one_mean_null-1.png" class="r-plt" alt="" width="576"></p>
+</div>
+<div class="section level3">
+<h3 id="step-4-calculate-the-p-value-1">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-1"></a>
+</h3>
+<p>This is a two-sided test (H₀: μ ≠ 98.6), so we count values in both
+tails that are at least as far from μ₀ as the observed mean:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">obs_mean</span> <span class="op">-</span> <span class="va">mu_0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">null_dist</span> <span class="op">-</span> <span class="va">mu_0</span><span class="op">)</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">p_value</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 0.0114</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="step-5-make-a-decision-1">Step 5: Make a decision<a class="anchor" aria-label="anchor" href="#step-5-make-a-decision-1"></a>
+</h3>
+<p>Since p = 0.0114 &lt; 0.05, we <strong>reject</strong> H₀ and
+conclude that there is evidence the true mean body temperature differs
+from 98.6°F.</p>
+<hr>
+</div>
+</div>
+<div class="section level2">
 <h2 id="more-than-two-proportions">More Than Two Proportions<a class="anchor" aria-label="anchor" href="#more-than-two-proportions"></a>
 </h2>
 <p><strong>When to use:</strong> One categorical variable with three or
@@ -299,14 +378,14 @@ expected distribution using <code><a href="../reference/rroll.html">rroll()</a><
 birth months of 198 randomly selected Yale students. Are students
 equally likely to be born in any month?</p>
 <div class="section level3">
-<h3 id="step-1-state-the-hypotheses-1">Step 1: State the hypotheses<a class="anchor" aria-label="anchor" href="#step-1-state-the-hypotheses-1"></a>
+<h3 id="step-1-state-the-hypotheses-2">Step 1: State the hypotheses<a class="anchor" aria-label="anchor" href="#step-1-state-the-hypotheses-2"></a>
 </h3>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub><mo>:</mo><msub><mi>π</mi><mrow><mi>J</mi><mi>a</mi><mi>n</mi></mrow></msub><mo>=</mo><msub><mi>π</mi><mrow><mi>F</mi><mi>e</mi><mi>b</mi></mrow></msub><mo>=</mo><mi>⋯</mi><mo>=</mo><msub><mi>π</mi><mrow><mi>D</mi><mi>e</mi><mi>c</mi></mrow></msub><mo>=</mo><mstyle displaystyle="false"><mfrac><mn>1</mn><mn>12</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">H_0: \pi_{Jan} = \pi_{Feb} = \cdots = \pi_{Dec} = \tfrac{1}{12}</annotation></semantics></math><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mi>A</mi></msub><mo>:</mo><mrow><mtext mathvariant="normal">at least one monthly proportion differs from </mtext><mspace width="0.333em"></mspace></mrow><mstyle displaystyle="false"><mfrac><mn>1</mn><mn>12</mn></mfrac></mstyle></mrow><annotation encoding="application/x-tex">H_A: \text{at least one monthly proportion differs from } \tfrac{1}{12}</annotation></semantics></math></p>
 </div>
 <div class="section level3">
-<h3 id="step-2-calculate-the-observed-statistic-1">Step 2: Calculate the observed statistic<a class="anchor" aria-label="anchor" href="#step-2-calculate-the-observed-statistic-1"></a>
+<h3 id="step-2-calculate-the-observed-statistic-2">Step 2: Calculate the observed statistic<a class="anchor" aria-label="anchor" href="#step-2-calculate-the-observed-statistic-2"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">observed_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="fl">11</span>, <span class="fl">21</span>, <span class="fl">17</span>, <span class="fl">15</span>, <span class="fl">13</span>, <span class="fl">19</span>, <span class="fl">16</span>, <span class="fl">18</span>, <span class="fl">22</span>, <span class="fl">14</span>, <span class="fl">18</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">observed_counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">month.abb</span></span>
 <span></span>
@@ -317,12 +396,12 @@ equally likely to be born in any month?</p>
 <pre><code><span><span class="co">## [1] 7.212121</span></span></code></pre>
 </div>
 <div class="section level3">
-<h3 id="step-3-create-the-null-distribution-1">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-1"></a>
+<h3 id="step-3-create-the-null-distribution-2">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-2"></a>
 </h3>
 <p>Under H₀, birth months are equally likely. Use <code><a href="../reference/rroll.html">rroll()</a></code>
 to simulate 10,000 samples of 198 students from a uniform distribution
 across 12 months:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">3341</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">n_students</span>      <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">observed_counts</span><span class="op">)</span></span>
@@ -341,15 +420,15 @@ across 12 months:</p>
 <p><img src="class-summary-randomization-tests_files/figure-html/multi_prop_null-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
-<h3 id="step-4-calculate-the-p-value-1">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-1"></a>
+<h3 id="step-4-calculate-the-p-value-2">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-2"></a>
 </h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_stat</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.7917</span></span></code></pre>
 </div>
 <div class="section level3">
-<h3 id="step-5-make-a-decision-1">Step 5: Make a decision<a class="anchor" aria-label="anchor" href="#step-5-make-a-decision-1"></a>
+<h3 id="step-5-make-a-decision-2">Step 5: Make a decision<a class="anchor" aria-label="anchor" href="#step-5-make-a-decision-2"></a>
 </h3>
 <p>Since p = 0.792 &gt;&gt; 0.05, we <strong>fail to reject</strong> H₀.
 There is no evidence that Yale students’ birth months deviate from a
@@ -372,14 +451,14 @@ placebo to 11 men (control). The outcome is the decrease in blood
 pressure. Is there evidence that calcium produces a greater
 decrease?</p>
 <div class="section level3">
-<h3 id="step-1-state-the-hypotheses-2">Step 1: State the hypotheses<a class="anchor" aria-label="anchor" href="#step-1-state-the-hypotheses-2"></a>
+<h3 id="step-1-state-the-hypotheses-3">Step 1: State the hypotheses<a class="anchor" aria-label="anchor" href="#step-1-state-the-hypotheses-3"></a>
 </h3>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub><mo>:</mo><msub><mi>μ</mi><mtext mathvariant="normal">treat</mtext></msub><mo>=</mo><msub><mi>μ</mi><mtext mathvariant="normal">control</mtext></msub><mspace width="2.0em"></mspace><msub><mi>H</mi><mi>A</mi></msub><mo>:</mo><msub><mi>μ</mi><mtext mathvariant="normal">treat</mtext></msub><mo>&gt;</mo><msub><mi>μ</mi><mtext mathvariant="normal">control</mtext></msub></mrow><annotation encoding="application/x-tex">H_0: \mu_\text{treat} = \mu_\text{control} \qquad H_A: \mu_\text{treat} &gt; \mu_\text{control}</annotation></semantics></math></p>
 </div>
 <div class="section level3">
-<h3 id="step-2-calculate-the-observed-statistic-2">Step 2: Calculate the observed statistic<a class="anchor" aria-label="anchor" href="#step-2-calculate-the-observed-statistic-2"></a>
+<h3 id="step-2-calculate-the-observed-statistic-3">Step 2: Calculate the observed statistic<a class="anchor" aria-label="anchor" href="#step-2-calculate-the-observed-statistic-3"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">treat</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">7</span>, <span class="op">-</span><span class="fl">4</span>, <span class="fl">18</span>, <span class="fl">17</span>, <span class="op">-</span><span class="fl">3</span>, <span class="op">-</span><span class="fl">5</span>,  <span class="fl">1</span>, <span class="fl">10</span>, <span class="fl">11</span>, <span class="op">-</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">control</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">12</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">3</span>,  <span class="fl">3</span>, <span class="op">-</span><span class="fl">5</span>,  <span class="fl">5</span>,  <span class="fl">2</span>, <span class="op">-</span><span class="fl">11</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">3</span><span class="op">)</span></span>
 <span></span>
@@ -388,11 +467,11 @@ decrease?</p>
 <pre><code><span><span class="co">## [1] 5.272727</span></span></code></pre>
 </div>
 <div class="section level3">
-<h3 id="step-3-create-the-null-distribution-2">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-2"></a>
+<h3 id="step-3-create-the-null-distribution-3">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-3"></a>
 </h3>
 <p>Combine both groups into one vector and use <code><a href="../reference/shuffle.html">shuffle()</a></code> to
 randomly reassign group labels 10,000 times:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">6174</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">combined_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">treat</span>, <span class="va">control</span><span class="op">)</span></span>
@@ -412,15 +491,15 @@ randomly reassign group labels 10,000 times:</p>
 <p><img src="class-summary-randomization-tests_files/figure-html/two_means_null-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
-<h3 id="step-4-calculate-the-p-value-2">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-2"></a>
+<h3 id="step-4-calculate-the-p-value-3">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-3"></a>
 </h3>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_stat</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.0605</span></span></code></pre>
 </div>
 <div class="section level3">
-<h3 id="step-5-make-a-decision-2">Step 5: Make a decision<a class="anchor" aria-label="anchor" href="#step-5-make-a-decision-2"></a>
+<h3 id="step-5-make-a-decision-3">Step 5: Make a decision<a class="anchor" aria-label="anchor" href="#step-5-make-a-decision-3"></a>
 </h3>
 <p>Since p = 0.06 is just above 0.05, we <strong>fail to reject</strong>
 H₀ at the α = 0.05 level. The evidence for a calcium effect is
@@ -441,14 +520,14 @@ using <code><a href="../reference/shuffle.html">shuffle()</a></code> on the grou
 timed completing a Sudoku-like puzzle, grouped into four majors. Is
 there a difference in mean completion time?</p>
 <div class="section level3">
-<h3 id="step-1-state-the-hypotheses-3">Step 1: State the hypotheses<a class="anchor" aria-label="anchor" href="#step-1-state-the-hypotheses-3"></a>
+<h3 id="step-1-state-the-hypotheses-4">Step 1: State the hypotheses<a class="anchor" aria-label="anchor" href="#step-1-state-the-hypotheses-4"></a>
 </h3>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub><mo>:</mo><msub><mi>μ</mi><mrow><mi>a</mi><mi>s</mi></mrow></msub><mo>=</mo><msub><mi>μ</mi><mrow><mi>n</mi><mi>s</mi></mrow></msub><mo>=</mo><msub><mi>μ</mi><mrow><mi>s</mi><mi>s</mi></mrow></msub><mo>=</mo><msub><mi>μ</mi><mrow><mi>a</mi><mi>h</mi></mrow></msub></mrow><annotation encoding="application/x-tex">H_0: \mu_{as} = \mu_{ns} = \mu_{ss} = \mu_{ah}</annotation></semantics></math><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mi>A</mi></msub><mo>:</mo><mtext mathvariant="normal">at least one group mean differs</mtext></mrow><annotation encoding="application/x-tex">H_A: \text{at least one group mean differs}</annotation></semantics></math></p>
 </div>
 <div class="section level3">
-<h3 id="step-2-calculate-the-observed-statistic-3">Step 2: Calculate the observed statistic<a class="anchor" aria-label="anchor" href="#step-2-calculate-the-observed-statistic-3"></a>
+<h3 id="step-2-calculate-the-observed-statistic-4">Step 2: Calculate the observed statistic<a class="anchor" aria-label="anchor" href="#step-2-calculate-the-observed-statistic-4"></a>
 </h3>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">4455</span><span class="op">)</span></span>
 <span><span class="va">completion_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, mean <span class="op">=</span> <span class="fl">22</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
 <span>                      <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, mean <span class="op">=</span> <span class="fl">20</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
@@ -462,17 +541,17 @@ there a difference in mean completion time?</p>
 <span>        ylab  <span class="op">=</span> <span class="st">"Time (seconds)"</span>,</span>
 <span>        col   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lightblue"</span>, <span class="st">"lightgreen"</span>, <span class="st">"lightpink"</span>, <span class="st">"lightyellow"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-randomization-tests_files/figure-html/multi_means_obs-1.png" class="r-plt" alt="" width="576"></p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obs_stat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_MAD_stat.html">get_MAD_stat</a></span><span class="op">(</span><span class="va">completion_times</span>, <span class="va">majors</span><span class="op">)</span></span>
 <span><span class="va">obs_stat</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 3.354879</span></span></code></pre>
 </div>
 <div class="section level3">
-<h3 id="step-3-create-the-null-distribution-3">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-3"></a>
+<h3 id="step-3-create-the-null-distribution-4">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-4"></a>
 </h3>
 <p>Use <code><a href="../reference/shuffle.html">shuffle()</a></code> on the group labels to break any real
 association:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">8812</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">completion_times</span> <span class="op">&lt;-</span> <span class="va">completion_times</span></span>
@@ -491,15 +570,15 @@ association:</p>
 <p><img src="class-summary-randomization-tests_files/figure-html/multi_means_null-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
-<h3 id="step-4-calculate-the-p-value-3">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-3"></a>
+<h3 id="step-4-calculate-the-p-value-4">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-4"></a>
 </h3>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_stat</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.0416</span></span></code></pre>
 </div>
 <div class="section level3">
-<h3 id="step-5-make-a-decision-3">Step 5: Make a decision<a class="anchor" aria-label="anchor" href="#step-5-make-a-decision-3"></a>
+<h3 id="step-5-make-a-decision-4">Step 5: Make a decision<a class="anchor" aria-label="anchor" href="#step-5-make-a-decision-4"></a>
 </h3>
 <p>Since p = 0.042, we <strong>reject</strong> H₀ at the α = 0.05
 level.</p>
@@ -526,14 +605,14 @@ distributions.</p>
 cereals recorded sugar content and calorie content. Is there evidence of
 a positive correlation?</p>
 <div class="section level3">
-<h3 id="step-1-state-the-hypotheses-4">Step 1: State the hypotheses<a class="anchor" aria-label="anchor" href="#step-1-state-the-hypotheses-4"></a>
+<h3 id="step-1-state-the-hypotheses-5">Step 1: State the hypotheses<a class="anchor" aria-label="anchor" href="#step-1-state-the-hypotheses-5"></a>
 </h3>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub><mo>:</mo><mi>ρ</mi><mo>=</mo><mn>0</mn><mspace width="2.0em"></mspace><msub><mi>H</mi><mi>A</mi></msub><mo>:</mo><mi>ρ</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">H_0: \rho = 0 \qquad H_A: \rho &gt; 0</annotation></semantics></math></p>
 </div>
 <div class="section level3">
-<h3 id="step-2-calculate-the-observed-statistic-4">Step 2: Calculate the observed statistic<a class="anchor" aria-label="anchor" href="#step-2-calculate-the-observed-statistic-4"></a>
+<h3 id="step-2-calculate-the-observed-statistic-5">Step 2: Calculate the observed statistic<a class="anchor" aria-label="anchor" href="#step-2-calculate-the-observed-statistic-5"></a>
 </h3>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1123</span><span class="op">)</span></span>
 <span><span class="co"># Simulated to match class 18 cereal data structure</span></span>
 <span><span class="va">n</span>        <span class="op">&lt;-</span> <span class="fl">77</span></span>
@@ -544,17 +623,17 @@ a positive correlation?</p>
 <span>     main <span class="op">=</span> <span class="st">"Calories vs Sugar in Cereals"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"Sugar (grams)"</span>, ylab <span class="op">=</span> <span class="st">"Calories"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-randomization-tests_files/figure-html/corr_obs-1.png" class="r-plt" alt="" width="576"></p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obs_stat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">sugar</span>, <span class="va">calories</span><span class="op">)</span></span>
 <span><span class="va">obs_stat</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.8149169</span></span></code></pre>
 </div>
 <div class="section level3">
-<h3 id="step-3-create-the-null-distribution-4">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-4"></a>
+<h3 id="step-3-create-the-null-distribution-5">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-5"></a>
 </h3>
 <p>Use <code><a href="../reference/shuffle.html">shuffle()</a></code> on the sugar values to destroy any
 correlation with calories:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">5671</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sugar</span>    <span class="op">&lt;-</span> <span class="va">sugar</span></span>
@@ -572,15 +651,15 @@ correlation with calories:</p>
 <p><img src="class-summary-randomization-tests_files/figure-html/corr_null-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
-<h3 id="step-4-calculate-the-p-value-4">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-4"></a>
+<h3 id="step-4-calculate-the-p-value-5">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-5"></a>
 </h3>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_stat</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0</span></span></code></pre>
 </div>
 <div class="section level3">
-<h3 id="step-5-make-a-decision-4">Step 5: Make a decision<a class="anchor" aria-label="anchor" href="#step-5-make-a-decision-4"></a>
+<h3 id="step-5-make-a-decision-5">Step 5: Make a decision<a class="anchor" aria-label="anchor" href="#step-5-make-a-decision-5"></a>
 </h3>
 <p>Since p ≈ 0, we <strong>reject</strong> H₀ and conclude that there is
 evidence of a positive correlation between sugar and calorie content in
@@ -600,14 +679,14 @@ relationship), the pairing between x and y is arbitrary.</p>
 per capita and lung cancer rates across U.S. states. Is there evidence
 of a positive slope?</p>
 <div class="section level3">
-<h3 id="step-1-state-the-hypotheses-5">Step 1: State the hypotheses<a class="anchor" aria-label="anchor" href="#step-1-state-the-hypotheses-5"></a>
+<h3 id="step-1-state-the-hypotheses-6">Step 1: State the hypotheses<a class="anchor" aria-label="anchor" href="#step-1-state-the-hypotheses-6"></a>
 </h3>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub><mo>:</mo><msub><mi>β</mi><mn>1</mn></msub><mo>=</mo><mn>0</mn><mspace width="2.0em"></mspace><msub><mi>H</mi><mi>A</mi></msub><mo>:</mo><msub><mi>β</mi><mn>1</mn></msub><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">H_0: \beta_1 = 0 \qquad H_A: \beta_1 &gt; 0</annotation></semantics></math></p>
 </div>
 <div class="section level3">
-<h3 id="step-2-calculate-the-observed-statistic-5">Step 2: Calculate the observed statistic<a class="anchor" aria-label="anchor" href="#step-2-calculate-the-observed-statistic-5"></a>
+<h3 id="step-2-calculate-the-observed-statistic-6">Step 2: Calculate the observed statistic<a class="anchor" aria-label="anchor" href="#step-2-calculate-the-observed-statistic-6"></a>
 </h3>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2947</span><span class="op">)</span></span>
 <span><span class="va">cigs_per_capita</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">44</span>, min <span class="op">=</span> <span class="fl">10</span>, max <span class="op">=</span> <span class="fl">45</span><span class="op">)</span></span>
 <span><span class="va">cancer_rate</span>     <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">0.005</span> <span class="op">*</span> <span class="va">cigs_per_capita</span> <span class="op">*</span> <span class="fl">1000</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">44</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
@@ -617,7 +696,7 @@ of a positive slope?</p>
 <span>     ylab <span class="op">=</span> <span class="st">"Lung Cancer Rate per 100,000"</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Lung Cancer Rate vs. Cigarette Consumption"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="class-summary-randomization-tests_files/figure-html/reg_obs-1.png" class="r-plt" alt="" width="576"></p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lung_lm</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">cancer_rate</span> <span class="op">~</span> <span class="va">cigs_per_capita</span><span class="op">)</span></span>
 <span><span class="va">obs_slope</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">lung_lm</span><span class="op">)</span><span class="op">[</span><span class="st">"cigs_per_capita"</span><span class="op">]</span></span>
 <span><span class="va">obs_slope</span></span></code></pre></div>
@@ -625,12 +704,12 @@ of a positive slope?</p>
 <span><span class="co">##        4.997922</span></span></code></pre>
 </div>
 <div class="section level3">
-<h3 id="step-3-create-the-null-distribution-5">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-5"></a>
+<h3 id="step-3-create-the-null-distribution-6">Step 3: Create the null distribution<a class="anchor" aria-label="anchor" href="#step-3-create-the-null-distribution-6"></a>
 </h3>
 <p>Use <code><a href="../reference/shuffle.html">shuffle()</a></code> on the cancer rate values — this breaks
 the association with <code>cigs_per_capita</code> while keeping both
 variables’ distributions intact:</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">3318</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cancer_rate</span>     <span class="op">&lt;-</span> <span class="va">cancer_rate</span></span>
@@ -650,15 +729,15 @@ variables’ distributions intact:</p>
 <p><img src="class-summary-randomization-tests_files/figure-html/reg_null-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
-<h3 id="step-4-calculate-the-p-value-5">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-5"></a>
+<h3 id="step-4-calculate-the-p-value-6">Step 4: Calculate the p-value<a class="anchor" aria-label="anchor" href="#step-4-calculate-the-p-value-6"></a>
 </h3>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_slope</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">p_value</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0</span></span></code></pre>
 </div>
 <div class="section level3">
-<h3 id="step-5-make-a-decision-5">Step 5: Make a decision<a class="anchor" aria-label="anchor" href="#step-5-make-a-decision-5"></a>
+<h3 id="step-5-make-a-decision-6">Step 5: Make a decision<a class="anchor" aria-label="anchor" href="#step-5-make-a-decision-6"></a>
 </h3>
 <p>Since p ≈ 0, we <strong>reject</strong> H₀ and conclude there is
 evidence of a positive relationship between cigarette consumption and
@@ -690,6 +769,14 @@ lung cancer rate.</p>
 <td><code>ptail(obs, null, lower.tail = FALSE)</code></td>
 </tr>
 <tr class="even">
+<td>One mean</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>x</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar{x}</annotation></semantics></math></td>
+<td>Shift data to H₀ mean, resample:
+<code>data_H0 &lt;- x - mean(x) + mu_0</code>
+</td>
+<td><code>ptail(abs(obs-mu_0), abs(null-mu_0), lower.tail=FALSE)</code></td>
+</tr>
+<tr class="odd">
 <td>Multiple proportions</td>
 <td>Chi-squared:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∑</mo><mo stretchy="false" form="prefix">(</mo><mi>O</mi><mo>−</mo><mi>E</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup><mi>/</mi><mi>E</mi></mrow><annotation encoding="application/x-tex">\sum(O-E)^2/E</annotation></semantics></math>
@@ -697,20 +784,20 @@ lung cancer rate.</p>
 <td><code>do_it(n) * { rroll(n, expected_p) }</code></td>
 <td><code>ptail(obs, null, lower.tail = FALSE)</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Two means</td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>x</mi><mo accent="true">‾</mo></mover><mn>1</mn></msub><mo>−</mo><msub><mover><mi>x</mi><mo accent="true">‾</mo></mover><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">\bar{x}_1 - \bar{x}_2</annotation></semantics></math></td>
 <td><code>do_it(n) * { shuff &lt;- shuffle(combined); ... }</code></td>
 <td><code>ptail(obs, null, lower.tail = FALSE)</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>More than two means</td>
 <td>MAD: <code><a href="../reference/get_MAD_stat.html">get_MAD_stat()</a></code>
 </td>
 <td><code>do_it(n) * { get_MAD_stat(y, shuffle(groups)) }</code></td>
 <td><code>ptail(obs, null, lower.tail = FALSE)</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Correlation</td>
 <td>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo></mrow><annotation encoding="application/x-tex">r =</annotation></semantics></math><code>cor(x, y)</code>
@@ -718,7 +805,7 @@ lung cancer rate.</p>
 <td><code>do_it(n) * { cor(shuffle(x), y) }</code></td>
 <td><code>ptail(obs, null, lower.tail = FALSE)</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Regression slope</td>
 <td>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>β</mi><mo accent="true">̂</mo></mover><mn>1</mn></msub><annotation encoding="application/x-tex">\hat{\beta}_1</annotation></semantics></math>
