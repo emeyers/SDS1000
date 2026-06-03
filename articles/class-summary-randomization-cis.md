@@ -26,12 +26,16 @@ Every bootstrap CI in this guide follows the same three steps:
 - [Regression slope](#regression-slope)
 - [Quick reference](#quick-reference)
 
+  
+
 **Also in Class Summaries:**
 
-- [Parametric Confidence
-  Intervals](https://emeyers.github.io/SDS1000/articles/class-summary-parametric-cis.md)
 - [Randomization Hypothesis
   Tests](https://emeyers.github.io/SDS1000/articles/class-summary-randomization-tests.md)
+- [Parametric Hypothesis
+  Tests](https://emeyers.github.io/SDS1000/articles/class-summary-parametric-tests.md)
+- [Parametric Confidence
+  Intervals](https://emeyers.github.io/SDS1000/articles/class-summary-parametric-cis.md)
 
 **Key SDS1000 functions.** `do_it(n) * { expr }` repeats an expression
 `n` times. `sample(data, n, replace = TRUE)` resamples with replacement.

@@ -24,14 +24,16 @@ test follows the same five steps used in class:
 - [Simple linear regression](#simple-linear-regression)
 - [Quick reference table](#quick-reference)
 
-**Also in this series:**
+  
 
-- [Part 1: Simulation and Data
-  Summaries](https://emeyers.github.io/SDS1000/articles/transitioning-simulation.md)
-- [Part 2: Inference and
-  Visualization](https://emeyers.github.io/SDS1000/articles/transitioning-inference.md)
-- [Cheat
-  Sheet](https://emeyers.github.io/SDS1000/articles/transitioning-cheatsheet.md)
+**Also in Class Summaries:**
+
+- [Randomization Hypothesis
+  Tests](https://emeyers.github.io/SDS1000/articles/class-summary-randomization-tests.md)
+- [Randomization Confidence
+  Intervals](https://emeyers.github.io/SDS1000/articles/class-summary-randomization-cis.md)
+- [Parametric Confidence
+  Intervals](https://emeyers.github.io/SDS1000/articles/class-summary-parametric-cis.md)
 
 **A note on assumptions.** Parametric tests rely on mathematical
 approximations that are only valid when certain conditions are met

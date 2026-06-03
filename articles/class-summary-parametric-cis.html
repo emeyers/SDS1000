@@ -129,11 +129,15 @@ the estimator.</p>
 <li><a href="#one-proportion">One proportion</a></li>
 <li><a href="#one-mean">One mean</a></li>
 <li><a href="#difference-of-two-means">Difference of two means</a></li>
+<li><a href="#correlation">Correlation</a></li>
 <li><a href="#regression-slope">Regression slope</a></li>
 <li><a href="#quick-reference">Quick reference</a></li>
 </ul>
+<p><br></p>
 <p><strong>Also in Class Summaries:</strong></p>
 <ul>
+<li><a href="class-summary-randomization-tests.html">Randomization
+Hypothesis Tests</a></li>
 <li><a href="class-summary-randomization-cis.html">Randomization
 Confidence Intervals</a></li>
 <li><a href="class-summary-parametric-tests.html">Parametric Hypothesis
@@ -300,6 +304,67 @@ females.</p>
 <hr>
 </div>
 <div class="section level2">
+<h2 id="correlation">Correlation<a class="anchor" aria-label="anchor" href="#correlation"></a>
+</h2>
+<p><strong>When to use:</strong> Two quantitative variables; construct a
+confidence interval for the population correlation ρ.</p>
+<p><strong>Method:</strong> <code><a href="https://rdrr.io/r/stats/cor.test.html" class="external-link">cor.test()</a></code> returns both a
+p-value and a confidence interval. Internally it uses <strong>Fisher’s
+z-transformation</strong>: the sample correlation r is transformed to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo>=</mo><msup><mrow><mi mathvariant="normal">tanh</mi><mo>⁡</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><mo stretchy="false" form="prefix">(</mo><mi>r</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">z = \tanh^{-1}(r)</annotation></semantics></math>,
+a CI is built in z-space (where the distribution is approximately
+normal), and the endpoints are transformed back via
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo>=</mo><mrow><mi mathvariant="normal">tanh</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">r = \tanh(z)</annotation></semantics></math>.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo>=</mo><msup><mrow><mi mathvariant="normal">tanh</mi><mo>⁡</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><mo stretchy="false" form="prefix">(</mo><mi>r</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="1.0em"></mspace><mi>S</mi><msub><mi>E</mi><mi>z</mi></msub><mo>=</mo><mfrac><mn>1</mn><msqrt><mrow><mi>n</mi><mo>−</mo><mn>3</mn></mrow></msqrt></mfrac><mo>,</mo><mspace width="1.0em"></mspace><mi>C</mi><msub><mi>I</mi><mi>z</mi></msub><mo>=</mo><mi>z</mi><mo>±</mo><msup><mi>z</mi><mo>*</mo></msup><mo>⋅</mo><mi>S</mi><msub><mi>E</mi><mi>z</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><mi>C</mi><msub><mi>I</mi><mi>r</mi></msub><mo>=</mo><mrow><mi mathvariant="normal">tanh</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>C</mi><msub><mi>I</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">z = \tanh^{-1}(r), \quad SE_z = \frac{1}{\sqrt{n-3}}, \quad
+CI_z = z \pm z^* \cdot SE_z, \quad
+CI_r = \tanh(CI_z)</annotation></semantics></math></p>
+<p>In practice, calling <code><a href="https://rdrr.io/r/stats/cor.test.html" class="external-link">cor.test()</a></code> handles all of this in
+one step.</p>
+<p><strong>Example (class 18/25):</strong> Sugar content and calorie
+content for a sample of 77 breakfast cereals. Compute a 95% confidence
+interval for the correlation.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1123</span><span class="op">)</span></span>
+<span><span class="va">n</span>        <span class="op">&lt;-</span> <span class="fl">77</span></span>
+<span><span class="va">sugar</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">15</span><span class="op">)</span></span>
+<span><span class="va">calories</span> <span class="op">&lt;-</span> <span class="fl">90</span> <span class="op">+</span> <span class="fl">3.5</span> <span class="op">*</span> <span class="va">sugar</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, sd <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># cor.test() gives both the CI and the hypothesis test in one call</span></span>
+<span><span class="va">corr_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.test.html" class="external-link">cor.test</a></span><span class="op">(</span><span class="va">sugar</span>, <span class="va">calories</span>, conf.level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Point estimate</span></span>
+<span><span class="va">corr_result</span><span class="op">$</span><span class="va">estimate</span></span></code></pre></div>
+<pre><code><span><span class="co">##       cor </span></span>
+<span><span class="co">## 0.8149169</span></span></code></pre>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 95% confidence interval</span></span>
+<span><span class="va">corr_result</span><span class="op">$</span><span class="va">conf.int</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 0.7228814 0.8785408</span></span>
+<span><span class="co">## attr(,"conf.level")</span></span>
+<span><span class="co">## [1] 0.95</span></span></code></pre>
+<p>We are 95% confident that the true correlation between sugar and
+calorie content in cereals is between 0.723 and 0.879. Since the
+interval lies entirely above zero, the data provide good evidence of a
+positive association.</p>
+<div class="tip-box">
+<p><strong>Manual calculation:</strong> You can reproduce the CI by hand
+using the Fisher z-transformation. This is useful to see how the formula
+works:</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">r</span>   <span class="op">&lt;-</span> <span class="va">corr_result</span><span class="op">$</span><span class="va">estimate</span></span>
+<span><span class="va">z</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">atanh</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span>                      <span class="co"># Fisher z-transform of r</span></span>
+<span><span class="va">SE_z</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">n</span> <span class="op">-</span> <span class="fl">3</span><span class="op">)</span>             <span class="co"># SE in z-space</span></span>
+<span></span>
+<span><span class="va">z_star</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.975</span><span class="op">)</span>              <span class="co"># critical value for 95% CI</span></span>
+<span></span>
+<span><span class="va">ci_z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">z</span> <span class="op">-</span> <span class="va">z_star</span> <span class="op">*</span> <span class="va">SE_z</span>, <span class="va">z</span> <span class="op">+</span> <span class="va">z_star</span> <span class="op">*</span> <span class="va">SE_z</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Hyperbolic.html" class="external-link">tanh</a></span><span class="op">(</span><span class="va">ci_z</span><span class="op">)</span>                          <span class="co"># transform back to correlation scale</span></span></code></pre></div>
+<pre><code><span><span class="co">##       cor       cor </span></span>
+<span><span class="co">## 0.7228814 0.8785408</span></span></code></pre>
+</div>
+<hr>
+</div>
+<div class="section level2">
 <h2 id="regression-slope">Regression Slope<a class="anchor" aria-label="anchor" href="#regression-slope"></a>
 </h2>
 <p><strong>When to use:</strong> Two quantitative variables; estimate
@@ -311,7 +376,7 @@ which uses <code><a href="https://rdrr.io/r/stats/TDist.html" class="external-li
 <p><strong>Example (class 25):</strong> Cigarette consumption per capita
 and lung cancer rates across 44 U.S. states. Compute a 90% confidence
 interval for the slope.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2947</span><span class="op">)</span></span>
 <span><span class="va">cigs_per_capita</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">44</span>, min <span class="op">=</span> <span class="fl">10</span>, max <span class="op">=</span> <span class="fl">45</span><span class="op">)</span></span>
 <span><span class="va">cancer_rate</span>     <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">0.005</span> <span class="op">*</span> <span class="va">cigs_per_capita</span> <span class="op">*</span> <span class="fl">1000</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">44</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
@@ -324,7 +389,7 @@ interval for the slope.</p>
 <span><span class="va">slope</span></span></code></pre></div>
 <pre><code><span><span class="co">## cigs_per_capita </span></span>
 <span><span class="co">##        4.997922</span></span></code></pre>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 90% CI for all coefficients (matches class 25)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">lung_lm</span>, level <span class="op">=</span> <span class="fl">0.90</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                        5 %     95 %</span></span>
@@ -377,6 +442,12 @@ critical value is <code>qt(1 - (1-C)/2, df = n-2)</code>.</p>
 <td><code><a href="../reference/ct.html">ct()</a></code></td>
 </tr>
 <tr class="even">
+<td>Correlation ρ</td>
+<td><code>cor.test(x, y, conf.level=C)$conf.int</code></td>
+<td>Fisher z-transform</td>
+<td>—</td>
+</tr>
+<tr class="odd">
 <td>Regression slope β₁</td>
 <td>from <code>confint(lm(...), level = C)</code>
 </td>

@@ -28,10 +28,16 @@ statistic falls.
 - [Simple linear regression](#simple-linear-regression)
 - [Quick reference table](#quick-reference)
 
+  
+
 **Also in Class Summaries:**
 
+- [Randomization Confidence
+  Intervals](https://emeyers.github.io/SDS1000/articles/class-summary-randomization-cis.md)
 - [Parametric Hypothesis
   Tests](https://emeyers.github.io/SDS1000/articles/class-summary-parametric-tests.md)
+- [Parametric Confidence
+  Intervals](https://emeyers.github.io/SDS1000/articles/class-summary-parametric-cis.md)
 
 **Key SDS1000 functions used in this guide.** `do_it(n) * { expr }`
 repeats an expression `n` times and collects the results. `rflip(n, p)`

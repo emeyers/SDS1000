@@ -21,11 +21,16 @@ the estimator.
 - [One proportion](#one-proportion)
 - [One mean](#one-mean)
 - [Difference of two means](#difference-of-two-means)
+- [Correlation](#correlation)
 - [Regression slope](#regression-slope)
 - [Quick reference](#quick-reference)
 
+  
+
 **Also in Class Summaries:**
 
+- [Randomization Hypothesis
+  Tests](https://emeyers.github.io/SDS1000/articles/class-summary-randomization-tests.md)
 - [Randomization Confidence
   Intervals](https://emeyers.github.io/SDS1000/articles/class-summary-randomization-cis.md)
 - [Parametric Hypothesis
@@ -240,6 +245,84 @@ of a difference in mean fiber intake between males and females.
 
 ------------------------------------------------------------------------
 
+## Correlation
+
+**When to use:** Two quantitative variables; construct a confidence
+interval for the population correlation ρ.
+
+**Method:** [`cor.test()`](https://rdrr.io/r/stats/cor.test.html)
+returns both a p-value and a confidence interval. Internally it uses
+**Fisher’s z-transformation**: the sample correlation r is transformed
+to $`z = \tanh^{-1}(r)`$, a CI is built in z-space (where the
+distribution is approximately normal), and the endpoints are transformed
+back via $`r = \tanh(z)`$.
+
+``` math
+z = \tanh^{-1}(r), \quad SE_z = \frac{1}{\sqrt{n-3}}, \quad
+CI_z = z \pm z^* \cdot SE_z, \quad
+CI_r = \tanh(CI_z)
+```
+
+In practice, calling
+[`cor.test()`](https://rdrr.io/r/stats/cor.test.html) handles all of
+this in one step.
+
+**Example (class 18/25):** Sugar content and calorie content for a
+sample of 77 breakfast cereals. Compute a 95% confidence interval for
+the correlation.
+
+``` r
+
+set.seed(1123)
+n        <- 77
+sugar    <- runif(n, 0, 15)
+calories <- 90 + 3.5 * sugar + rnorm(n, sd = 12)
+
+# cor.test() gives both the CI and the hypothesis test in one call
+corr_result <- cor.test(sugar, calories, conf.level = 0.95)
+
+# Point estimate
+corr_result$estimate
+```
+
+    ##       cor 
+    ## 0.8149169
+
+``` r
+
+# 95% confidence interval
+corr_result$conf.int
+```
+
+    ## [1] 0.7228814 0.8785408
+    ## attr(,"conf.level")
+    ## [1] 0.95
+
+We are 95% confident that the true correlation between sugar and calorie
+content in cereals is between 0.723 and 0.879. Since the interval lies
+entirely above zero, the data provide good evidence of a positive
+association.
+
+**Manual calculation:** You can reproduce the CI by hand using the
+Fisher z-transformation. This is useful to see how the formula works:
+
+``` r
+
+r   <- corr_result$estimate
+z   <- atanh(r)                      # Fisher z-transform of r
+SE_z <- 1 / sqrt(n - 3)             # SE in z-space
+
+z_star <- qnorm(0.975)              # critical value for 95% CI
+
+ci_z <- c(z - z_star * SE_z, z + z_star * SE_z)
+tanh(ci_z)                          # transform back to correlation scale
+```
+
+    ##       cor       cor 
+    ## 0.7228814 0.8785408
+
+------------------------------------------------------------------------
+
 ## Regression Slope
 
 **When to use:** Two quantitative variables; estimate how much y changes
@@ -300,4 +383,5 @@ regression output from `summary(lung_lm)`. The SE of the slope is in the
 | One proportion π | $`\hat{p} \pm z^* \sqrt{\hat{p}(1-\hat{p})/n}`$ | `cnorm(C)` | [`cnorm()`](https://emeyers.github.io/SDS1000/reference/cnorm.md) |
 | One mean μ | $`\bar{x} \pm t^* \cdot s/\sqrt{n}`$ | `ct(C, n-1)` | [`ct()`](https://emeyers.github.io/SDS1000/reference/ct.md) |
 | Difference μ₁ − μ₂ | $`(\bar{x}_1-\bar{x}_2) \pm t^* \cdot SE_{diff}`$ | `ct(C, min(n₁,n₂)-1)` | [`ct()`](https://emeyers.github.io/SDS1000/reference/ct.md) |
+| Correlation ρ | `cor.test(x, y, conf.level=C)$conf.int` | Fisher z-transform | — |
 | Regression slope β₁ | from `confint(lm(...), level = C)` | `qt(1-(1-C)/2, n-2)` | — |
