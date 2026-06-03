@@ -1,4 +1,4 @@
-# Transitioning to Base R: Parametric Hypothesis Tests
+# Parametric Hypothesis Tests
 
 ## Overview
 
@@ -107,7 +107,7 @@ plot(x, dens, type = "l", col = "blue",
 abline(v = z_stat, col = "red", lwd = 2)
 ```
 
-![](transitioning-parametric-tests_files/figure-html/one_prop-1.png)
+![](class-summary-parametric-tests_files/figure-html/one_prop-1.png)
 
 ``` r
 
@@ -190,7 +190,7 @@ plot(x, dens, type = "l", col = "blue",
 abline(v = z_stat, col = "red", lwd = 2)
 ```
 
-![](transitioning-parametric-tests_files/figure-html/two_prop-1.png)
+![](class-summary-parametric-tests_files/figure-html/two_prop-1.png)
 
 ``` r
 
@@ -271,7 +271,7 @@ plot(x, dens, type = "l", col = "blue",
 abline(v = chi_sq_stat, col = "red", lwd = 2)
 ```
 
-![](transitioning-parametric-tests_files/figure-html/chisq_gof-1.png)
+![](class-summary-parametric-tests_files/figure-html/chisq_gof-1.png)
 
 ``` r
 
@@ -344,7 +344,7 @@ plot(x, dens, type = "l", col = "blue",
 abline(v = t_stat, col = "red", lwd = 2)
 ```
 
-![](transitioning-parametric-tests_files/figure-html/one_mean-1.png)
+![](class-summary-parametric-tests_files/figure-html/one_mean-1.png)
 
 ``` r
 
@@ -419,7 +419,7 @@ abline(v =  t_stat, col = "red", lwd = 2)
 abline(v = -t_stat, col = "red", lwd = 2)   # two-sided: mark both tails
 ```
 
-![](transitioning-parametric-tests_files/figure-html/two_means_indep-1.png)
+![](class-summary-parametric-tests_files/figure-html/two_means_indep-1.png)
 
 ``` r
 
@@ -489,7 +489,7 @@ plot(x, dens, type = "l", col = "blue",
 abline(v = t_stat, col = "red", lwd = 2)
 ```
 
-![](transitioning-parametric-tests_files/figure-html/two_means_paired-1.png)
+![](class-summary-parametric-tests_files/figure-html/two_means_paired-1.png)
 
 ``` r
 
@@ -559,7 +559,7 @@ boxplot(completion_times ~ majors,
         col   = c("lightblue", "lightgreen", "lightpink", "lightyellow"))
 ```
 
-![](transitioning-parametric-tests_files/figure-html/anova-1.png)
+![](class-summary-parametric-tests_files/figure-html/anova-1.png)
 
 ``` r
 
@@ -591,7 +591,7 @@ plot(x, dens, type = "l", col = "blue",
 abline(v = f_stat, col = "red", lwd = 2)
 ```
 
-![](transitioning-parametric-tests_files/figure-html/anova-2.png)
+![](class-summary-parametric-tests_files/figure-html/anova-2.png)
 
 ``` r
 
@@ -671,7 +671,7 @@ plot(cigs_per_capita, cancer_rate,
      main = "Lung Cancer Rate vs. Cigarette Consumption")
 ```
 
-![](transitioning-parametric-tests_files/figure-html/correlation-1.png)
+![](class-summary-parametric-tests_files/figure-html/correlation-1.png)
 
 ``` r
 
@@ -705,7 +705,7 @@ plot(x, dens, type = "l", col = "blue",
 abline(v = t_stat, col = "red", lwd = 2)
 ```
 
-![](transitioning-parametric-tests_files/figure-html/correlation-2.png)
+![](class-summary-parametric-tests_files/figure-html/correlation-2.png)
 
 ``` r
 
@@ -807,7 +807,7 @@ plot(x, dens, type = "l", col = "blue",
 abline(v = t_stat, col = "red", lwd = 2)
 ```
 
-![](transitioning-parametric-tests_files/figure-html/regression_viz-1.png)
+![](class-summary-parametric-tests_files/figure-html/regression_viz-1.png)
 
 ``` r
 

@@ -28,8 +28,8 @@ If you haven’t read Part 1, start there.
   [`rroll()`](https://emeyers.github.io/SDS1000/reference/rroll.md),
   [`shuffle()`](https://emeyers.github.io/SDS1000/reference/shuffle.md),
   [`resample_pairs()`](https://emeyers.github.io/SDS1000/reference/resample_pairs.md)
-- [Part 3: Parametric Hypothesis
-  Tests](https://emeyers.github.io/SDS1000/articles/transitioning-parametric-tests.md)
+- [Parametric Hypothesis
+  Tests](https://emeyers.github.io/SDS1000/articles/class-summary-parametric-tests.md)
   — t-tests, chi-squared, ANOVA, correlation, and regression
 - [Cheat
   Sheet](https://emeyers.github.io/SDS1000/articles/transitioning-cheatsheet.md)

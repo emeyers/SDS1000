@@ -29,7 +29,7 @@ the estimator.
 - [Randomization Confidence
   Intervals](https://emeyers.github.io/SDS1000/articles/class-summary-randomization-cis.md)
 - [Parametric Hypothesis
-  Tests](https://emeyers.github.io/SDS1000/articles/transitioning-parametric-tests.md)
+  Tests](https://emeyers.github.io/SDS1000/articles/class-summary-parametric-tests.md)
 
 ------------------------------------------------------------------------
 

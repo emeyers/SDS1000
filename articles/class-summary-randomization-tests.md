@@ -31,7 +31,7 @@ statistic falls.
 **Also in Class Summaries:**
 
 - [Parametric Hypothesis
-  Tests](https://emeyers.github.io/SDS1000/articles/transitioning-parametric-tests.md)
+  Tests](https://emeyers.github.io/SDS1000/articles/class-summary-parametric-tests.md)
 
 **Key SDS1000 functions used in this guide.** `do_it(n) * { expr }`
 repeats an expression `n` times and collects the results. `rflip(n, p)`

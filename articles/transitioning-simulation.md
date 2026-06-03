@@ -29,8 +29,8 @@ data summary functions. Part 2 covers inference and visualization.
   [`cnorm()`](https://emeyers.github.io/SDS1000/reference/cnorm.md),
   [`ct()`](https://emeyers.github.io/SDS1000/reference/ct.md),
   distribution plots, and a complete worked example
-- [Part 3: Parametric Hypothesis
-  Tests](https://emeyers.github.io/SDS1000/articles/transitioning-parametric-tests.md)
+- [Parametric Hypothesis
+  Tests](https://emeyers.github.io/SDS1000/articles/class-summary-parametric-tests.md)
   — t-tests, chi-squared, ANOVA, correlation, and regression
 - [Cheat
   Sheet](https://emeyers.github.io/SDS1000/articles/transitioning-cheatsheet.md)

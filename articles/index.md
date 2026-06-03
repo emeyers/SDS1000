@@ -42,6 +42,14 @@ S&DS 1000 using base R.
   S&DS 1000: one proportion, one mean, difference of two means, and
   regression slope.
 
+- [Parametric Hypothesis
+  Tests](https://emeyers.github.io/SDS1000/articles/class-summary-parametric-tests.md):
+
+  A reference guide covering every parametric hypothesis test from S&DS
+  1000: one and two proportions, multiple proportions (chi-squared), one
+  mean, two means (independent and paired), multiple means (ANOVA),
+  correlation, and simple linear regression.
+
 - [Randomization (Bootstrap) Confidence
   Intervals](https://emeyers.github.io/SDS1000/articles/class-summary-randomization-cis.md):
 
@@ -55,12 +63,4 @@ S&DS 1000 using base R.
   A reference guide covering every randomization (simulation-based)
   hypothesis test from S&DS 1000: one proportion, two proportions,
   multiple proportions, one mean, two means, more than two means,
-  correlation, and simple linear regression.
-
-- [Transitioning to Base R: Parametric Hypothesis
-  Tests](https://emeyers.github.io/SDS1000/articles/transitioning-parametric-tests.md):
-
-  A reference guide covering every parametric hypothesis test from S&DS
-  1000: one and two proportions, multiple proportions (chi-squared), one
-  mean, two means (independent and paired), multiple means (ANOVA),
   correlation, and simple linear regression.
