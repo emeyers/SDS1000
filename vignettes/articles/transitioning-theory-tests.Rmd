@@ -15,73 +15,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
-<style>
-h2 {
-  margin-top:     3.5rem;
-  padding-top:    0.6rem;
-  padding-bottom: 0.4rem;
-  border-bottom:  1px solid #dee2e6;
-  color: #1a3a5c;
-  font-size: 1.45rem;
-}
 
-h3 {
-  margin-top: 2rem;
-  color: #2c5282;
-  font-size: 1.15rem;
-}
-
-hr {
-  margin:     3rem 0 2rem 0;
-  border:     none;
-  border-top: 2px solid #e2e8f0;
-}
-
-table {
-  margin:    1.25rem 0 1.75rem 0;
-  font-size: 0.93rem;
-  width:     100%;
-}
-
-table thead tr {
-  background-color: #dbeafe;
-  color: #1e3a5f;
-}
-
-table tbody tr:nth-child(even) {
-  background-color: #f8fafc;
-}
-
-.guide-nav {
-  background-color: #f0f7ff;
-  border:           1px solid #bfdbfe;
-  border-radius:    6px;
-  padding:          1.1rem 1.4rem;
-  margin-bottom:    2rem;
-  font-size:        0.95rem;
-}
-
-.guide-nav ul  { margin-bottom: 0; padding-left: 1.2rem; }
-.guide-nav li  { margin-bottom: 0.3rem; }
-
-.tip-box {
-  background-color: #f0fdf4;
-  border-left:      4px solid #22c55e;
-  border-radius:    4px;
-  padding:          0.75rem 1rem;
-  margin:           1.25rem 0;
-  font-size:        0.93rem;
-}
-
-.warn-box {
-  background-color: #fffbeb;
-  border-left:      4px solid #f59e0b;
-  border-radius:    4px;
-  padding:          0.75rem 1rem;
-  margin:           1.25rem 0;
-  font-size:        0.93rem;
-}
-</style>
 
 ## Overview
 

@@ -15,65 +15,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(SDS1000)
 ```
 
-<style>
-/* ── Section headers ─────────────────────────────────────────────────────── */
-h2 {
-  margin-top:     3.5rem;
-  padding-top:    0.6rem;
-  padding-bottom: 0.4rem;
-  border-bottom:  1px solid #dee2e6;
-  color: #1a3a5c;
-  font-size: 1.45rem;
-}
 
-h3 {
-  margin-top: 2rem;
-  color: #2c5282;
-  font-size: 1.15rem;
-}
-
-hr {
-  margin:     3rem 0 2rem 0;
-  border:     none;
-  border-top: 2px solid #e2e8f0;
-}
-
-table {
-  margin:    1.25rem 0 1.75rem 0;
-  font-size: 0.93rem;
-  width:     100%;
-}
-
-table thead tr {
-  background-color: #dbeafe;
-  color: #1e3a5f;
-}
-
-table tbody tr:nth-child(even) {
-  background-color: #f8fafc;
-}
-
-.guide-nav {
-  background-color: #f0f7ff;
-  border:           1px solid #bfdbfe;
-  border-radius:    6px;
-  padding:          1.1rem 1.4rem;
-  margin-bottom:    2rem;
-  font-size:        0.95rem;
-}
-
-.guide-nav ul  { margin-bottom: 0; padding-left: 1.2rem; }
-.guide-nav li  { margin-bottom: 0.3rem; }
-
-.tip-box {
-  background-color: #f0fdf4;
-  border-left:      4px solid #22c55e;
-  border-radius:    4px;
-  padding:          0.75rem 1rem;
-  margin:           1.25rem 0;
-  font-size:        0.93rem;
-}
-</style>
 
 ## Overview
 
@@ -124,7 +66,8 @@ You also used it to build a **bootstrap distribution**:
 ```{r do_it_bootstrap, eval=FALSE}
 # SDS1000 version
 bootstrap_dist <- do_it(10000) * {
-  mean(sample(price_sample, length(price_sample), replace = TRUE))
+  boot_sample <- sample(price_sample, length(price_sample), replace = TRUE)
+  mean(boot_sample)
 }
 ```
 
@@ -133,7 +76,7 @@ And to build a **null distribution** by shuffling:
 ```{r do_it_null, eval=FALSE}
 # SDS1000 version
 null_distribution <- do_it(10000) * {
-  cor(shuffle(draft_numbers), birth_months)
+  cor(shuffle(sugar), calories)
 }
 ```
 
@@ -163,7 +106,8 @@ sampling_distribution <- replicate(10000, {
 
 ```{r replicate_bootstrap, eval=FALSE}
 bootstrap_dist <- replicate(10000, {
-  mean(sample(price_sample, length(price_sample), replace = TRUE))
+  boot_sample <- sample(price_sample, length(price_sample), replace = TRUE)
+  mean(boot_sample)
 })
 ```
 
@@ -171,7 +115,7 @@ bootstrap_dist <- replicate(10000, {
 
 ```{r replicate_null, eval=FALSE}
 null_distribution <- replicate(10000, {
-  cor(sample(draft_numbers), birth_months)  # sample() with no replace = shuffles
+   cor(sample(sugar), calories)      # sample() with no replace = shuffle
 })
 ```
 
@@ -353,15 +297,17 @@ sample(v)    # Base R — identical
 ```
 
 In a permutation test, shuffling one variable breaks its relationship with
-another, simulating the null hypothesis. For example, testing whether draft
-numbers were correlated with birth date:
+another, simulating the null hypothesis. For example, testing whether the correlation
+between `x` and `y` is 0 at the population level we could use: 
 
 ```{r permutation_test}
 set.seed(8812)
 
+# generate fake data
 n <- 100
 x <- rnorm(n)
 y <- 0.3 * x + rnorm(n)
+
 obs_stat <- cor(x, y)
 
 null_distribution <- replicate(10000, {
@@ -401,8 +347,10 @@ A complete bootstrap for a regression slope in base R (class 25 style):
 ```{r bootstrap_slope}
 set.seed(3047)
 
+# generate fake data
 cigs_per_capita <- runif(50, 10, 40)
 cancer_rate     <- 2 + 0.8 * cigs_per_capita + rnorm(50, sd = 5)
+
 obs_slope       <- coef(lm(cancer_rate ~ cigs_per_capita))[2]
 
 boot_dist <- replicate(10000, {
