@@ -2,18 +2,33 @@
 
 ## Overview
 
-In S&DS 1000, you built null distributions by simulation (using
+In S&DS 1000, you built null distributions by simulation (e.g., using
 [`do_it()`](https://emeyers.github.io/SDS1000/reference/do_it.md) and
 [`shuffle()`](https://emeyers.github.io/SDS1000/reference/shuffle.md) /
 [`rflip()`](https://emeyers.github.io/SDS1000/reference/rflip.md)) and
 computed p-values by counting. That **randomization** approach works for
 almost any statistic and requires very few assumptions.
 
-For many common situations — comparing means, testing correlations,
-comparing proportions — statisticians have worked out what the null
-distribution looks like *mathematically*. Base R provides dedicated
-functions for these **theory-based** tests that return p-values,
-confidence intervals, and test statistics in a single call.
+We also discussed that for many common situations — comparing means,
+testing correlations, comparing proportions — statisticians have worked
+out what the null distribution looks like *mathematically* and we used a
+number of functions in R to run these “theory based hypothesis tests. To
+do this, we went through each step of hypothesis testing by calculating
+the observed test statistic and using the appropriate probability
+function (e.g., [`pt()`](https://rdrr.io/r/stats/TDist.html),
+[`pnorm()`](https://rdrr.io/r/stats/Normal.html),
+[`pchisq()`](https://rdrr.io/r/stats/Chisquare.html)) to get a p-value.
+
+We also briefly discussed that base R provides dedicated functions for
+these **theory-based** tests that return p-values, confidence intervals,
+and test statistics in a single function call using functions like
+[`t.test()`](https://rdrr.io/r/stats/t.test.html). After completing S&DS
+1000, you will likely use these built-in functions for most of your
+hypothesis testing needs, as they are more efficient and less
+error-prone than manually calculating test statistics and p-values. In
+this article, we will cover how to use these functions effectively,
+including [`t.test()`](https://rdrr.io/r/stats/t.test.html),
+[`cor.test()`](https://rdrr.io/r/stats/cor.test.html)
 
 **In this article:**
 
@@ -88,6 +103,10 @@ Reading the output:
   mean
 - **sample mean** — your observed mean
 
+Note: by default, [`t.test()`](https://rdrr.io/r/stats/t.test.html)
+performs a two-sided test. To test a one-sided alternative, add the
+`alternative` argument (e.g., `alternative = "greater"`).
+
 ### Two-sample independent t-test
 
 Tests whether two group means are equal. This is the theory-based
@@ -146,6 +165,8 @@ H_0: \mu_\text{diff} = 0 \qquad H_A: \mu_\text{diff} \ne 0
 
 # Tread wear (mm) on left and right tires of the same 14 cars
 set.seed(7731)
+
+# generate fake simulated data with a small average difference (right wears more)
 left_tire  <- c(3.1, 4.2, 2.8, 3.9, 4.5, 3.3, 2.6, 4.8, 3.7, 4.1,
                 2.9, 3.5, 4.4, 3.0)
 right_tire <- left_tire + rnorm(14, mean = 0.2, sd = 0.3)  # right wears slightly more
@@ -219,6 +240,8 @@ cancer** example from class 25:
 ``` r
 
 set.seed(2947)
+
+# generate fake data with a positive correlation (more cigarettes → higher cancer rate)
 cigs_per_capita <- runif(44, min = 10, max = 45)
 cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
 
@@ -246,8 +269,8 @@ The output includes:
   correlation ρ
 - **cor** — the sample correlation r
 
-You can also compute the correlation alone with
-[`cor()`](https://rdrr.io/r/stats/cor.html):
+As we discussed in class, you can also compute the correlation alone
+with [`cor()`](https://rdrr.io/r/stats/cor.html):
 
 ``` r
 
@@ -271,24 +294,12 @@ cor(cigs_per_capita, cancer_rate)
 A one-way analysis of variance tests whether the means of three or more
 groups are all equal. In S&DS 1000, you used
 [`get_F_stat()`](https://emeyers.github.io/SDS1000/reference/get_F_stat.md)
-to compute the F-statistic for a randomization test.
-[`get_F_stat()`](https://emeyers.github.io/SDS1000/reference/get_F_stat.md)
-is itself a thin wrapper around
-[`aov()`](https://rdrr.io/r/stats/aov.html):
+to compute the F-statistic and then used
+[`pf()`](https://rdrr.io/r/stats/Fdist.html) to get a p-value.
 
-``` r
-
-# What get_F_stat() does internally:
-get_F_stat <- function(data, grouping) {
-  fit         <- aov(data ~ grouping)
-  fit_summary <- summary(fit)
-  fit_summary[[1]]$`F value`[1]   # extract just the F-statistic
-}
-```
-
-Calling [`aov()`](https://rdrr.io/r/stats/aov.html) directly gives you
-the full picture — not just the F-statistic, but the p-value, degrees of
-freedom, and more, all in one step.
+Calling [`aov()`](https://rdrr.io/r/stats/aov.html) directly runs the
+full hypothesis test for you giving you the F-statistic, the p-value,
+degrees of freedom, and more, all in one step.
 
 ### Running the ANOVA
 
@@ -302,12 +313,15 @@ H_0: \mu_\text{bio} = \mu_\text{cs} = \mu_\text{econ} = \mu_\text{psych}
 ``` r
 
 set.seed(1142)
+
+# generate fake data
 completion_times <- c(rnorm(10, mean = 22, sd = 4),   # Biology
                       rnorm(10, mean = 20, sd = 4),   # CS
                       rnorm(10, mean = 25, sd = 4),   # Econ
                       rnorm(10, mean = 21, sd = 4))   # Psychology
 majors <- rep(c("Biology", "CS", "Econ", "Psychology"), each = 10)
 
+# use aov() to run the ANOVA
 fit <- aov(completion_times ~ majors)
 summary(fit)
 ```
@@ -382,21 +396,11 @@ neither assumption and is a robust alternative.
 A chi-squared goodness-of-fit test asks whether the observed counts
 across categories match a set of expected proportions.
 [`get_chisqr_stat()`](https://emeyers.github.io/SDS1000/reference/get_chisqr_stat.md)
-in SDS1000 is a direct wrapper — it simply calls
-[`chisq.test()`](https://rdrr.io/r/stats/chisq.test.html) and returns
-the statistic:
-
-``` r
-
-# What get_chisqr_stat() does internally:
-get_chisqr_stat <- function(observed_counts, expected_proportions) {
-  test_output <- chisq.test(observed_counts, p = expected_proportions)
-  test_output$statistic   # extract just the chi-squared value
-}
-```
-
-Calling [`chisq.test()`](https://rdrr.io/r/stats/chisq.test.html)
-directly gives you the full test result.
+in SDS1000 gets the chi-square statistic and we then used the
+[`pchisq()`](https://rdrr.io/r/stats/Chisquare.html) function to get a
+p-value. The [`chisq.test()`](https://rdrr.io/r/stats/chisq.test.html)
+function in base R does both steps for you — it returns the chi-squared
+statistic, degrees of freedom, and p-value all in one step.
 
 ### Goodness-of-fit test
 
@@ -477,11 +481,11 @@ chisq.test(vaccine_table)
 
 ## Linear regression: `lm()` and `summary()`
 
-[`lm()`](https://rdrr.io/r/stats/lm.html) fits a linear regression
-model. [`summary()`](https://rdrr.io/r/base/summary.html) reports the
-theory-based hypothesis test for each coefficient — whether the slope
-(or intercept) is significantly different from zero — and
-[`confint()`](https://rdrr.io/r/stats/confint.html) gives confidence
+The [`lm()`](https://rdrr.io/r/stats/lm.html) function fits a linear
+regression model. The [`summary()`](https://rdrr.io/r/base/summary.html)
+function reports the theory-based hypothesis test for each coefficient —
+whether the slope (or intercept) is significantly different from zero —
+and [`confint()`](https://rdrr.io/r/stats/confint.html) gives confidence
 intervals.
 
 Using the **cigarette consumption and lung cancer** data from class 25:
@@ -493,6 +497,8 @@ H_0: \beta_1 = 0 \qquad H_A: \beta_1 \ne 0
 ``` r
 
 set.seed(2947)
+
+# generate fake data with a positive association (more cigarettes → higher cancer rate)
 cigs_per_capita <- runif(44, min = 10, max = 45)
 cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
 

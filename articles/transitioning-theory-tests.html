@@ -85,17 +85,28 @@ wrapper functions.
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>In S&amp;DS 1000, you built null distributions by simulation (using
-<code><a href="../reference/do_it.html">do_it()</a></code> and <code><a href="../reference/shuffle.html">shuffle()</a></code> / <code><a href="../reference/rflip.html">rflip()</a></code>)
-and computed p-values by counting. That <strong>randomization</strong>
-approach works for almost any statistic and requires very few
-assumptions.</p>
-<p>For many common situations — comparing means, testing correlations,
-comparing proportions — statisticians have worked out what the null
-distribution looks like <em>mathematically</em>. Base R provides
-dedicated functions for these <strong>theory-based</strong> tests that
-return p-values, confidence intervals, and test statistics in a single
-call.</p>
+<p>In S&amp;DS 1000, you built null distributions by simulation (e.g.,
+using <code><a href="../reference/do_it.html">do_it()</a></code> and <code><a href="../reference/shuffle.html">shuffle()</a></code> /
+<code><a href="../reference/rflip.html">rflip()</a></code>) and computed p-values by counting. That
+<strong>randomization</strong> approach works for almost any statistic
+and requires very few assumptions.</p>
+<p>We also discussed that for many common situations — comparing means,
+testing correlations, comparing proportions — statisticians have worked
+out what the null distribution looks like <em>mathematically</em> and we
+used a number of functions in R to run these “theory based hypothesis
+tests. To do this, we went through each step of hypothesis testing by
+calculating the observed test statistic and using the appropriate
+probability function (e.g., <code><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">pt()</a></code>, <code><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">pnorm()</a></code>,
+<code><a href="https://rdrr.io/r/stats/Chisquare.html" class="external-link">pchisq()</a></code>) to get a p-value.</p>
+<p>We also briefly discussed that base R provides dedicated functions
+for these <strong>theory-based</strong> tests that return p-values,
+confidence intervals, and test statistics in a single function call
+using functions like <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>. After completing S&amp;DS
+1000, you will likely use these built-in functions for most of your
+hypothesis testing needs, as they are more efficient and less
+error-prone than manually calculating test statistics and p-values. In
+this article, we will cover how to use these functions effectively,
+including <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/cor.test.html" class="external-link">cor.test()</a></code></p>
 <div class="guide-nav">
 <p><strong>In this article:</strong></p>
 <ul>
@@ -176,6 +187,9 @@ values for the true mean</li>
 <li>
 <strong>sample mean</strong> — your observed mean</li>
 </ul>
+<p>Note: by default, <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> performs a two-sided test. To
+test a one-sided alternative, add the <code>alternative</code> argument
+(e.g., <code>alternative = "greater"</code>).</p>
 </div>
 <div class="section level3">
 <h3 id="two-sample-independent-t-test">Two-sample independent t-test<a class="anchor" aria-label="anchor" href="#two-sample-independent-t-test"></a>
@@ -242,6 +256,8 @@ pairs. Based on the <strong>tire wear</strong> example from class
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Tread wear (mm) on left and right tires of the same 14 cars</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7731</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># generate fake simulated data with a small average difference (right wears more)</span></span>
 <span><span class="va">left_tire</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3.1</span>, <span class="fl">4.2</span>, <span class="fl">2.8</span>, <span class="fl">3.9</span>, <span class="fl">4.5</span>, <span class="fl">3.3</span>, <span class="fl">2.6</span>, <span class="fl">4.8</span>, <span class="fl">3.7</span>, <span class="fl">4.1</span>,</span>
 <span>                <span class="fl">2.9</span>, <span class="fl">3.5</span>, <span class="fl">4.4</span>, <span class="fl">3.0</span><span class="op">)</span></span>
 <span><span class="va">right_tire</span> <span class="op">&lt;-</span> <span class="va">left_tire</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">14</span>, mean <span class="op">=</span> <span class="fl">0.2</span>, sd <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>  <span class="co"># right wears slightly more</span></span>
@@ -327,6 +343,8 @@ you built using <code><a href="../reference/shuffle.html">shuffle()</a></code> i
 and lung cancer</strong> example from class 25:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2947</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># generate fake data with a positive correlation (more cigarettes → higher cancer rate)</span></span>
 <span><span class="va">cigs_per_capita</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">44</span>, min <span class="op">=</span> <span class="fl">10</span>, max <span class="op">=</span> <span class="fl">45</span><span class="op">)</span></span>
 <span><span class="va">cancer_rate</span>     <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">0.005</span> <span class="op">*</span> <span class="va">cigs_per_capita</span> <span class="op">*</span> <span class="fl">1000</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">44</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
@@ -355,8 +373,8 @@ values for the true correlation ρ</li>
 <li>
 <strong>cor</strong> — the sample correlation r</li>
 </ul>
-<p>You can also compute the correlation alone with
-<code><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor()</a></code>:</p>
+<p>As we discussed in class, you can also compute the correlation alone
+with <code><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor()</a></code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">cigs_per_capita</span>, <span class="va">cancer_rate</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.9945126</span></span></code></pre>
@@ -395,19 +413,11 @@ values for the true correlation ρ</li>
 </h2>
 <p>A one-way analysis of variance tests whether the means of three or
 more groups are all equal. In S&amp;DS 1000, you used
-<code><a href="../reference/get_F_stat.html">get_F_stat()</a></code> to compute the F-statistic for a randomization
-test. <code><a href="../reference/get_F_stat.html">get_F_stat()</a></code> is itself a thin wrapper around
-<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># What get_F_stat() does internally:</span></span>
-<span><span class="va">get_F_stat</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">grouping</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">fit</span>         <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov</a></span><span class="op">(</span><span class="va">data</span> <span class="op">~</span> <span class="va">grouping</span><span class="op">)</span></span>
-<span>  <span class="va">fit_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
-<span>  <span class="va">fit_summary</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">`F value`</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>   <span class="co"># extract just the F-statistic</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>Calling <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> directly gives you the full picture — not
-just the F-statistic, but the p-value, degrees of freedom, and more, all
-in one step.</p>
+<code><a href="../reference/get_F_stat.html">get_F_stat()</a></code> to compute the F-statistic and then used
+<code><a href="https://rdrr.io/r/stats/Fdist.html" class="external-link">pf()</a></code> to get a p-value.</p>
+<p>Calling <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> directly runs the full hypothesis test for
+you giving you the F-statistic, the p-value, degrees of freedom, and
+more, all in one step.</p>
 <div class="section level3">
 <h3 id="running-the-anova">Running the ANOVA<a class="anchor" aria-label="anchor" href="#running-the-anova"></a>
 </h3>
@@ -415,14 +425,17 @@ in one step.</p>
 class 24:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub><mo>:</mo><msub><mi>μ</mi><mtext mathvariant="normal">bio</mtext></msub><mo>=</mo><msub><mi>μ</mi><mtext mathvariant="normal">cs</mtext></msub><mo>=</mo><msub><mi>μ</mi><mtext mathvariant="normal">econ</mtext></msub><mo>=</mo><msub><mi>μ</mi><mtext mathvariant="normal">psych</mtext></msub><mspace width="2.0em"></mspace><msub><mi>H</mi><mi>A</mi></msub><mo>:</mo><mtext mathvariant="normal">at least one mean differs</mtext></mrow><annotation encoding="application/x-tex">H_0: \mu_\text{bio} = \mu_\text{cs} = \mu_\text{econ} = \mu_\text{psych}
 \qquad H_A: \text{at least one mean differs}</annotation></semantics></math></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1142</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># generate fake data</span></span>
 <span><span class="va">completion_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, mean <span class="op">=</span> <span class="fl">22</span>, sd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,   <span class="co"># Biology</span></span>
 <span>                      <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, mean <span class="op">=</span> <span class="fl">20</span>, sd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,   <span class="co"># CS</span></span>
 <span>                      <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, mean <span class="op">=</span> <span class="fl">25</span>, sd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,   <span class="co"># Econ</span></span>
 <span>                      <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span>, mean <span class="op">=</span> <span class="fl">21</span>, sd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span>   <span class="co"># Psychology</span></span>
 <span><span class="va">majors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Biology"</span>, <span class="st">"CS"</span>, <span class="st">"Econ"</span>, <span class="st">"Psychology"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># use aov() to run the ANOVA</span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov</a></span><span class="op">(</span><span class="va">completion_times</span> <span class="op">~</span> <span class="va">majors</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##             Df Sum Sq Mean Sq F value Pr(&gt;F)  </span></span>
@@ -468,7 +481,7 @@ class 24:</p>
 differ, but not <em>which</em> ones. Use <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>
 (Tukey’s Honest Significant Difference) to make all pairwise comparisons
 while controlling for multiple testing:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   Tukey multiple comparisons of means</span></span>
 <span><span class="co">##     95% family-wise confidence level</span></span>
@@ -535,16 +548,11 @@ assumption and is a robust alternative.</p>
 </h2>
 <p>A chi-squared goodness-of-fit test asks whether the observed counts
 across categories match a set of expected proportions.
-<code><a href="../reference/get_chisqr_stat.html">get_chisqr_stat()</a></code> in SDS1000 is a direct wrapper — it
-simply calls <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code> and returns the statistic:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># What get_chisqr_stat() does internally:</span></span>
-<span><span class="va">get_chisqr_stat</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">observed_counts</span>, <span class="va">expected_proportions</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">test_output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test</a></span><span class="op">(</span><span class="va">observed_counts</span>, p <span class="op">=</span> <span class="va">expected_proportions</span><span class="op">)</span></span>
-<span>  <span class="va">test_output</span><span class="op">$</span><span class="va">statistic</span>   <span class="co"># extract just the chi-squared value</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>Calling <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code> directly gives you the full test
-result.</p>
+<code><a href="../reference/get_chisqr_stat.html">get_chisqr_stat()</a></code> in SDS1000 gets the chi-square statistic
+and we then used the <code><a href="https://rdrr.io/r/stats/Chisquare.html" class="external-link">pchisq()</a></code> function to get a p-value.
+The <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code> function in base R does both steps for you
+— it returns the chi-squared statistic, degrees of freedom, and p-value
+all in one step.</p>
 <div class="section level3">
 <h3 id="goodness-of-fit-test">Goodness-of-fit test<a class="anchor" aria-label="anchor" href="#goodness-of-fit-test"></a>
 </h3>
@@ -552,7 +560,7 @@ result.</p>
 class 23 — are students equally likely to be born in any month?</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub><mo>:</mo><mtext mathvariant="normal">birth months are uniformly distributed</mtext><mspace width="2.0em"></mspace><msub><mi>H</mi><mi>A</mi></msub><mo>:</mo><mtext mathvariant="normal">some months are more common than others</mtext></mrow><annotation encoding="application/x-tex">H_0: \text{birth months are uniformly distributed}
 \qquad H_A: \text{some months are more common than others}</annotation></semantics></math></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Observed birth month counts for 198 Yale students (class 23)</span></span>
 <span><span class="va">observed_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="fl">11</span>, <span class="fl">21</span>, <span class="fl">17</span>, <span class="fl">15</span>, <span class="fl">13</span>, <span class="fl">19</span>, <span class="fl">16</span>, <span class="fl">18</span>, <span class="fl">22</span>, <span class="fl">14</span>, <span class="fl">18</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">observed_counts</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">month.abb</span></span>
@@ -583,7 +591,7 @@ deviation from uniform if H₀ were true</li>
 <p><code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code> also tests whether two categorical
 variables are <em>independent</em> of each other (i.e., whether they are
 associated). Pass a contingency table instead of a count vector:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Are vaccination status and illness related?</span></span>
 <span><span class="va">vaccine_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">45</span>, <span class="fl">15</span>, <span class="fl">20</span>, <span class="fl">70</span><span class="op">)</span>,</span>
 <span>                        nrow <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -593,7 +601,7 @@ associated). Pass a contingency table instead of a count vector:</p>
 <pre><code><span><span class="co">##              Got Ill Stayed Healthy</span></span>
 <span><span class="co">## Vaccinated        45             20</span></span>
 <span><span class="co">## Unvaccinated      15             70</span></span></code></pre>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test</a></span><span class="op">(</span><span class="va">vaccine_table</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##  Pearson's Chi-squared test with Yates' continuity correction</span></span>
@@ -639,16 +647,18 @@ associated). Pass a contingency table instead of a count vector:</p>
 <div class="section level2">
 <h2 id="linear-regression-lm-and-summary">Linear regression: <code>lm()</code> and <code>summary()</code><a class="anchor" aria-label="anchor" href="#linear-regression-lm-and-summary"></a>
 </h2>
-<p><code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> fits a linear regression model.
-<code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> reports the theory-based hypothesis test for each
-coefficient — whether the slope (or intercept) is significantly
+<p>The <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> function fits a linear regression model. The
+<code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> function reports the theory-based hypothesis test
+for each coefficient — whether the slope (or intercept) is significantly
 different from zero — and <code><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint()</a></code> gives confidence
 intervals.</p>
 <p>Using the <strong>cigarette consumption and lung cancer</strong> data
 from class 25:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub><mo>:</mo><msub><mi>β</mi><mn>1</mn></msub><mo>=</mo><mn>0</mn><mspace width="2.0em"></mspace><msub><mi>H</mi><mi>A</mi></msub><mo>:</mo><msub><mi>β</mi><mn>1</mn></msub><mo>≠</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">H_0: \beta_1 = 0 \qquad H_A: \beta_1 \ne 0</annotation></semantics></math></p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2947</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># generate fake data with a positive association (more cigarettes → higher cancer rate)</span></span>
 <span><span class="va">cigs_per_capita</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">44</span>, min <span class="op">=</span> <span class="fl">10</span>, max <span class="op">=</span> <span class="fl">45</span><span class="op">)</span></span>
 <span><span class="va">cancer_rate</span>     <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">0.005</span> <span class="op">*</span> <span class="va">cigs_per_capita</span> <span class="op">*</span> <span class="fl">1000</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">44</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
@@ -704,7 +714,7 @@ from class 25:</p>
 <div class="section level3">
 <h3 id="confidence-intervals-for-the-coefficients">Confidence intervals for the coefficients<a class="anchor" aria-label="anchor" href="#confidence-intervals-for-the-coefficients"></a>
 </h3>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">lung_lm</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##                     2.5 %   97.5 %</span></span>
 <span><span class="co">## (Intercept)     -1.698784 7.644857</span></span>

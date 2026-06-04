@@ -51,28 +51,28 @@ this:
 
 ``` r
 
-ptail(obs_value, x, lower.tail = TRUE)
+ptail(obs_value, null_dist, lower.tail = TRUE)
 ```
 
 - `obs_value` — the observed statistic from your real data
-- `x` — the null distribution (a vector of simulated statistics)
+- `null_dist` — the null distribution (a vector of simulated statistics)
 - `lower.tail` — if `TRUE` (default), counts values **≤** `obs_value`
   (left tail); if `FALSE`, counts values **≥** `obs_value` (right tail)
 
-For example, to test whether Paul the Octopus was psychic (11 correct
-out of 12):
+For example, to test whether Buzz could pick the correct food (15
+correct out of 16):
 
 ``` r
 
 # SDS1000 version — upper-tail p-value
-p_value <- ptail(paul_stat, null_distribution, lower.tail = FALSE)
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
 ```
 
 ### The base R equivalent: `mean()` with a logical comparison
 
 [`ptail()`](https://emeyers.github.io/SDS1000/reference/ptail.md) is
 just `sum(x >= obs) / length(x)` under the hood. The
-[`mean()`](https://rdrr.io/r/base/mean.html) trick — taking the mean of
+[`mean()`](https://rdrr.io/r/base/mean.html) trick - taking the mean of
 a logical vector — gives the same result in one step:
 
 ``` r
@@ -85,6 +85,9 @@ p_value <- mean(null_distribution <= obs_stat)
 ```
 
 ### A worked example
+
+We can assess whether a coin is fair (i.e., lands heads 50% of the time)
+after flipping it 100 times and observing 57 heads using:
 
 ``` r
 
@@ -122,9 +125,7 @@ two functions are identical —
 [`pnull()`](https://emeyers.github.io/SDS1000/reference/pnull.md) has
 since been deprecated. Replace any
 [`pnull()`](https://emeyers.github.io/SDS1000/reference/pnull.md) calls
-with [`ptail()`](https://emeyers.github.io/SDS1000/reference/ptail.md),
-or better yet, use [`mean()`](https://rdrr.io/r/base/mean.html)
-directly.
+with [`ptail()`](https://emeyers.github.io/SDS1000/reference/ptail.md).
 
 ### Quick reference
 
@@ -189,10 +190,12 @@ Common critical values to know:
 
 set.seed(2251)
 
+# generate simulated (fake) data
 body_temps <- rnorm(50, mean = 98.25, sd = 0.73)
 obs_mean   <- mean(body_temps)
 
-boot_dist <- replicate(10000, mean(sample(body_temps, length(body_temps), replace = TRUE)))
+boot_dist <- replicate(10000, 
+                       mean(sample(body_temps, length(body_temps), replace = TRUE)))
 SE_boot   <- sd(boot_dist)
 
 z_star <- qnorm(0.975)             # was: cnorm(0.95)
@@ -206,7 +209,11 @@ ci_95
 
 ``` r
 
-n    <- 55;  xbar <- 7.0;  s <- 1.2
+# observed data
+n    <- 55
+xbar <- 7.0  
+s <- 1.2
+
 SE   <- s / sqrt(n);  df <- n - 1
 
 t_star <- qt(0.975, df = df)       # was: ct(0.95, df)
@@ -267,6 +274,7 @@ To overlay a density curve on a histogram, use `probability = TRUE` in
 
 ``` r
 
+# generate random (fake) data
 iq_scores <- rnorm(500, mean = 100, sd = 15)
 
 hist(iq_scores, probability = TRUE, breaks = 30,
@@ -282,7 +290,8 @@ From class 21 and 22 — marking an observed t-statistic:
 
 ``` r
 
-df <- 54;  t_stat <- 2.1
+df <- 54
+t_stat <- 2.1
 
 x    <- seq(-5, 5, length.out = 1000)
 dens <- dt(x, df = df)

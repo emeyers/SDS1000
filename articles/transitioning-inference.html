@@ -133,25 +133,25 @@ of values in the null distribution that are <em>as extreme or more
 extreme</em> than the observed statistic. In S&amp;DS 1000, you used
 <code><a href="../reference/ptail.html">ptail()</a></code> for this:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_value</span>, <span class="va">x</span>, lower.tail <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_value</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>
 <code>obs_value</code> — the observed statistic from your real
 data</li>
 <li>
-<code>x</code> — the null distribution (a vector of simulated
-statistics)</li>
+<code>null_dist</code> — the null distribution (a vector of
+simulated statistics)</li>
 <li>
 <code>lower.tail</code> — if <code>TRUE</code> (default), counts
 values <strong>≤</strong> <code>obs_value</code> (left tail); if
 <code>FALSE</code>, counts values <strong>≥</strong>
 <code>obs_value</code> (right tail)</li>
 </ul>
-<p>For example, to test whether Paul the Octopus was psychic (11 correct
-out of 12):</p>
+<p>For example, to test whether Buzz could pick the correct food (15
+correct out of 16):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># SDS1000 version — upper-tail p-value</span></span>
-<span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">paul_stat</span>, <span class="va">null_distribution</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">p_value</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ptail.html">ptail</a></span><span class="op">(</span><span class="va">obs_stat</span>, <span class="va">null_dist</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="the-base-r-equivalent-mean-with-a-logical-comparison">The base R equivalent: <code>mean()</code> with a logical
@@ -159,7 +159,7 @@ comparison<a class="anchor" aria-label="anchor" href="#the-base-r-equivalent-mea
 </h3>
 <p><code><a href="../reference/ptail.html">ptail()</a></code> is just
 <code>sum(x &gt;= obs) / length(x)</code> under the hood. The
-<code><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean()</a></code> trick — taking the mean of a logical vector — gives
+<code><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean()</a></code> trick - taking the mean of a logical vector — gives
 the same result in one step:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Upper-tail p-value (was: ptail(obs, null, lower.tail = FALSE))</span></span>
@@ -171,6 +171,8 @@ the same result in one step:</p>
 <div class="section level3">
 <h3 id="a-worked-example">A worked example<a class="anchor" aria-label="anchor" href="#a-worked-example"></a>
 </h3>
+<p>We can assess whether a coin is fair (i.e., lands heads 50% of the
+time) after flipping it 100 times and observing 57 heads using:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">4021</span><span class="op">)</span></span>
 <span></span>
@@ -193,8 +195,7 @@ the same result in one step:</p>
 <p><strong>Note on <code><a href="../reference/pnull.html">pnull()</a></code>:</strong> Earlier homeworks used
 <code><a href="../reference/pnull.html">pnull()</a></code> instead of <code><a href="../reference/ptail.html">ptail()</a></code>. The two functions
 are identical — <code><a href="../reference/pnull.html">pnull()</a></code> has since been deprecated. Replace
-any <code><a href="../reference/pnull.html">pnull()</a></code> calls with <code><a href="../reference/ptail.html">ptail()</a></code>, or better yet,
-use <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean()</a></code> directly.</p>
+any <code><a href="../reference/pnull.html">pnull()</a></code> calls with <code><a href="../reference/ptail.html">ptail()</a></code>.</p>
 </div>
 </div>
 <div class="section level3">
@@ -290,10 +291,12 @@ style):</strong></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2251</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># generate simulated (fake) data</span></span>
 <span><span class="va">body_temps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span>, mean <span class="op">=</span> <span class="fl">98.25</span>, sd <span class="op">=</span> <span class="fl">0.73</span><span class="op">)</span></span>
 <span><span class="va">obs_mean</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">body_temps</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">boot_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">body_temps</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">body_temps</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">boot_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, </span>
+<span>                       <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">body_temps</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">body_temps</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">SE_boot</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">boot_dist</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">z_star</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">0.975</span><span class="op">)</span>             <span class="co"># was: cnorm(0.95)</span></span>
@@ -302,7 +305,11 @@ style):</strong></p>
 <pre><code><span><span class="co">## [1] 98.06333 98.51613</span></span></code></pre>
 <p><strong>Theory-based t CI (class 21 style):</strong></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">n</span>    <span class="op">&lt;-</span> <span class="fl">55</span>;  <span class="va">xbar</span> <span class="op">&lt;-</span> <span class="fl">7.0</span>;  <span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">1.2</span></span>
+<code class="sourceCode R"><span><span class="co"># observed data</span></span>
+<span><span class="va">n</span>    <span class="op">&lt;-</span> <span class="fl">55</span></span>
+<span><span class="va">xbar</span> <span class="op">&lt;-</span> <span class="fl">7.0</span>  </span>
+<span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">1.2</span></span>
+<span></span>
 <span><span class="va">SE</span>   <span class="op">&lt;-</span> <span class="va">s</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span>;  <span class="va">df</span> <span class="op">&lt;-</span> <span class="va">n</span> <span class="op">-</span> <span class="fl">1</span></span>
 <span></span>
 <span><span class="va">t_star</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">qt</a></span><span class="op">(</span><span class="fl">0.975</span>, df <span class="op">=</span> <span class="va">df</span><span class="op">)</span>       <span class="co"># was: ct(0.95, df)</span></span>
@@ -377,7 +384,8 @@ code uses this pattern from class 19 onwards.</p>
 <code>probability = TRUE</code> in <code><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist()</a></code> and then
 <code><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines()</a></code>:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">iq_scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">500</span>, mean <span class="op">=</span> <span class="fl">100</span>, sd <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># generate random (fake) data</span></span>
+<span><span class="va">iq_scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">500</span>, mean <span class="op">=</span> <span class="fl">100</span>, sd <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">iq_scores</span>, probability <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"IQ Scores with Density Overlay"</span>, xlab <span class="op">=</span> <span class="st">"IQ Score"</span><span class="op">)</span></span>
@@ -389,7 +397,8 @@ code uses this pattern from class 19 onwards.</p>
 </h3>
 <p>From class 21 and 22 — marking an observed t-statistic:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fl">54</span>;  <span class="va">t_stat</span> <span class="op">&lt;-</span> <span class="fl">2.1</span></span>
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fl">54</span></span>
+<span><span class="va">t_stat</span> <span class="op">&lt;-</span> <span class="fl">2.1</span></span>
 <span></span>
 <span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span>, length.out <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="va">dens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/TDist.html" class="external-link">dt</a></span><span class="op">(</span><span class="va">x</span>, df <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
