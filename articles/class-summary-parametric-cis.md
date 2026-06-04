@@ -201,24 +201,28 @@ difference in mean daily fiber intake (grams) between males and females.
 
 # Summary statistics (simulated to match class 22 Nutrition Study structure)
 set.seed(7823)
-fiber_males   <- round(rnorm(155, mean = 23.5, sd = 14.2))
+fiber_males   <- round(rnorm(155, mean = 23.5, sd = 14.2)) # generate fake data
 fiber_females <- round(rnorm(662, mean = 20.1, sd = 11.8))
 
 # Group statistics
-n1    <- length(fiber_males);    x_bar1 <- mean(fiber_males);    s1 <- sd(fiber_males)
-n2    <- length(fiber_females);  x_bar2 <- mean(fiber_females);  s2 <- sd(fiber_females)
+n1    <- length(fiber_males)    
+x_bar1 <- mean(fiber_males)    
+s1 <- sd(fiber_males)
+n2    <- length(fiber_females)
+x_bar2 <- mean(fiber_females)
+s2 <- sd(fiber_females)
 
-cat("Males:   n =", n1, "  mean =", round(x_bar1, 2), "  sd =", round(s1, 2), "\n")
+paste("Males:   n =", n1, "  mean =", round(x_bar1, 2), "  sd =", round(s1, 2))
 ```
 
-    ## Males:   n = 155   mean = 24.5   sd = 15.08
+    ## [1] "Males:   n = 155   mean = 24.5   sd = 15.08"
 
 ``` r
 
-cat("Females: n =", n2, "  mean =", round(x_bar2, 2), "  sd =", round(s2, 2), "\n")
+paste("Females: n =", n2, "  mean =", round(x_bar2, 2), "  sd =", round(s2, 2))
 ```
 
-    ## Females: n = 662   mean = 20.39   sd = 11.47
+    ## [1] "Females: n = 662   mean = 20.39   sd = 11.47"
 
 ``` r
 
@@ -275,7 +279,7 @@ the correlation.
 
 set.seed(1123)
 n        <- 77
-sugar    <- runif(n, 0, 15)
+sugar    <- runif(n, 0, 15)  # fake data
 calories <- 90 + 3.5 * sugar + rnorm(n, sd = 12)
 
 # cor.test() gives both the CI and the hypothesis test in one call
@@ -307,18 +311,17 @@ association.
 
 ``` r
 
-r    <- corr_result$estimate
-z    <- atanh(r)                     # Fisher z-transform of r
+r    <- cor(sugar, calories)        # sample correlation
+z    <- atanh(r)                    # Fisher z-transform of r
 SE_z <- 1 / sqrt(n - 3)             # SE in z-space
 
-z_star <- qnorm(0.975)              # critical value for 95% CI
+z_star <- cnorm(0.95)               # critical value for 95% CI
 
 ci_z <- c(z - z_star * SE_z, z + z_star * SE_z)
 tanh(ci_z)                          # transform back to correlation scale
 ```
 
-    ##       cor       cor 
-    ## 0.7228814 0.8785408
+    ## [1] 0.7228814 0.8785408
 
 ------------------------------------------------------------------------
 
@@ -340,7 +343,7 @@ slope.
 ``` r
 
 set.seed(2947)
-cigs_per_capita <- runif(44, min = 10, max = 45)
+cigs_per_capita <- runif(44, min = 10, max = 45)  # fake data
 cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
 
 # Fit the linear model
@@ -370,8 +373,7 @@ cases per 100,000 people.
 
 **Manual calculation:** You can also compute the CI by hand using the
 regression output from `summary(lung_lm)`. The SE of the slope is in the
-`Std. Error` column, and the critical value is
-`qt(1 - (1-C)/2, df = n-2)`.
+`Std. Error` column, and the critical value is `ct(C, df = n-2)`.
 
 ------------------------------------------------------------------------
 
@@ -383,4 +385,4 @@ regression output from `summary(lung_lm)`. The SE of the slope is in the
 | One mean μ | $`\bar{x} \pm t^* \cdot s/\sqrt{n}`$ | `ct(C, n-1)` | [`ct()`](https://emeyers.github.io/SDS1000/reference/ct.md) |
 | Difference μ₁ − μ₂ | $`(\bar{x}_1-\bar{x}_2) \pm t^* \cdot SE_{diff}`$ | `ct(C, min(n₁,n₂)-1)` | [`ct()`](https://emeyers.github.io/SDS1000/reference/ct.md) |
 | Correlation ρ | `cor.test(x, y, conf.level=C)$conf.int` | Fisher z-transform | — |
-| Regression slope β₁ | from `confint(lm(...), level = C)` | `qt(1-(1-C)/2, n-2)` | — |
+| Regression slope β₁ | from `confint(lm(...), level = C)` | `ct(C, n-2)` | — |
