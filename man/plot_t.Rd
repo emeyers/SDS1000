@@ -11,7 +11,7 @@ plot_t(
   n = 1000,
   add = FALSE,
   type = "l",
-  xlab = expression(F),
+  xlab = expression(T),
   ylab = "Probability Density",
   xlim = NULL,
   ...
