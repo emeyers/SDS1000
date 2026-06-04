@@ -61,7 +61,8 @@ You also used it to build a **bootstrap distribution**:
 
 # SDS1000 version
 bootstrap_dist <- do_it(10000) * {
-  mean(sample(price_sample, length(price_sample), replace = TRUE))
+  boot_sample <- sample(price_sample, length(price_sample), replace = TRUE)
+  mean(boot_sample)
 }
 ```
 
@@ -71,7 +72,7 @@ And to build a **null distribution** by shuffling:
 
 # SDS1000 version
 null_distribution <- do_it(10000) * {
-  cor(shuffle(draft_numbers), birth_months)
+  cor(shuffle(sugar), calories)
 }
 ```
 
@@ -105,7 +106,8 @@ sampling_distribution <- replicate(10000, {
 ``` r
 
 bootstrap_dist <- replicate(10000, {
-  mean(sample(price_sample, length(price_sample), replace = TRUE))
+  boot_sample <- sample(price_sample, length(price_sample), replace = TRUE)
+  mean(boot_sample)
 })
 ```
 
@@ -114,7 +116,7 @@ bootstrap_dist <- replicate(10000, {
 ``` r
 
 null_distribution <- replicate(10000, {
-  cor(sample(draft_numbers), birth_months)  # sample() with no replace = shuffles
+   cor(sample(sugar), calories)      # sample() with no replace = shuffle
 })
 ```
 
@@ -339,15 +341,18 @@ sample(v)    # Base R — identical
 
 In a permutation test, shuffling one variable breaks its relationship
 with another, simulating the null hypothesis. For example, testing
-whether draft numbers were correlated with birth date:
+whether the correlation between `x` and `y` is 0 at the population level
+we could use:
 
 ``` r
 
 set.seed(8812)
 
+# generate fake data
 n <- 100
 x <- rnorm(n)
 y <- 0.3 * x + rnorm(n)
+
 obs_stat <- cor(x, y)
 
 null_distribution <- replicate(10000, {
@@ -397,8 +402,10 @@ A complete bootstrap for a regression slope in base R (class 25 style):
 
 set.seed(3047)
 
+# generate fake data
 cigs_per_capita <- runif(50, 10, 40)
 cancer_rate     <- 2 + 0.8 * cigs_per_capita + rnorm(50, sd = 5)
+
 obs_slope       <- coef(lm(cancer_rate ~ cigs_per_capita))[2]
 
 boot_dist <- replicate(10000, {

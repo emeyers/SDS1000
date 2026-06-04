@@ -10,7 +10,8 @@
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Transitioning to Base R: Simulation and Data Summaries">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="Transitioning to Base R: Simulation and Data Summaries">
 <meta name="description" content="Part 1 of 2. Covers do_it(), get_proportion(), rflip(), rroll(),
 shuffle(), and resample_pairs() and their base R equivalents.
 ">
@@ -79,65 +80,6 @@ shuffle(), and resample_pairs() and their base R equivalents.
 
     
     
-<style>
-/* ── Section headers ─────────────────────────────────────────────────────── */
-h2 {
-  margin-top:     3.5rem;
-  padding-top:    0.6rem;
-  padding-bottom: 0.4rem;
-  border-bottom:  1px solid #dee2e6;
-  color: #1a3a5c;
-  font-size: 1.45rem;
-}
-
-h3 {
-  margin-top: 2rem;
-  color: #2c5282;
-  font-size: 1.15rem;
-}
-
-hr {
-  margin:     3rem 0 2rem 0;
-  border:     none;
-  border-top: 2px solid #e2e8f0;
-}
-
-table {
-  margin:    1.25rem 0 1.75rem 0;
-  font-size: 0.93rem;
-  width:     100%;
-}
-
-table thead tr {
-  background-color: #dbeafe;
-  color: #1e3a5f;
-}
-
-table tbody tr:nth-child(even) {
-  background-color: #f8fafc;
-}
-
-.guide-nav {
-  background-color: #f0f7ff;
-  border:           1px solid #bfdbfe;
-  border-radius:    6px;
-  padding:          1.1rem 1.4rem;
-  margin-bottom:    2rem;
-  font-size:        0.95rem;
-}
-
-.guide-nav ul  { margin-bottom: 0; padding-left: 1.2rem; }
-.guide-nav li  { margin-bottom: 0.3rem; }
-
-.tip-box {
-  background-color: #f0fdf4;
-  border-left:      4px solid #22c55e;
-  border-radius:    4px;
-  padding:          0.75rem 1rem;
-  margin:           1.25rem 0;
-  font-size:        0.93rem;
-}
-</style>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -202,13 +144,14 @@ distribution</strong>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># SDS1000 version</span></span>
 <span><span class="va">bootstrap_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">price_sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">price_sample</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">boot_sample</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">price_sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">price_sample</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">boot_sample</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>And to build a <strong>null distribution</strong> by shuffling:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># SDS1000 version</span></span>
 <span><span class="va">null_distribution</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/do_it.html">do_it</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span> <span class="op">*</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="../reference/shuffle.html">shuffle</a></span><span class="op">(</span><span class="va">draft_numbers</span><span class="op">)</span>, <span class="va">birth_months</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="../reference/shuffle.html">shuffle</a></span><span class="op">(</span><span class="va">sugar</span><span class="op">)</span>, <span class="va">calories</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -231,12 +174,13 @@ same thing: it evaluates the expression <code>expr</code> a total of
 <p><strong>Bootstrap distribution:</strong></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bootstrap_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">price_sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">price_sample</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">boot_sample</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">price_sample</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">price_sample</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">boot_sample</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Null distribution (shuffling):</strong></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">null_distribution</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">draft_numbers</span><span class="op">)</span>, <span class="va">birth_months</span><span class="op">)</span>  <span class="co"># sample() with no replace = shuffles</span></span>
+<span>   <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">sugar</span><span class="op">)</span>, <span class="va">calories</span><span class="op">)</span>      <span class="co"># sample() with no replace = shuffle</span></span>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -496,13 +440,16 @@ confidence intervals</strong> for paired variables.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span>    <span class="co"># Base R — identical</span></span></code></pre></div>
 <p>In a permutation test, shuffling one variable breaks its relationship
 with another, simulating the null hypothesis. For example, testing
-whether draft numbers were correlated with birth date:</p>
+whether the correlation between <code>x</code> and <code>y</code> is 0
+at the population level we could use:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">8812</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># generate fake data</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fl">0.3</span> <span class="op">*</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">obs_stat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">null_distribution</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="op">{</span></span>
@@ -544,8 +491,10 @@ style):</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">3047</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># generate fake data</span></span>
 <span><span class="va">cigs_per_capita</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">10</span>, <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="va">cancer_rate</span>     <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">0.8</span> <span class="op">*</span> <span class="va">cigs_per_capita</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">obs_slope</span>       <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">cancer_rate</span> <span class="op">~</span> <span class="va">cigs_per_capita</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">boot_dist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="op">{</span></span>
