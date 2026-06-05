@@ -6,8 +6,21 @@ format:
     toc: true
     toc-depth: 2
     number-sections: false
+    colorlinks: true
     geometry: margin=1in
     fontsize: 11pt
+    include-in-header:
+      text: |
+        \usepackage{titlesec}
+        \usepackage{xcolor}
+        \definecolor{sectiongreen}{HTML}{00A86B}
+        \definecolor{subsectionblue}{HTML}{2c5282}
+        \titleformat{\section}{\LARGE\bfseries\color{sectiongreen}}{}{0em}{}[\vspace{0.3ex}\titlerule]
+        \titlespacing{\section}{0pt}{4ex}{2ex}
+        \titleformat{\subsection}{\Large\bfseries\color{subsectionblue}}{}{0em}{}
+        \titlespacing{\subsection}{0pt}{3ex}{1ex}
+        \titleformat{\subsubsection}{\normalsize\bfseries}{}{0em}{}
+        \titlespacing{\subsubsection}{0pt}{2ex}{0.5ex}
 execute:
   echo: true
   message: false
