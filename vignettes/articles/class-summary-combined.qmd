@@ -1,0 +1,1730 @@
+---
+title: "S&DS 1000 Class Summaries"
+subtitle: "Hypothesis Tests and Confidence Intervals"
+format:
+  pdf:
+    toc: true
+    toc-depth: 2
+    number-sections: false
+    geometry: margin=1in
+    fontsize: 11pt
+execute:
+  echo: true
+  message: false
+  warning: false
+  fig-width: 6
+  fig-height: 3.5
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(SDS1000)
+
+# knitr-safe do_it() — avoids lazyeval rendering issues in knitr
+do_it <- function(n) structure(list(num_times = n), class = "do_it_knitr")
+`*.do_it_knitr` <- function(e1, e2) {
+  expr <- match.call()[[3]]
+  replicate(e1$num_times, eval(expr, envir = parent.frame()))
+}
+```
+
+{{< pagebreak >}}
+
+# Randomization Hypothesis Tests
+
+This guide covers every randomization (simulation-based) hypothesis test from
+S&DS 1000. Each test follows the same five steps used in class:
+
+1. **State** the null and alternative hypotheses
+2. **Calculate** the observed test statistic
+3. **Create** a null distribution by simulation
+4. **Calculate** the p-value
+5. **Make a decision**
+
+The core idea is the same for every test: if the null hypothesis were true, how
+extreme would our observed result be? We answer this by repeatedly simulating
+data under the null and seeing where our observed statistic falls.
+
+::: {.callout-tip}
+**Key SDS1000 functions used in this guide.**
+`do_it(n) * { expr }` repeats an expression `n` times and collects the
+results. `rflip(n, p)` simulates `n` coin flips with probability `p`.
+`rroll(n, prob)` simulates rolling a die `n` times. `shuffle(x)` randomly
+permutes a vector. `ptail(obs, null, lower.tail)` computes the p-value from
+a null distribution.
+:::
+
+---
+
+## One Proportion
+
+**When to use:** One categorical variable with two outcomes; test whether the
+population proportion π equals a specific value π₀. The null distribution is
+created by simulating coin flips under the assumption that H₀ is true using
+`rflip()`.
+
+**Example (class 12):** Doris the dolphin and Buzz the dolphin were tested to
+see whether Buzz could identify which lever Doris was pointing to. In 16
+trials, Buzz got the correct answer 15 times. Is there evidence that Buzz is
+doing better than random chance?
+
+### Step 1: State the hypotheses
+
+$$H_0: \pi = 0.50 \qquad H_A: \pi > 0.50$$
+
+### Step 2: Calculate the observed statistic
+
+```{r}
+#| label: rt-one-prop-obs
+n_trials <- 16
+obs_stat <- 15   # number of correct answers
+obs_stat
+```
+
+### Step 3: Create the null distribution
+
+Under H₀, each trial is like a fair coin flip. Use `rflip()` to simulate
+10,000 experiments:
+
+```{r}
+#| label: rt-one-prop-null
+set.seed(5731)
+
+null_dist <- do_it(10000) * {
+  rflip(n_trials, 0.50)
+}
+
+hist(null_dist, breaks = 50,
+     main = "Null Distribution — Number of Correct Answers",
+     xlab = "Number Correct (out of 16)",
+     col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+```
+
+### Step 4: Calculate the p-value
+
+```{r}
+#| label: rt-one-prop-pval
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p = `r format(round(p_value, 4), scientific = FALSE)` < 0.05, we
+**reject** H₀ and conclude that Buzz appears to be doing better than random
+chance.
+
+---
+
+**Second example (class 13):** A lie detector correctly identified 31 out of
+48 participants as lying. Is this evidence the detector is more than 60%
+accurate?
+
+$$H_0: \pi = 0.60 \qquad H_A: \pi > 0.60$$
+
+```{r}
+#| label: rt-one-prop-lie
+set.seed(9021)
+
+n        <- 48
+obs_phat <- 31 / 48
+
+null_dist <- do_it(10000) * {
+  rflip(n, 0.60) / n
+}
+
+hist(null_dist, breaks = 60,
+     main = "Null Distribution — Proportion Correct",
+     xlab = "Proportion Correct",
+     col = "steelblue", border = "white")
+abline(v = obs_phat, col = "red", lwd = 2)
+
+p_value <- ptail(obs_phat, null_dist, lower.tail = FALSE)
+p_value
+```
+
+Since p = `r round(p_value, 3)` > 0.05, we **fail to reject** H₀. There is
+not sufficient evidence that the lie detector exceeds 60% accuracy.
+
+---
+
+## Two Proportions
+
+**When to use:** A binary outcome measured in two independent groups; test
+whether the two population proportions are equal.
+
+**Key idea:** Under H₀ (π₁ = π₂), both groups share the same true proportion.
+We estimate this **overall proportion** by pooling the two samples:
+
+$$\hat{p}_\text{overall} = \frac{x_1 + x_2}{n_1 + n_2}$$
+
+We then simulate each group independently using this pooled rate with
+`rflip()`, mimicking what we would observe if H₀ were true.
+
+**Example:** In a clinical trial, 245 patients received a new vaccine and 255
+received a placebo. Of the vaccinated group 32 got the flu; of the placebo
+group 56 got the flu. Is there evidence that the vaccine reduces the flu rate?
+
+### Step 1: State the hypotheses
+
+Let group 1 = vaccine, group 2 = placebo.
+$$H_0: \pi_1 = \pi_2 \qquad H_A: \pi_1 < \pi_2$$
+
+### Step 2: Calculate the observed statistic
+
+```{r}
+#| label: rt-two-prop-obs
+x1 <- 32;  n1 <- 245   # vaccinated
+x2 <- 56;  n2 <- 255   # placebo
+
+obs_phat1 <- x1 / n1
+obs_phat2 <- x2 / n2
+obs_stat  <- obs_phat1 - obs_phat2
+obs_stat
+```
+
+### Step 3: Create the null distribution
+
+```{r}
+#| label: rt-two-prop-null
+set.seed(4412)
+
+overall_prop <- (x1 + x2) / (n1 + n2)
+
+null_dist <- do_it(10000) * {
+  sim_phat1 <- rflip(n1, overall_prop) / n1
+  sim_phat2 <- rflip(n2, overall_prop) / n2
+  sim_phat1 - sim_phat2
+}
+
+hist(null_dist, breaks = 80,
+     main = "Null Distribution — Difference in Proportions",
+     xlab = expression(hat(p)[1] - hat(p)[2]),
+     col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+```
+
+### Step 4: Calculate the p-value
+
+```{r}
+#| label: rt-two-prop-pval
+p_value <- ptail(obs_stat, null_dist, lower.tail = TRUE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p = `r round(p_value, 4)` < 0.05, we **reject** H₀ and conclude that
+the vaccine is associated with a significantly lower flu rate.
+
+---
+
+## More Than Two Proportions
+
+**When to use:** One categorical variable with three or more outcomes; test
+whether the population proportions match a set of expected values. The
+observed statistic is the chi-squared statistic; the null distribution is
+created by simulating random samples using `rroll()`.
+
+**Example (class 23):** A Yale professor examined the birth months of 198
+randomly selected Yale students. Are students equally likely to be born in any
+month?
+
+### Step 1: State the hypotheses
+
+$$H_0: \pi_{Jan} = \pi_{Feb} = \cdots = \pi_{Dec} = \tfrac{1}{12}$$
+$$H_A: \text{at least one monthly proportion differs from } \tfrac{1}{12}$$
+
+### Step 2: Calculate the observed statistic
+
+```{r}
+#| label: rt-multi-prop-obs
+observed_counts <- c(14, 11, 21, 17, 15, 13, 19, 16, 18, 22, 14, 18)
+names(observed_counts) <- month.abb
+
+expected_counts <- rep(sum(observed_counts) / 12, 12)
+
+obs_stat <- sum((observed_counts - expected_counts)^2 / expected_counts)
+obs_stat
+```
+
+### Step 3: Create the null distribution
+
+```{r}
+#| label: rt-multi-prop-null
+set.seed(3341)
+
+n_students <- sum(observed_counts)
+
+null_dist <- do_it(10000) * {
+  sim_counts <- rroll(n_students, prob = rep(1/12, 12))
+  sum((sim_counts - expected_counts)^2 / expected_counts)
+}
+
+hist(null_dist, breaks = 60,
+     main = "Null Distribution — Chi-squared Statistic",
+     xlab = "Chi-squared value",
+     col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+```
+
+### Step 4: Calculate the p-value
+
+```{r}
+#| label: rt-multi-prop-pval
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p = `r round(p_value, 3)` > 0.05, we **fail to reject** H₀. There is
+no evidence that Yale students' birth months deviate from a uniform
+distribution.
+
+---
+
+## One Mean
+
+**When to use:** A single quantitative variable; test whether the population
+mean μ equals a specific value μ₀. We use a **bootstrap-based procedure**:
+shift the data so its mean equals μ₀, then resample from that shifted data.
+
+**Key idea:**
+```r
+data_H0 <- my_data - mean(my_data) + mu_0
+```
+
+**Example:** It is widely assumed that the average human body temperature is
+98.6°F. A sample of 50 body temperatures had a mean of 98.25°F. Is there
+evidence that the true mean differs from 98.6°F?
+
+### Step 1: State the hypotheses
+
+$$H_0: \mu = 98.6 \qquad H_A: \mu \ne 98.6$$
+
+### Step 2: Calculate the observed statistic
+
+```{r}
+#| label: rt-one-mean-obs
+set.seed(9910)
+body_temps <- rnorm(50, mean = 98.25, sd = 0.73)
+
+obs_mean <- mean(body_temps)
+obs_mean
+```
+
+### Step 3: Create the null distribution
+
+```{r}
+#| label: rt-one-mean-null
+set.seed(3345)
+
+mu_0    <- 98.6
+data_H0 <- body_temps - mean(body_temps) + mu_0
+n       <- length(body_temps)
+
+null_dist <- do_it(10000) * {
+  mean(sample(data_H0, n, replace = TRUE))
+}
+
+hist(null_dist, breaks = 80,
+     main = "Null Distribution — Mean Body Temperature",
+     xlab = "Mean Temperature (°F)",
+     col = "steelblue", border = "white")
+abline(v = obs_mean, col = "red", lwd = 2)
+```
+
+### Step 4: Calculate the p-value
+
+Two-sided test — count values at least as far from μ₀ as the observed mean:
+
+```{r}
+#| label: rt-one-mean-pval
+margin <- abs(obs_mean - mu_0)
+
+p_value <- ptail(mu_0 - margin, null_dist, lower.tail = TRUE) +
+           ptail(mu_0 + margin, null_dist, lower.tail = FALSE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p = `r round(p_value, 4)` < 0.05, we **reject** H₀ and conclude that
+there is evidence the true mean body temperature differs from 98.6°F.
+
+---
+
+## Two Means
+
+**When to use:** A quantitative variable measured in two independent groups;
+test whether the two group means are equal. The null distribution is created
+by using `shuffle()` to randomly reassign group labels.
+
+**Example (class 17):** A randomized controlled trial gave calcium supplements
+to 10 men (treatment) and a placebo to 11 men (control). The outcome is the
+decrease in blood pressure. Is there evidence that calcium produces a greater
+decrease?
+
+### Step 1: State the hypotheses
+
+$$H_0: \mu_\text{treat} = \mu_\text{control} \qquad H_A: \mu_\text{treat} > \mu_\text{control}$$
+
+### Step 2: Calculate the observed statistic
+
+```{r}
+#| label: rt-two-means-obs
+treat   <- c( 7, -4, 18, 17, -3, -5,  1, 10, 11, -2)
+control <- c(-1, 12, -1, -3,  3, -5,  5,  2, -11, -1, -3)
+
+obs_stat <- mean(treat) - mean(control)
+obs_stat
+```
+
+### Step 3: Create the null distribution
+
+```{r}
+#| label: rt-two-means-null
+set.seed(6174)
+
+combined_data <- c(treat, control)
+
+null_dist <- do_it(10000) * {
+  shuff         <- shuffle(combined_data)
+  shuff_treat   <- shuff[1:10]
+  shuff_control <- shuff[11:21]
+  mean(shuff_treat) - mean(shuff_control)
+}
+
+hist(null_dist, breaks = 100,
+     main = "Null Distribution — Difference in Means",
+     xlab = "Difference in mean blood pressure decrease (mmHg)",
+     col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+```
+
+### Step 4: Calculate the p-value
+
+```{r}
+#| label: rt-two-means-pval
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p = `r round(p_value, 3)` is just above 0.05, we **fail to reject** H₀
+at the α = 0.05 level. The evidence for a calcium effect is suggestive but not
+conclusive.
+
+---
+
+## More Than Two Means
+
+**When to use:** A quantitative variable measured across three or more
+independent groups; test whether all group means are equal. The observed
+statistic is the **mean absolute deviation (MAD)** of group means. The null
+distribution is created by using `shuffle()` on the group labels.
+
+**Example (class 17/18):** Hope College students were timed completing a
+Sudoku-like puzzle, grouped into four majors. Is there a difference in mean
+completion time?
+
+### Step 1: State the hypotheses
+
+$$H_0: \mu_{as} = \mu_{ns} = \mu_{ss} = \mu_{ah}$$
+$$H_A: \text{at least one group mean differs}$$
+
+### Step 2: Calculate the observed statistic
+
+```{r}
+#| label: rt-multi-means-obs
+set.seed(4455)
+completion_times <- c(rnorm(10, mean = 22, sd = 5),
+                      rnorm(10, mean = 20, sd = 5),
+                      rnorm(10, mean = 26, sd = 5),
+                      rnorm(10, mean = 21, sd = 5))
+majors <- rep(c("Applied Sci", "Natural Sci", "Social Sci", "Arts/Hum"),
+              each = 10)
+
+boxplot(completion_times ~ majors,
+        main = "Completion Time by Major",
+        ylab = "Time (seconds)",
+        col  = c("lightblue", "lightgreen", "lightpink", "lightyellow"))
+
+obs_stat <- get_MAD_stat(completion_times, majors)
+obs_stat
+```
+
+### Step 3: Create the null distribution
+
+```{r}
+#| label: rt-multi-means-null
+set.seed(8812)
+
+null_dist <- do_it(10000) * {
+  get_MAD_stat(completion_times, shuffle(majors))
+}
+
+hist(null_dist, breaks = 100,
+     main = "Null Distribution — MAD Statistic",
+     xlab = "Mean absolute deviation of group means",
+     col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+```
+
+### Step 4: Calculate the p-value
+
+```{r}
+#| label: rt-multi-means-pval
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p = `r round(p_value, 3)`, we
+`r ifelse(p_value < 0.05, "**reject**", "**fail to reject**")` H₀ at the
+α = 0.05 level.
+
+::: {.callout-tip}
+**What is the MAD statistic?** `get_MAD_stat()` computes the mean of all
+pairwise absolute differences between group means:
+$$MAD = \frac{1}{\binom{k}{2}} \sum_{i < j} |\bar{x}_i - \bar{x}_j|$$
+It is sensitive to any difference between group means, making it a natural
+choice for a general alternative hypothesis. Any statistic can be used —
+for example, `get_F_stat()` would give the ANOVA F-statistic.
+:::
+
+---
+
+## Correlation
+
+**When to use:** Two quantitative variables; test whether the population
+correlation ρ equals zero. The null distribution is created by using
+`shuffle()` on one variable — this breaks any real relationship while
+preserving the marginal distributions.
+
+**Example (class 18):** A dataset of 77 breakfast cereals recorded sugar
+content and calorie content. Is there evidence of a positive correlation?
+
+### Step 1: State the hypotheses
+
+$$H_0: \rho = 0 \qquad H_A: \rho > 0$$
+
+### Step 2: Calculate the observed statistic
+
+```{r}
+#| label: rt-corr-obs
+set.seed(1123)
+n        <- 77
+sugar    <- runif(n, 0, 15)
+calories <- 90 + 3.5 * sugar + rnorm(n, sd = 12)
+
+plot(sugar, calories,
+     main = "Calories vs Sugar in Cereals",
+     xlab = "Sugar (grams)", ylab = "Calories")
+
+obs_stat <- cor(sugar, calories)
+obs_stat
+```
+
+### Step 3: Create the null distribution
+
+```{r}
+#| label: rt-corr-null
+set.seed(5671)
+
+null_dist <- do_it(10000) * {
+  cor(shuffle(sugar), calories)
+}
+
+hist(null_dist, breaks = 80,
+     main = "Null Distribution — Correlation",
+     xlab = "Correlation",
+     col = "steelblue", border = "white")
+abline(v = obs_stat, col = "red", lwd = 2)
+```
+
+### Step 4: Calculate the p-value
+
+```{r}
+#| label: rt-corr-pval
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p ≈ `r round(p_value, 4)`, we **reject** H₀ and conclude that there is
+evidence of a positive correlation between sugar and calorie content in cereals.
+
+---
+
+## Simple Linear Regression
+
+**When to use:** Two quantitative variables where you want to test whether the
+slope of a linear regression model is significantly different from zero. The
+null distribution is created by using `shuffle()` on the response variable.
+
+**Example (class 25):** Data on cigarette consumption per capita and lung
+cancer rates across U.S. states. Is there evidence of a positive slope?
+
+### Step 1: State the hypotheses
+
+$$H_0: \beta_1 = 0 \qquad H_A: \beta_1 > 0$$
+
+### Step 2: Calculate the observed statistic
+
+```{r}
+#| label: rt-reg-obs
+set.seed(2947)
+cigs_per_capita <- runif(44, min = 10, max = 45)
+cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
+
+plot(cigs_per_capita, cancer_rate,
+     xlab = "Cigarettes per Capita (hundreds)",
+     ylab = "Lung Cancer Rate per 100,000",
+     main = "Lung Cancer Rate vs. Cigarette Consumption")
+
+lung_lm   <- lm(cancer_rate ~ cigs_per_capita)
+obs_slope <- coef(lung_lm)["cigs_per_capita"]
+obs_slope
+```
+
+### Step 3: Create the null distribution
+
+```{r}
+#| label: rt-reg-null
+set.seed(3318)
+
+null_dist <- do_it(10000) * {
+  null_lm <- lm(shuffle(cancer_rate) ~ cigs_per_capita)
+  coef(null_lm)["cigs_per_capita"]
+}
+
+hist(null_dist, breaks = 80,
+     main = "Null Distribution — Regression Slope",
+     xlab = "Slope",
+     col = "steelblue", border = "white")
+abline(v = obs_slope, col = "red", lwd = 2)
+```
+
+### Step 4: Calculate the p-value
+
+```{r}
+#| label: rt-reg-pval
+p_value <- ptail(obs_slope, null_dist, lower.tail = FALSE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p ≈ `r round(p_value, 4)`, we **reject** H₀ and conclude there is
+evidence of a positive relationship between cigarette consumption and lung
+cancer rate.
+
+---
+
+## Quick Reference
+
+| Test | Observed statistic | How to simulate the null | p-value |
+|---|---|---|---|
+| One proportion | Count or proportion | `do_it(n) * { rflip(n, pi_0) }` | `ptail(obs, null, lower.tail = ...)` |
+| Two proportions | $\hat{p}_1 - \hat{p}_2$ | `do_it(n) * { rflip(n1,p_pool)/n1 - rflip(n2,p_pool)/n2 }` | `ptail(obs, null, lower.tail = ...)` |
+| Multiple proportions | $\sum(O-E)^2/E$ | `do_it(n) * { rroll(n, expected_p) }` | `ptail(obs, null, lower.tail = FALSE)` |
+| One mean | $\bar{x}$ | Shift data to μ₀, then resample | two-sided sum of tails |
+| Two means | $\bar{x}_1 - \bar{x}_2$ | `do_it(n) * { shuff <- shuffle(combined); ... }` | `ptail(obs, null, lower.tail = ...)` |
+| More than two means | MAD: `get_MAD_stat()` | `do_it(n) * { get_MAD_stat(y, shuffle(groups)) }` | `ptail(obs, null, lower.tail = FALSE)` |
+| Correlation | $r =$ `cor(x, y)` | `do_it(n) * { cor(shuffle(x), y) }` | `ptail(obs, null, lower.tail = ...)` |
+| Regression slope | $\hat{\beta}_1$ from `lm()` | `do_it(n) * { coef(lm(shuffle(y) ~ x))[2] }` | `ptail(obs, null, lower.tail = ...)` |
+
+{{< pagebreak >}}
+
+# Randomization Confidence Intervals
+
+A **bootstrap confidence interval** estimates the uncertainty of a statistic by
+repeatedly resampling the observed data *with replacement*. Because it relies on
+the data itself rather than a mathematical formula, it works for almost any
+statistic and requires very few distributional assumptions.
+
+Every bootstrap CI in this guide follows the same three steps:
+
+1. **Create a bootstrap distribution** — use `do_it()` to resample with replacement
+   many times, computing the statistic each time.
+2. **Calculate the bootstrap SE** — `SE_boot <- sd(boot_dist)`.
+3. **Construct the CI** — `obs_stat ± cnorm(C) × SE_boot`.
+
+::: {.callout-tip}
+**Key SDS1000 functions.** `do_it(n) * { expr }` repeats an expression `n`
+times. `sample(data, n, replace = TRUE)` resamples with replacement.
+`get_proportion(v, "cat")` computes a proportion. `resample_pairs(v1, v2)`
+resamples two paired vectors together. `cnorm(C)` gives the normal critical
+value for confidence level C.
+:::
+
+---
+
+## One Proportion
+
+**When to use:** A single categorical variable with two outcomes; estimate the
+population proportion π.
+
+**Example (class 11):** A survey asked 2625 people whether they agreed with
+"There is only one true love for each person." 1812 disagreed. Compute a 90%
+bootstrap confidence interval for the proportion who disagreed.
+
+### Step 1: Compute the observed statistic
+
+```{r}
+#| label: rci-one-prop-obs
+believes_in_true_love <- c(rep("FALSE", 1812), rep("TRUE", 2625 - 1812))
+
+obs_prop <- get_proportion(believes_in_true_love, "FALSE")
+obs_prop
+```
+
+### Step 2: Create the bootstrap distribution
+
+```{r}
+#| label: rci-one-prop-boot
+set.seed(2292)
+
+n <- length(believes_in_true_love)
+
+boot_dist <- do_it(10000) * {
+  boot_sample <- sample(believes_in_true_love, n, replace = TRUE)
+  get_proportion(boot_sample, "FALSE")
+}
+
+hist(boot_dist, breaks = 30,
+     main = "Bootstrap Distribution — Proportion Who Disagreed",
+     xlab = "Proportion",
+     col = "steelblue", border = "white")
+```
+
+### Step 3: Compute the SE and construct the CI
+
+```{r}
+#| label: rci-one-prop-ci
+SE_boot <- sd(boot_dist)
+
+CI <- c(obs_prop - cnorm(0.90) * SE_boot,
+        obs_prop + cnorm(0.90) * SE_boot)
+CI
+```
+
+We are 90% confident that the true proportion of people who disagree that
+there is only one true love for each person is between
+`r round(CI[1], 3)` and `r round(CI[2], 3)`.
+
+---
+
+## One Mean
+
+**When to use:** A single quantitative variable; estimate the population mean μ.
+
+**Example (class 11/12):** A sample of 50 body temperatures from Mackowiak
+et al. (1992). Compute a 95% bootstrap confidence interval for the mean
+body temperature.
+
+### Step 1: Compute the observed statistic
+
+```{r}
+#| label: rci-one-mean-obs
+set.seed(9910)
+body_temps <- rnorm(50, mean = 98.25, sd = 0.73)
+
+obs_mean <- mean(body_temps)
+obs_mean
+```
+
+### Step 2: Create the bootstrap distribution
+
+```{r}
+#| label: rci-one-mean-boot
+set.seed(4471)
+
+n <- length(body_temps)
+
+boot_dist <- do_it(10000) * {
+  mean(sample(body_temps, n, replace = TRUE))
+}
+
+hist(boot_dist, breaks = 80,
+     main = "Bootstrap Distribution — Mean Body Temperature",
+     xlab = "Mean Temperature (°F)",
+     col = "steelblue", border = "white")
+```
+
+### Step 3: Compute the SE and construct the CI
+
+```{r}
+#| label: rci-one-mean-ci
+SE_boot <- sd(boot_dist)
+
+CI_95 <- c(obs_mean - cnorm(0.95) * SE_boot,
+           obs_mean + cnorm(0.95) * SE_boot)
+CI_80 <- c(obs_mean - cnorm(0.80) * SE_boot,
+           obs_mean + cnorm(0.80) * SE_boot)
+CI_99 <- c(obs_mean - cnorm(0.99) * SE_boot,
+           obs_mean + cnorm(0.99) * SE_boot)
+
+CI_80; CI_95; CI_99
+```
+
+We are 95% confident that the mean human body temperature is between
+`r round(CI_95[1], 2)`°F and `r round(CI_95[2], 2)`°F.
+
+::: {.callout-tip}
+**Wider CI = more confident.** A 99% CI is wider than a 95% CI, which is wider
+than an 80% CI. There is always a trade-off: greater confidence requires
+sacrificing precision.
+:::
+
+---
+
+## Difference of Two Means
+
+**When to use:** A quantitative variable measured in two independent groups;
+estimate $\mu_1 - \mu_2$. Resample each group separately with replacement,
+keeping group sizes fixed.
+
+**Example:** Using the calcium supplement study from class 17, compute a 95%
+bootstrap confidence interval for the difference in mean blood pressure
+decrease (treatment − control).
+
+### Step 1: Compute the observed statistic
+
+```{r}
+#| label: rci-two-means-obs
+treat   <- c( 7, -4, 18, 17, -3, -5,  1, 10, 11, -2)
+control <- c(-1, 12, -1, -3,  3, -5,  5,  2, -11, -1, -3)
+
+obs_diff <- mean(treat) - mean(control)
+obs_diff
+```
+
+### Step 2: Create the bootstrap distribution
+
+```{r}
+#| label: rci-two-means-boot
+set.seed(6174)
+
+n_treat   <- length(treat)
+n_control <- length(control)
+
+boot_dist <- do_it(10000) * {
+  boot_treat   <- sample(treat,   n_treat,   replace = TRUE)
+  boot_control <- sample(control, n_control, replace = TRUE)
+  mean(boot_treat) - mean(boot_control)
+}
+
+hist(boot_dist, breaks = 80,
+     main = "Bootstrap Distribution — Difference in Means",
+     xlab = "Difference in mean blood pressure decrease (mmHg)",
+     col = "steelblue", border = "white")
+```
+
+### Step 3: Compute the SE and construct the CI
+
+```{r}
+#| label: rci-two-means-ci
+SE_boot <- sd(boot_dist)
+
+CI <- c(obs_diff - cnorm(0.95) * SE_boot,
+        obs_diff + cnorm(0.95) * SE_boot)
+CI
+```
+
+The 95% CI includes zero, consistent with the hypothesis test result. However,
+the interval also extends well above zero, meaning a meaningful calcium effect
+remains plausible.
+
+---
+
+## Correlation
+
+**When to use:** Two paired quantitative variables; estimate the population
+correlation ρ. Because x and y are paired, use `resample_pairs()` so that
+every resampled (x, y) pair stays matched.
+
+**Example (class 18):** Sugar content and calorie content for a sample of 77
+breakfast cereals. Compute a 95% bootstrap confidence interval for the
+correlation.
+
+### Step 1: Compute the observed statistic
+
+```{r}
+#| label: rci-corr-obs
+set.seed(1123)
+n        <- 77
+sugar    <- runif(n, 0, 15)
+calories <- 90 + 3.5 * sugar + rnorm(n, sd = 12)
+
+obs_cor <- cor(sugar, calories)
+obs_cor
+```
+
+### Step 2: Create the bootstrap distribution
+
+```{r}
+#| label: rci-corr-boot
+set.seed(8833)
+
+boot_dist <- do_it(10000) * {
+  resampled          <- resample_pairs(sugar, calories)
+  cor(resampled$vector1, resampled$vector2)
+}
+
+hist(boot_dist, breaks = 80,
+     main = "Bootstrap Distribution — Correlation",
+     xlab = "Correlation",
+     col = "steelblue", border = "white")
+```
+
+### Step 3: Compute the SE and construct the CI
+
+```{r}
+#| label: rci-corr-ci
+SE_boot <- sd(boot_dist)
+
+CI <- c(obs_cor - cnorm(0.95) * SE_boot,
+        obs_cor + cnorm(0.95) * SE_boot)
+CI
+```
+
+We are 95% confident that the true correlation between sugar and calorie
+content in cereals is between `r round(CI[1], 3)` and `r round(CI[2], 3)`.
+
+::: {.callout-tip}
+**Why `resample_pairs()` and not `sample(..., replace = TRUE)`?** For paired
+data, we must resample observations together to preserve the relationship
+between x and y. Resampling x and y independently would destroy the very
+correlation we are trying to measure.
+:::
+
+---
+
+## Regression Slope
+
+**When to use:** Two paired quantitative variables; estimate the slope β₁ of
+a simple linear regression model. Use `resample_pairs()` to keep pairs intact.
+
+**Example (class 25):** Cigarette consumption per capita and lung cancer rates
+across 44 U.S. states. Compute a 95% bootstrap confidence interval for the
+slope.
+
+### Step 1: Compute the observed statistic
+
+```{r}
+#| label: rci-reg-obs
+set.seed(2947)
+cigs_per_capita <- runif(44, min = 10, max = 45)
+cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
+
+lung_lm   <- lm(cancer_rate ~ cigs_per_capita)
+obs_slope <- coef(lung_lm)["cigs_per_capita"]
+obs_slope
+```
+
+### Step 2: Create the bootstrap distribution
+
+```{r}
+#| label: rci-reg-boot
+set.seed(3109)
+
+boot_dist <- do_it(10000) * {
+  resampled        <- resample_pairs(cigs_per_capita, cancer_rate)
+  resampled_cigs   <- resampled$vector1
+  resampled_cancer <- resampled$vector2
+  coef(lm(resampled_cancer ~ resampled_cigs))["resampled_cigs"]
+}
+
+hist(boot_dist, breaks = 80,
+     main = "Bootstrap Distribution — Regression Slope",
+     xlab = "Slope",
+     col = "steelblue", border = "white")
+```
+
+### Step 3: Compute the SE and construct the CI
+
+```{r}
+#| label: rci-reg-ci
+SE_boot <- sd(boot_dist)
+
+CI <- c(obs_slope - cnorm(0.95) * SE_boot,
+        obs_slope + cnorm(0.95) * SE_boot)
+CI
+```
+
+We are 95% confident that for each additional hundred cigarettes smoked per
+capita, the lung cancer rate increases by between `r round(CI[1], 4)` and
+`r round(CI[2], 4)` cases per 100,000 people.
+
+---
+
+## Quick Reference
+
+| Parameter | Resample method | CI formula |
+|---|---|---|
+| One proportion | `sample(data, n, replace=TRUE)` → `get_proportion()` | `obs ± cnorm(C) * sd(boot_dist)` |
+| One mean | `sample(data, n, replace=TRUE)` → `mean()` | `obs ± cnorm(C) * sd(boot_dist)` |
+| Diff. of two means | `sample(group, n, replace=TRUE)` for each group | `obs ± cnorm(C) * sd(boot_dist)` |
+| Correlation | `resample_pairs(x, y)` → `cor()` | `obs ± cnorm(C) * sd(boot_dist)` |
+| Regression slope | `resample_pairs(x, y)` → `coef(lm(...))` | `obs ± cnorm(C) * sd(boot_dist)` |
+
+{{< pagebreak >}}
+
+# Parametric Hypothesis Tests
+
+This guide covers every parametric hypothesis test from S&DS 1000. Each test
+follows the same five steps used in class:
+
+1. **State** the null and alternative hypotheses
+2. **Calculate** the observed test statistic (and check conditions)
+3. **Visualize** the null distribution and mark the observed statistic
+4. **Calculate** the p-value
+5. **Make a decision**
+
+::: {.callout-warning}
+**A note on assumptions.** Parametric tests rely on mathematical
+approximations that are only valid when certain conditions are met (e.g.,
+large enough sample sizes, approximate normality). Always check conditions
+before interpreting a p-value. The randomization methods above are more
+robust when conditions are uncertain.
+:::
+
+---
+
+## One Proportion
+
+**When to use:** One categorical variable with two outcomes; test whether the
+population proportion π equals a specific value π₀.
+
+**Conditions:** $n\pi_0 \geq 10$ and $n(1 - \pi_0) \geq 10$
+
+**Test statistic:**
+$$z = \frac{\hat{p} - \pi_0}{SE_0}, \qquad SE_0 = \sqrt{\frac{\pi_0(1 - \pi_0)}{n}}$$
+
+**Example (class 20):** From 1982–1994 there were 128 penalty shots in the
+World Cup. Goalkeepers correctly guessed the kick direction 41% of the time.
+Test whether goalies guessed correctly **less than** 50% of the time.
+
+### Step 1: State the hypotheses
+
+$$H_0: \pi = 0.50 \qquad H_A: \pi < 0.50$$
+
+### Steps 2–4: Calculate, visualize, p-value
+
+```{r}
+#| label: pt-one-prop
+pi_0  <- 0.50
+n     <- 128
+p_hat <- 0.41
+
+# Check conditions
+n * pi_0; n * (1 - pi_0)
+
+SE     <- sqrt(pi_0 * (1 - pi_0) / n)
+z_stat <- (p_hat - pi_0) / SE
+z_stat
+
+plot_norm(col = "blue",
+          main = "Null Distribution — Z-statistic",
+          xlab = "Z-score", ylab = "Density")
+abline(v = z_stat, col = "red", lwd = 2)
+
+p_value <- pnorm(z_stat, mean = 0, sd = 1, lower.tail = TRUE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p = `r round(p_value, 4)` < 0.05, we **reject** $H_0$ and conclude
+that goalkeepers guess the correct direction less than 50% of the time.
+
+---
+
+## Two Proportions
+
+**When to use:** A binary outcome measured in two independent groups; test
+whether the two population proportions are equal.
+
+**Conditions:** At least 10 successes and 10 failures in each group.
+
+**Test statistic** (using the unpooled standard error):
+$$z = \frac{\hat{p}_1 - \hat{p}_2}{SE}, \qquad
+SE = \sqrt{\frac{\hat{p}_1(1-\hat{p}_1)}{n_1} + \frac{\hat{p}_2(1-\hat{p}_2)}{n_2}}$$
+
+**Example:** In a clinical trial, 245 patients received a new vaccine and 255
+received a placebo. Of the vaccinated group 32 got the flu; of the placebo
+group 56 got the flu. Test whether the vaccine **reduces** the proportion who
+get the flu.
+
+### Step 1: State the hypotheses
+
+$$H_0: \pi_1 = \pi_2 \qquad H_A: \pi_1 < \pi_2$$
+
+### Steps 2–4: Calculate, visualize, p-value
+
+```{r}
+#| label: pt-two-prop
+x1 <- 32;  n1 <- 245   # vaccinated
+x2 <- 56;  n2 <- 255   # placebo
+
+p_hat1 <- x1 / n1
+p_hat2 <- x2 / n2
+
+# Check conditions
+c(x1, n1 - x1, x2, n2 - x2)
+
+SE     <- sqrt((p_hat1*(1-p_hat1)/n1) + (p_hat2*(1-p_hat2)/n2))
+z_stat <- (p_hat1 - p_hat2) / SE
+z_stat
+
+plot_norm(col = "blue",
+          main = "Null Distribution — Z-statistic",
+          xlab = "Z-score", ylab = "Density")
+abline(v = z_stat, col = "red", lwd = 2)
+
+p_value <- pnorm(z_stat, lower.tail = TRUE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p = `r round(p_value, 4)` < 0.05, we **reject** $H_0$ and conclude
+that the vaccine significantly reduces the proportion of flu cases.
+
+---
+
+## More Than Two Proportions
+
+**When to use:** One categorical variable with three or more outcomes; test
+whether the observed counts match a set of expected proportions.
+
+**Conditions:** Expected count in each cell $\geq 5$
+
+**Test statistic:**
+$$\chi^2 = \sum_{i=1}^{k} \frac{(O_i - E_i)^2}{E_i}, \qquad df = k - 1$$
+
+**Example (class 23/24):** A Yale professor gathered birth months for 198
+randomly selected Yale students. Are students equally likely to be born in
+any month?
+
+### Step 1: State the hypotheses
+
+$$H_0: \pi_{Jan} = \pi_{Feb} = \cdots = \pi_{Dec} = \tfrac{1}{12}$$
+$$H_A: \text{at least one monthly proportion differs from } \tfrac{1}{12}$$
+
+### Steps 2–4: Calculate, visualize, p-value
+
+```{r}
+#| label: pt-chisq
+observed_counts <- c(14, 11, 21, 17, 15, 13, 19, 16, 18, 22, 14, 18)
+names(observed_counts) <- month.abb
+expected_counts <- rep(sum(observed_counts) / 12, 12)
+
+expected_counts[1]   # all ~16.5 — conditions met
+
+chi_sq_stat <- sum((observed_counts - expected_counts)^2 / expected_counts)
+chi_sq_stat
+
+df <- length(observed_counts) - 1
+
+plot_chisq(df = df, col = "blue",
+           main = "Null Distribution — Chi-squared Statistic",
+           xlab = "Chi-squared value", ylab = "Density")
+abline(v = chi_sq_stat, col = "red", lwd = 2)
+
+p_value <- pchisq(chi_sq_stat, df = df, lower.tail = FALSE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p = `r round(p_value, 3)` > 0.05, we **fail to reject** $H_0$. There
+is not sufficient evidence that Yale students' birth months deviate from a
+uniform distribution.
+
+---
+
+## One Mean
+
+**When to use:** One quantitative variable; test whether the population mean μ
+equals a specific value μ₀.
+
+**Conditions:** $n \geq 30$, or the population is approximately normal.
+
+**Test statistic:**
+$$t = \frac{\bar{x} - \mu_0}{SE}, \qquad SE = \frac{s}{\sqrt{n}}, \qquad df = n - 1$$
+
+**Example (class 21):** Air Force cadets tested 42 bags of Chips Ahoy! cookies
+and found a mean of 1261.6 chips, sd = 117.6. Test whether the mean exceeds
+1000.
+
+### Step 1: State the hypotheses
+
+$$H_0: \mu = 1000 \qquad H_A: \mu > 1000$$
+
+### Steps 2–4: Calculate, visualize, p-value
+
+```{r}
+#| label: pt-one-mean
+n     <- 42
+x_bar <- 1261.6
+s     <- 117.6
+mu_0  <- 1000
+
+SE     <- s / sqrt(n)
+t_stat <- (x_bar - mu_0) / SE
+t_stat
+
+df <- n - 1
+plot_t(df, to = 15, col = "blue",
+       main = "Null Distribution — T-statistic",
+       xlab = "T-score", ylab = "Density")
+abline(v = t_stat, col = "red", lwd = 2)
+
+p_value <- pt(t_stat, df = df, lower.tail = FALSE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p ≈ 0, we **reject** $H_0$ and conclude the average chip count exceeds
+1000.
+
+---
+
+## Two Means: Independent Samples
+
+**When to use:** A quantitative variable measured in two independent groups;
+test whether the group means are equal.
+
+**Conditions:** Each group has $n \geq 30$, or both populations are
+approximately normal.
+
+**Test statistic (Welch's t-test):**
+$$t = \frac{(\bar{x}_1 - \bar{x}_2)}{SE_{diff}}, \qquad
+SE_{diff} = \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}, \qquad
+df = \min(n_1 - 1,\; n_2 - 1)$$
+
+**Example (class 22):** A study of 2295 American men found that right-handers
+(n = 2027) earned \$13.10/hr and left-handers (n = 268) earned \$13.40/hr,
+both with sd = \$7.90. Test whether there is a difference in earnings.
+
+### Step 1: State the hypotheses
+
+$$H_0: \mu_1 = \mu_2 \qquad H_A: \mu_1 \ne \mu_2$$
+
+### Steps 2–4: Calculate, visualize, p-value
+
+```{r}
+#| label: pt-two-means-indep
+n1 <- 2027;  x_bar1 <- 13.10;  s1 <- 7.90
+n2 <- 268;   x_bar2 <- 13.40;  s2 <- 7.90
+
+SE_diff <- sqrt((s1^2/n1) + (s2^2/n2))
+t_stat  <- (x_bar1 - x_bar2) / SE_diff
+t_stat
+
+df <- min(n1 - 1, n2 - 1)
+plot_t(df, col = "blue",
+       main = "Null Distribution — T-statistic",
+       xlab = "T-score", ylab = "Density")
+abline(v =  t_stat, col = "red", lwd = 2)
+abline(v = -t_stat, col = "red", lwd = 2)
+
+p_value <- 2 * pt(-abs(t_stat), df = df)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p = `r round(p_value, 3)` > 0.05, we **fail to reject** $H_0$. There
+is not sufficient evidence of a difference in hourly earnings between right-
+and left-handed men.
+
+---
+
+## Two Means: Paired Samples
+
+**When to use:** Observations come in natural pairs (e.g., before/after on the
+same subject). Compute within-pair differences and run a one-sample t-test.
+
+**Test statistic:**
+$$t = \frac{\bar{d}}{SE_d}, \qquad SE_d = \frac{s_d}{\sqrt{n}}, \qquad df = n - 1$$
+
+**Example (class 22):** Exam scores for 10 students on Exam 1 and Exam 2.
+Test whether students scored higher on Exam 2 on average.
+
+### Step 1: State the hypotheses
+
+$$H_0: \mu_d = 0 \qquad H_A: \mu_d > 0$$
+
+### Steps 2–4: Calculate, visualize, p-value
+
+```{r}
+#| label: pt-two-means-paired
+exam1 <- c(72, 95, 56, 87, 80, 98, 74, 85, 77, 62)
+exam2 <- c(78, 96, 72, 89, 80, 95, 86, 87, 82, 72)
+
+d      <- exam2 - exam1
+n      <- length(d)
+SE_d   <- sd(d) / sqrt(n)
+t_stat <- mean(d) / SE_d
+t_stat
+
+df <- n - 1
+plot_t(df, col = "blue",
+       main = "Null Distribution — T-statistic (Paired)",
+       xlab = "T-score", ylab = "Density")
+abline(v = t_stat, col = "red", lwd = 2)
+
+p_value <- pt(t_stat, df = df, lower.tail = FALSE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p = `r round(p_value, 4)` < 0.05, we **reject** $H_0$ and conclude
+that students scored significantly higher on Exam 2.
+
+---
+
+## More Than Two Means: ANOVA
+
+**When to use:** A quantitative variable measured across three or more
+independent groups; test whether all group means are equal.
+
+**Conditions:** Approximately normal residuals; roughly equal variance across
+groups; independent observations.
+
+**Test statistic:**
+$$F = \frac{MSG}{MSE}, \qquad df_1 = k - 1, \quad df_2 = N - k$$
+
+**Example (class 24):** Hope College students were timed completing a
+Sudoku-like puzzle. Majors were grouped into four categories. Is mean
+completion time the same across majors?
+
+### Step 1: State the hypotheses
+
+$$H_0: \mu_{as} = \mu_{ns} = \mu_{ss} = \mu_{ah} \qquad
+H_A: \text{at least one mean differs}$$
+
+### Steps 2–4: Calculate, visualize, p-value
+
+```{r}
+#| label: pt-anova
+set.seed(4455)
+completion_times <- c(rnorm(10, mean = 22, sd = 5),
+                      rnorm(10, mean = 20, sd = 5),
+                      rnorm(10, mean = 26, sd = 5),
+                      rnorm(10, mean = 21, sd = 5))
+majors <- factor(rep(c("Applied Sci", "Natural Sci", "Social Sci", "Arts/Hum"),
+                     each = 10))
+
+boxplot(completion_times ~ majors,
+        main = "Completion Time by Major",
+        ylab = "Time (seconds)",
+        col  = c("lightblue", "lightgreen", "lightpink", "lightyellow"))
+
+f_stat <- get_F_stat(completion_times, majors)
+df1 <- length(unique(majors)) - 1
+df2 <- length(completion_times) - length(unique(majors))
+f_stat
+
+plot_f(df1, df2, col = "blue",
+       main = "Null Distribution — F-statistic",
+       xlab = "F value", ylab = "Density")
+abline(v = f_stat, col = "red", lwd = 2)
+
+p_value <- pf(f_stat, df1, df2, lower.tail = FALSE)
+p_value
+```
+
+### Step 5: Make a decision
+
+```{r}
+#| label: pt-anova-decision
+#| echo: false
+dec <- ifelse(p_value < 0.05,
+              "reject H\u2080 — at least one group mean differs",
+              "fail to reject H\u2080 — no evidence of a difference")
+```
+
+p = `r round(p_value, 3)`: we `r dec`.
+
+---
+
+## Correlation
+
+**When to use:** Two quantitative variables; test whether the linear
+association between them is significantly different from zero.
+
+**Conditions:** Both variables approximately normal, or $n$ is large; the
+relationship is linear.
+
+**Test statistic:**
+$$t = \frac{r\sqrt{n-2}}{\sqrt{1-r^2}}, \qquad df = n - 2$$
+
+**Example (class 25):** Data on cigarette consumption per capita and lung
+cancer rates across 44 U.S. states. Is there evidence of a positive linear
+association?
+
+### Step 1: State the hypotheses
+
+$$H_0: \rho = 0 \qquad H_A: \rho > 0$$
+
+### Steps 2–4: Calculate, visualize, p-value
+
+```{r}
+#| label: pt-correlation
+set.seed(2947)
+cigs_per_capita <- runif(44, min = 10, max = 45)
+cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
+
+plot(cigs_per_capita, cancer_rate,
+     xlab = "Cigarettes per Capita (hundreds)",
+     ylab = "Lung Cancer Rate per 100,000",
+     main = "Lung Cancer Rate vs. Cigarette Consumption")
+
+n <- length(cigs_per_capita)
+r <- cor(cigs_per_capita, cancer_rate)
+r
+
+t_stat <- r * sqrt(n - 2) / sqrt(1 - r^2)
+t_stat
+
+df <- n - 2
+plot_t(df, col = "blue",
+       main = "Null Distribution — T-statistic",
+       xlab = "T-score", ylab = "Density")
+abline(v = t_stat, col = "red", lwd = 2)
+
+p_value <- pt(t_stat, df = df, lower.tail = FALSE)
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p = `r round(p_value, 4)`, we **reject** $H_0$ and conclude that there
+is a significant positive linear association between cigarette consumption and
+lung cancer rate.
+
+::: {.callout-tip}
+**Shortcut:** `cor.test(x, y, alternative = "greater")` performs all of steps
+2–4 in one call and returns the same t-statistic, df, and p-value.
+:::
+
+---
+
+## Simple Linear Regression
+
+**When to use:** Two quantitative variables where you want to model y as a
+linear function of x **and** test whether the slope differs from zero.
+Testing H₀: β₁ = 0 is equivalent to testing H₀: ρ = 0 — they yield
+identical t-statistics and p-values.
+
+**Conditions:** Linear relationship; approximately normal residuals; constant
+variance; independent observations.
+
+**Test statistic for the slope:**
+$$t = \frac{\hat{\beta}_1}{SE_{\hat{\beta}_1}}, \qquad df = n - 2$$
+
+**Example (class 25):** Using the same cigarette/lung cancer data, test
+whether the slope is significantly positive.
+
+### Step 1: State the hypotheses
+
+$$H_0: \beta_1 = 0 \qquad H_A: \beta_1 > 0$$
+
+### Steps 2–4: Fit the model, visualize, p-value
+
+```{r}
+#| label: pt-regression
+lung_lm <- lm(cancer_rate ~ cigs_per_capita)
+summary(lung_lm)
+```
+
+Reading the `Coefficients` table:
+
+| Column | Meaning |
+|---|---|
+| `Estimate` | Fitted intercept (β̂₀) and slope (β̂₁) |
+| `Std. Error` | Standard error of each estimate |
+| `t value` | t-statistic testing H₀: coefficient = 0 |
+| `Pr(>|t|)` | Two-sided p-value |
+
+```{r}
+#| label: pt-regression-viz
+fit_sum <- summary(lung_lm)
+t_stat  <- fit_sum$coefficients["cigs_per_capita", "t value"]
+df      <- lung_lm$df.residual
+
+plot_t(df, col = "blue",
+       main = "Null Distribution — T-statistic for Slope",
+       xlab = "T-score", ylab = "Density")
+abline(v = t_stat, col = "red", lwd = 2)
+
+p_two_sided <- fit_sum$coefficients["cigs_per_capita", "Pr(>|t|)"]
+p_value     <- p_two_sided / 2
+p_value
+```
+
+### Step 5: Make a decision
+
+Since p = `r round(p_value, 4)` < 0.05, we **reject** $H_0$ and conclude
+that there is a significant positive relationship between cigarette
+consumption and lung cancer rate.
+
+### Confidence interval for the slope
+
+```{r}
+#| label: pt-regression-ci
+confint(lung_lm, level = 0.90)
+```
+
+---
+
+## Quick Reference
+
+| Test | H₀ | Statistic | df | p-value function |
+|---|---|---|---|---|
+| One proportion | $\pi = \pi_0$ | $z = \frac{\hat{p}-\pi_0}{SE_0}$ | — | `pnorm(z, lower.tail=...)` |
+| Two proportions | $\pi_1 = \pi_2$ | $z = \frac{\hat{p}_1-\hat{p}_2}{SE}$ | — | `pnorm(z, lower.tail=...)` |
+| Multiple proportions | $\pi_i = \pi_0$ | $\chi^2 = \sum(O-E)^2/E$ | $k-1$ | `pchisq(x, df, lower.tail=FALSE)` |
+| One mean | $\mu = \mu_0$ | $t = \frac{\bar{x}-\mu_0}{s/\sqrt{n}}$ | $n-1$ | `pt(t, df, lower.tail=...)` |
+| Two means (indep.) | $\mu_1 = \mu_2$ | $t = \frac{\bar{x}_1-\bar{x}_2}{SE_{diff}}$ | $\min(n_1,n_2)-1$ | `pt(t, df, lower.tail=...)` |
+| Two means (paired) | $\mu_d = 0$ | $t = \frac{\bar{d}}{s_d/\sqrt{n}}$ | $n-1$ | `pt(t, df, lower.tail=...)` |
+| Multiple means | $\mu_1=\cdots=\mu_k$ | $F = MSG/MSE$ | $k-1$, $N-k$ | `pf(f, df1, df2, lower.tail=FALSE)` |
+| Correlation | $\rho = 0$ | $t = \frac{r\sqrt{n-2}}{\sqrt{1-r^2}}$ | $n-2$ | `pt(t, df, lower.tail=...)` |
+| Regression slope | $\beta_1 = 0$ | $t = \hat{\beta}_1/SE$ | $n-2$ | `summary(lm(...))` |
+
+{{< pagebreak >}}
+
+# Parametric Confidence Intervals
+
+A **confidence interval** gives a range of plausible values for an unknown
+population parameter. A parametric CI uses a mathematical formula based on the
+sampling distribution of the estimator. Every CI in this guide takes the form:
+
+$$\text{point estimate} \pm \text{critical value} \times SE$$
+
+The **critical value** comes from a normal or t-distribution and is found using
+`cnorm(C)` (normal) or `ct(C, df)` (t) for a confidence level C. The
+**standard error (SE)** measures the typical variability of the estimator.
+
+---
+
+## One Proportion
+
+**When to use:** A single categorical variable with two outcomes; estimate the
+population proportion π.
+
+**Conditions:** $n\hat{p} \geq 10$ and $n(1-\hat{p}) \geq 10$
+
+**Formula:**
+$$\hat{p} \pm z^* \cdot \hat{SE}, \qquad \hat{SE} = \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}$$
+
+**Example (class 20):** A survey asked 2625 people if they agreed that
+"There is only one true love for each person." 1812 of the respondents
+disagreed. Compute a 90% confidence interval for the proportion who disagreed.
+
+```{r}
+#| label: pci-one-prop
+n     <- 2625
+x     <- 1812
+p_hat <- x / n
+p_hat
+
+# Check conditions
+n * p_hat; n * (1 - p_hat)
+
+SE     <- sqrt(p_hat * (1 - p_hat) / n)
+z_star <- cnorm(0.90)
+
+CI <- c(p_hat - z_star * SE, p_hat + z_star * SE)
+CI
+```
+
+We are 90% confident that the true proportion who disagree is between
+`r round(CI[1], 3)` and `r round(CI[2], 3)`.
+
+---
+
+## One Mean
+
+**When to use:** A single quantitative variable; estimate the population mean μ.
+
+**Conditions:** $n \geq 30$, or the population is approximately normal.
+
+**Formula:**
+$$\bar{x} \pm t^* \cdot SE, \qquad SE = \frac{s}{\sqrt{n}}, \qquad df = n-1$$
+
+**Example (class 21):** A study recorded outdoor hunting activity of n = 55
+domestic cats. The mean number of kills per week was 2.4 with a standard
+deviation of 1.51. Compute a 99% confidence interval for the mean.
+
+```{r}
+#| label: pci-one-mean
+n     <- 55
+x_bar <- 2.4
+s     <- 1.51
+
+SE     <- s / sqrt(n)
+df     <- n - 1
+t_star <- ct(0.99, df)
+t_star
+
+CI <- c(x_bar - t_star * SE, x_bar + t_star * SE)
+CI
+```
+
+We are 99% confident that the mean number of kills per week is between
+`r round(CI[1], 3)` and `r round(CI[2], 3)`.
+
+::: {.callout-tip}
+**When to use t vs z.** For a single mean, always use the t-distribution
+(`ct()`). The t-distribution has heavier tails than the normal, which
+accounts for the additional uncertainty from estimating σ with s. For a
+proportion, use the normal distribution (`cnorm()`).
+:::
+
+---
+
+## Difference of Two Means
+
+**When to use:** A quantitative variable measured in two independent groups;
+estimate $\mu_1 - \mu_2$.
+
+**Conditions:** Each group has $n \geq 30$ or both populations are
+approximately normal.
+
+**Formula (Welch's):**
+$$(\bar{x}_1 - \bar{x}_2) \pm t^* \cdot SE_{diff}, \qquad
+SE_{diff} = \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}, \qquad
+df = \min(n_1-1,\, n_2-1)$$
+
+**Example (class 22):** A study recorded dietary fiber intake. Compute a 95%
+confidence interval for the difference in mean daily fiber intake (grams)
+between males and females.
+
+```{r}
+#| label: pci-two-means
+set.seed(7823)
+fiber_males   <- round(rnorm(155, mean = 23.5, sd = 14.2))
+fiber_females <- round(rnorm(662, mean = 20.1, sd = 11.8))
+
+n1 <- length(fiber_males);    x_bar1 <- mean(fiber_males);    s1 <- sd(fiber_males)
+n2 <- length(fiber_females);  x_bar2 <- mean(fiber_females);  s2 <- sd(fiber_females)
+
+paste("Males:   n =", n1, " mean =", round(x_bar1,2), " sd =", round(s1,2))
+paste("Females: n =", n2, " mean =", round(x_bar2,2), " sd =", round(s2,2))
+
+SE_diff <- sqrt((s1^2/n1) + (s2^2/n2))
+df      <- min(n1 - 1, n2 - 1)
+t_star  <- ct(0.95, df)
+
+obs_diff <- x_bar1 - x_bar2
+CI <- c(obs_diff - t_star * SE_diff, obs_diff + t_star * SE_diff)
+CI
+```
+
+The 95% CI includes zero, which suggests we do not have strong evidence of a
+difference in mean fiber intake between males and females.
+
+---
+
+## Correlation
+
+**When to use:** Two quantitative variables; construct a confidence interval
+for the population correlation ρ using **Fisher's z-transformation**.
+
+$$z = \tanh^{-1}(r), \quad SE_z = \frac{1}{\sqrt{n-3}}, \quad
+CI_z = z \pm z^* \cdot SE_z, \quad CI_r = \tanh(CI_z)$$
+
+**Example (class 18/25):** Sugar content and calorie content for a sample of
+77 breakfast cereals. Compute a 95% confidence interval for the correlation.
+
+```{r}
+#| label: pci-corr
+set.seed(1123)
+n        <- 77
+sugar    <- runif(n, 0, 15)
+calories <- 90 + 3.5 * sugar + rnorm(n, sd = 12)
+
+corr_result <- cor.test(sugar, calories, conf.level = 0.95)
+corr_result$estimate
+corr_result$conf.int
+```
+
+We are 95% confident that the true correlation is between
+`r round(corr_result$conf.int[1], 3)` and
+`r round(corr_result$conf.int[2], 3)`.
+
+**Manual calculation using Fisher's z-transformation:**
+
+```{r}
+#| label: pci-corr-manual
+r    <- cor(sugar, calories)
+z    <- atanh(r)
+SE_z <- 1 / sqrt(n - 3)
+
+z_star <- cnorm(0.95)
+ci_z   <- c(z - z_star * SE_z, z + z_star * SE_z)
+tanh(ci_z)
+```
+
+---
+
+## Regression Slope
+
+**When to use:** Two quantitative variables; estimate how much y changes on
+average for a one-unit increase in x. Use `confint()` on the fitted model,
+which uses `qt()` internally with $df = n - 2$.
+
+**Example (class 25):** Cigarette consumption per capita and lung cancer rates
+across 44 U.S. states. Compute a 90% confidence interval for the slope.
+
+```{r}
+#| label: pci-reg-slope
+set.seed(2947)
+cigs_per_capita <- runif(44, min = 10, max = 45)
+cancer_rate     <- 2 + 0.005 * cigs_per_capita * 1000 + rnorm(44, sd = 5)
+
+lung_lm <- lm(cancer_rate ~ cigs_per_capita)
+
+slope <- coef(lung_lm)["cigs_per_capita"]
+slope
+
+confint(lung_lm, level = 0.90)
+```
+
+We are 90% confident that for each additional hundred cigarettes smoked per
+capita, the lung cancer rate increases by between
+`r round(confint(lung_lm, level=0.90)["cigs_per_capita",1], 4)` and
+`r round(confint(lung_lm, level=0.90)["cigs_per_capita",2], 4)` cases per
+100,000 people.
+
+::: {.callout-tip}
+**Manual calculation:** You can also compute the CI by hand using
+`summary(lung_lm)`. The SE of the slope is in the `Std. Error` column, and
+the critical value is `ct(C, df = n-2)`.
+:::
+
+---
+
+## Quick Reference
+
+| Parameter | Formula | Critical value | Function |
+|---|---|---|---|
+| One proportion π | $\hat{p} \pm z^* \sqrt{\hat{p}(1-\hat{p})/n}$ | `cnorm(C)` | `cnorm()` |
+| One mean μ | $\bar{x} \pm t^* \cdot s/\sqrt{n}$ | `ct(C, n-1)` | `ct()` |
+| Difference μ₁−μ₂ | $(\bar{x}_1-\bar{x}_2) \pm t^* \cdot SE_{diff}$ | `ct(C, min(n₁,n₂)-1)` | `ct()` |
+| Correlation ρ | `cor.test(x, y, conf.level=C)$conf.int` | Fisher z-transform | — |
+| Regression slope β₁ | `confint(lm(...), level=C)` | `ct(C, n-2)` | — |
