@@ -80,6 +80,7 @@ reference:
   - goto_practice_session
   - goto_final_project
   - goto_directory
+  - get_latest_poll
 - title: Backup Data, and Setup/Configuration
   desc: Functions for configuration and backing up class material.
   contents:
