@@ -13,7 +13,9 @@ Imports:
     httr,
     devtools,
     fs,
-    lifecycle
+    lifecycle,
+    googlesheets4,
+    ggplot2
 Suggests: 
     testthat (>= 2.1.0)
 URL: https://emeyers.github.io/SDS1000/

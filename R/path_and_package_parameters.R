@@ -5,14 +5,19 @@
 # should set this to the name of the package
 package_name <- "SDS1000"
 
-
 # should set this to the github user name
 github_user_name <- "emeyers"
-
 
 # if the default branch is not "main", change this
 branch_name <- "main"
 #branch_name <- "download_github_directories"
+
+# Google Apps Script web app URL — update after each new deployment
+# (Extensions > Apps Script > Deploy > New Deployment)
+poll_script_url <- "https://script.google.com/macros/s/AKfycbxFaoYAttRhOCStZDHmWwIp__5GkVWC3N8S7oOaAk0aOPU8Vefh8SG_hg9DwZQeEc8e/exec"
+
+# Google Sheet ID for the student_polls sheet (the long string in the sheet URL)
+poll_sheet_id <- "1nUfa7rONLlDy6ao3Z2Ja3gOar8tADE5-zYJ8U14Rkrg"
 
 
 #' Get the package name and version number
@@ -174,6 +179,15 @@ get_branch_name <- function() {
   branch_name
 }
 
+
+get_poll_script_url <- function() {
+  poll_script_url
+}
+
+
+get_poll_sheet_id <- function() {
+  poll_sheet_id
+}
 
 
 # could alternatively read these from ClassMaterials directory on GitHub
