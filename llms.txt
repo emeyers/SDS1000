@@ -119,6 +119,8 @@ material.
   : Sets the working directory and has RStudio file pane set to that
   directory If the directory does not exist, the user is prompted to
   download the files.
+- [`get_latest_poll()`](https://emeyers.github.io/SDS1000/reference/get_latest_poll.md)
+  : Submit an answer to the current poll
 
 ## Backup Data, and Setup/Configuration
 
