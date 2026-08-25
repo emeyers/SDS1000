@@ -221,14 +221,31 @@ create_new_poll(
 )
 ```
 
-### Option B: Shiny admin app *(once built)*
+### Option B: Shiny admin app
 
 ```r
+install.packages(c("shiny", "bslib"))   # once, if you don't have them
+
+googlesheets4::gs4_auth()               # once per session, before launching
 shiny::runApp("instructor_tools/poll_admin_app")
 ```
 
-The app provides a form-based interface for creating polls without typing
-R code, and is easier to use quickly before class.
+A form-based interface for the same functions — no R typing needed. Three tabs:
+
+| Tab | What it does |
+|---|---|
+| **Run poll** | Activate a poll, watch results update live, close all polls |
+| **New poll** | Create a poll from a form (one choice per line), optionally activating it immediately |
+| **All polls** | Every poll in the sheet, with the active one marked |
+
+The **Run poll** tab is the one to leave open on the projector during class. It
+auto-refreshes every 5 seconds (adjustable, or switchable to manual), shows a
+running response count, and plots every answer choice — including ones nobody
+has picked yet, so a zero stays visible instead of vanishing.
+
+> The app is a front end for the functions in `poll_functions.R`, not a second
+> implementation, so both routes behave identically. It reads the sheet as you,
+> via `gs4_auth()`, and will refuse to start if you have not authenticated.
 
 ---
 
