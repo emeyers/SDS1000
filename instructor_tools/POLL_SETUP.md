@@ -12,14 +12,20 @@ each class.
 The poll system has three moving parts:
 
 ```
-[Google Sheet]  ←──────────────────────────────────────────────────────┐
-  • polls        (one row per question)                                  │
-  • responses    (one row per student submission)                        │ googlesheets4
-  • archived     (responses moved here after closing a poll)            │ (instructor R session)
-        ↑                                                               │
-        │ Apps Script web app (HTTPS POST)           instructor writes  ┘
+[Google Sheet]  — PRIVATE: never shared with anyone
+  • polls        (one row per question)
+  • responses    (one row per student submission)
+  • archived     (responses moved here after closing a poll)
+        ↑
+        │ googlesheets4 + gs4_auth()  ← instructor R session, reads/writes directly
         │
-[Apps Script]  ←── students POST answers via httr (no Google login needed)
+        │ the Apps Script runs *as you*, so it can reach the private sheet
+        ↓
+[Apps Script web app]
+  • doGet   → returns the currently active poll question and choices
+  • doPost  → appends one row to the responses tab
+        ↑
+        │ HTTPS via httr (no Google login needed)
         │
 [SDS1000 R Package]
   • get_latest_poll()   — student calls this in class
@@ -29,6 +35,16 @@ The poll system has three moving parts:
 The **Apps Script web app** is the only piece that accepts unauthenticated
 requests (from students). Everything else requires a Google login, which only
 the instructor needs.
+
+Students never touch the spreadsheet. `doGet` hands back only the poll that is
+currently active, so students cannot read each other's responses, and they
+cannot see questions you have not activated yet.
+
+> **Why this matters:** Google Sheets sharing is per-*file*, not per-tab. If the
+> spreadsheet were shared "anyone with the link," that share would cover the
+> `responses` tab too — and the Sheet ID is published in the package source on
+> GitHub. Anyone could then read the whole class's names and answers. Keeping
+> the sheet private is what prevents that.
 
 ---
 
@@ -70,14 +86,14 @@ the instructor needs.
    ```
    Keep this handy; you will paste it in two places later.
 
-6. **Share the sheet** so students can read it without logging in:
-   - Click **Share** (top-right)
-   - Click **Change to anyone with the link**
-   - Set the permission to **Viewer**
-   - Click **Done**
+6. **Do not share the sheet.** Leave it private — the default for a new
+   spreadsheet. To confirm, click **Share** (top-right) and check that
+   **General access** reads **Restricted**.
 
-   > Students need read access so `get_latest_poll()` can fetch the active
-   > poll question and choices without requiring a Google account.
+   > Students reach the poll through the Apps Script web app, not through the
+   > spreadsheet, so they need no access to it at all. The `responses` tab
+   > holds student names paired with their answers; sharing the file would
+   > expose that tab along with everything else in it.
 
 ---
 
@@ -116,9 +132,18 @@ The Apps Script web app receives student poll submissions via HTTP POST.
    ```
    Keep this handy; you will paste it in two places in the next section.
 
-> **Important:** Every time you create a **New Deployment**, Google generates
-> a new URL. Always use "New Deployment" (not "Manage deployments → Edit") to
-> ensure the latest code is live, and update the URLs in the package afterward.
+10. Check that both handlers work. In the Apps Script editor, pick
+    `testDoGet` from the function dropdown and click **Run**, then open
+    **Execution log**. With no poll activated yet you should see
+    `{"status":"none"}`; after `set_current_poll()` it returns the active
+    question. Do the same with `testDoPost` to confirm writes.
+
+> **Updating the script later:** use **Deploy → Manage deployments → pencil
+> icon ✏️ → Version: New version → Deploy**. This publishes your latest code at
+> the *same* `/exec` URL, so nothing in the package changes. Only use
+> **New Deployment** if you deliberately want a fresh URL — Google mints a new
+> one, which means editing `poll_script_url` (Section 3) and having every
+> student reinstall the package.
 
 ---
 
@@ -155,8 +180,9 @@ Then push to GitHub so students can install the updated package:
 remotes::install_github("emeyers/SDS1000")
 ```
 
-> Repeat Section 3a and Section 4 any time you redeploy the Apps Script
-> (which changes the web app URL).
+> Sections 3 and 4 only need repeating if the web app URL or Sheet ID actually
+> changes. Redeploying the script as a **new version** of the existing
+> deployment keeps the same URL, so students do not need to reinstall.
 
 ---
 
@@ -290,9 +316,14 @@ The `sheet_id` argument is available on every function but defaults to
 : Run `set_current_poll("your_poll_name")` in your instructor session.
 
 **Students' answers show a blank `poll_name` in the sheet**
-: The Apps Script may be running an old deployment. Follow Section 2 to
-  create a **New Deployment**, then update `poll_script_url` in Section 3
-  and reinstall the package (Section 4).
+: The Apps Script may be running an old version of the code. Redeploy with
+  **Deploy → Manage deployments → ✏️ → Version: New version** (Section 2),
+  which keeps the same URL so no package change is needed.
+
+**Students get an error instead of a poll question**
+: The Apps Script has no `doGet` handler, or is running a version from before
+  `doGet` was added. Re-copy `poll_script_template()` into the editor and
+  redeploy as a new version (Section 2).
 
 **`create_new_poll()` fails with a 401 error**
 : Your Google auth has expired. Run `googlesheets4::gs4_auth()` again.

@@ -262,7 +262,52 @@ poll_script_template <- function() {
 // Setup: Extensions > Apps Script in your Google Sheet.
 // Deploy: Deploy > New Deployment > Web app
 //         Execute as: Me | Who has access: Anyone
+//
+// This script runs as the sheet owner, so the spreadsheet itself
+// must stay PRIVATE. Students reach it only through the two
+// handlers below: doGet returns the active poll, doPost records
+// an answer. Neither exposes the responses tab.
 // =============================================================
+
+function jsonOut(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Returns only the currently active poll, so questions that have
+// not been activated yet are never sent to students.
+function doGet(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("polls");
+    if (!sheet) return jsonOut({ status: "empty" });
+
+    var values = sheet.getDataRange().getValues();
+    if (values.length < 2) return jsonOut({ status: "empty" });
+
+    var header    = values[0];
+    var iName     = header.indexOf("poll_name");
+    var iQuestion = header.indexOf("question");
+    var iChoices  = header.indexOf("choices");
+    var iCurrent  = header.indexOf("current_poll");
+
+    for (var r = 1; r < values.length; r++) {
+      if (String(values[r][iCurrent]).toUpperCase() === "TRUE") {
+        return jsonOut({
+          status    : "ok",
+          poll_name : String(values[r][iName]),
+          question  : String(values[r][iQuestion]),
+          choices   : String(values[r][iChoices]).split("|")
+        });
+      }
+    }
+
+    return jsonOut({ status: "none" });
+
+  } catch (err) {
+    return jsonOut({ status: "error", message: err.toString() });
+  }
+}
 
 function doPost(e) {
   try {
@@ -293,6 +338,10 @@ function doPost(e) {
       .createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+function testDoGet() {
+  Logger.log(doGet({}).getContent());
 }
 
 function testDoPost() {

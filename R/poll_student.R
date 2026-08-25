@@ -13,52 +13,66 @@
 #' }
 get_latest_poll <- function() {
 
-  if (!requireNamespace("googlesheets4", quietly = TRUE)) {
+  # The poll is fetched through the same Apps Script web app that submissions
+  # are sent to. The script runs as the instructor, so the underlying Google
+  # Sheet stays private and students never need a Google account. Only the
+  # currently active poll is returned.
+  resp <- httr::GET(get_poll_script_url())
+
+  if (httr::http_error(resp)) {
     stop(
-      "Package 'googlesheets4' is required. Install it with:\n",
-      "  install.packages('googlesheets4')",
+      "Could not reach the poll (HTTP ", httr::status_code(resp), ").\n",
+      "Check your internet connection or contact your instructor.",
       call. = FALSE
     )
   }
 
-  # Students do not need a Google account — the sheet must be publicly readable.
-  # Save any existing auth token and restore it on exit so this function does
-  # not permanently deauthenticate an instructor's session.
-  if (googlesheets4::gs4_has_token()) {
-    saved_token <- googlesheets4::gs4_token()
-    on.exit(googlesheets4::gs4_auth(token = saved_token), add = TRUE)
+  # A misdeployed script still answers with HTTP 200, but returns an HTML
+  # error page rather than JSON, so the body has to be checked too.
+  poll <- tryCatch(
+    httr::content(resp, as = "parsed", type = "application/json",
+                  encoding = "UTF-8"),
+    error = function(e) NULL
+  )
+
+  if (is.null(poll) || is.null(poll$status)) {
+    stop(
+      "The poll server did not send back a valid poll.\n",
+      "Please let your instructor know — the poll script may need to be redeployed.",
+      call. = FALSE
+    )
   }
-  googlesheets4::gs4_deauth()
 
-  polls <- googlesheets4::read_sheet(get_poll_sheet_id(), sheet = "polls", col_types = "c")
+  if (identical(poll$status, "error")) {
+    stop(
+      "The poll server reported an error: ",
+      if (is.null(poll$message)) "unknown" else poll$message, "\n",
+      "Please let your instructor know.",
+      call. = FALSE
+    )
+  }
 
-  if (nrow(polls) == 0) {
+  if (identical(poll$status, "empty")) {
     message("No polls have been created yet. Check back soon!")
     return(invisible(NULL))
   }
 
-  # Find the currently active poll
-  active <- polls[as.logical(polls$current_poll), ]
-
-  if (nrow(active) == 0) {
+  if (!identical(poll$status, "ok")) {
     message("No poll is currently active. Check back with your instructor.")
     return(invisible(NULL))
   }
 
-  poll_name <- active$poll_name[1]
-  question  <- active$question[1]
-  choices   <- strsplit(active$choices[1], "\\|")[[1]]
+  choices <- unlist(poll$choices)
 
   # Display question and capture student selection
-  selection <- menu(choices, title = paste0("\nPoll question: ", question))
+  selection <- utils::menu(choices, title = paste0("\nPoll question: ", poll$question))
 
   if (selection == 0L) {
     message("No answer submitted.")
     return(invisible(NULL))
   }
 
-  answer <- choices[selection]
-  submit_poll(poll_name, answer)
+  submit_poll(poll$poll_name, choices[selection])
 }
 
 
