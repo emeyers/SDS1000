@@ -34,7 +34,7 @@ if (!googlesheets4::gs4_has_token()) {
 
 
 # --- Chart styling -----------------------------------------------------------
-# Deliberately light-only: this plot is projected in a classroom.
+# Deliberately light-only: these plots are projected in a classroom.
 SURFACE   <- "#fcfcfb"
 INK       <- "#0b0b0b"
 INK_2     <- "#52514e"
@@ -42,10 +42,27 @@ GRIDLINE  <- "#e1e0d9"
 BASELINE  <- "#c3c2b7"
 BAR       <- "#2a78d6"   # one series, one color — every bar the same
 
-# Wrap long answer text so labels stay readable on the categorical axis.
+# Wrap long text so labels and titles stay readable.
 wrap_label <- function(x, width = 42) {
   vapply(x, function(s) paste(strwrap(s, width = width), collapse = "\n"),
          character(1), USE.NAMES = FALSE)
+}
+
+poll_theme <- function() {
+  theme_minimal(base_size = 17) +
+    theme(
+      plot.title.position = "plot",
+      plot.background  = element_rect(fill = SURFACE, colour = NA),
+      panel.background = element_rect(fill = SURFACE, colour = NA),
+      panel.grid.minor = element_blank(),
+      axis.ticks       = element_blank(),
+      axis.text        = element_text(colour = INK_2),
+      axis.title       = element_text(colour = INK_2, size = 14),
+      axis.line.x      = element_line(colour = BASELINE, linewidth = 0.4),
+      plot.title       = element_text(colour = INK, size = 20, hjust = 0,
+                                      lineheight = 1.15, margin = margin(b = 16)),
+      plot.margin      = margin(18, 26, 12, 12)
+    )
 }
 
 # Counts for every choice, including choices nobody picked.
@@ -69,23 +86,35 @@ poll_bar_chart <- function(counts, question) {
       breaks = function(lims) unique(floor(pretty(c(0, max(1, lims[2])))))
     ) +
     labs(title = wrap_label(question, width = 72), x = NULL, y = NULL) +
-    theme_minimal(base_size = 17) +
+    poll_theme() +
     theme(
-      plot.title.position = "plot",
-      plot.background    = element_rect(fill = SURFACE, colour = NA),
-      panel.background   = element_rect(fill = SURFACE, colour = NA),
       panel.grid.major.y = element_blank(),
-      panel.grid.minor   = element_blank(),
       panel.grid.major.x = element_line(colour = GRIDLINE, linewidth = 0.4),
-      axis.line.x        = element_line(colour = BASELINE, linewidth = 0.4),
-      axis.ticks         = element_blank(),
-      axis.text.x        = element_text(colour = INK_2),
-      axis.text.y        = element_text(colour = INK, lineheight = 1.05),
-      plot.title         = element_text(colour = INK, size = 20, hjust = 0,
-                                        lineheight = 1.15,
-                                        margin = margin(b = 16)),
-      plot.margin        = margin(18, 26, 12, 12)
+      axis.text.y        = element_text(colour = INK, lineheight = 1.05)
     )
+}
+
+# Numeric polls: show the distribution of what students typed.
+poll_histogram <- function(values, question) {
+  bins <- max(5, min(15, ceiling(sqrt(length(values)))))
+  ggplot(data.frame(v = values), aes(x = v)) +
+    geom_histogram(bins = bins, fill = BAR,
+                   colour = SURFACE, linewidth = 0.7) +   # 2px surface gap
+    scale_y_continuous(
+      expand = expansion(mult = c(0, 0.08)),
+      breaks = function(lims) unique(floor(pretty(c(0, max(1, lims[2])))))
+    ) +
+    labs(title = wrap_label(question, width = 72),
+         x = NULL, y = "Number of responses") +
+    poll_theme() +
+    theme(
+      panel.grid.major.x = element_blank(),
+      panel.grid.major.y = element_line(colour = GRIDLINE, linewidth = 0.4)
+    )
+}
+
+fmt_stat <- function(x) {
+  if (length(x) == 0 || is.na(x)) "—" else formatC(x, digits = 4, format = "g")
 }
 
 
@@ -117,14 +146,7 @@ ui <- page_navbar(
         value_box(title = "Responses", value = textOutput("n_responses")),
         uiOutput("stale_note")
       ),
-      card(
-        full_screen = TRUE,
-        card_body(plotOutput("results_plot", height = "440px"))
-      ),
-      card(
-        card_header("Counts"),
-        card_body(tableOutput("results_table"))
-      )
+      uiOutput("results_area")
     )
   ),
 
@@ -133,9 +155,22 @@ ui <- page_navbar(
     layout_sidebar(
       sidebar = sidebar(
         width = 330,
-        div(class = "small text-muted",
-            "Choices are shown to students in the order you list them. ",
-            "One choice per line; at least two."),
+        radioButtons("new_type", "Response type",
+                     choices = c("Multiple choice" = "choice",
+                                 "Number"          = "numeric",
+                                 "Text"            = "text"),
+                     selected = "choice"),
+        conditionalPanel(
+          "input.new_type == 'choice'",
+          div(class = "small text-muted",
+              "Choices are shown to students in the order you list them. ",
+              "One choice per line; at least two.")
+        ),
+        conditionalPanel(
+          "input.new_type != 'choice'",
+          div(class = "small text-muted",
+              "Students will type their answer instead of picking from a list.")
+        ),
         hr(),
         checkboxInput("activate_now", "Activate as soon as it is created",
                       value = FALSE),
@@ -145,13 +180,16 @@ ui <- page_navbar(
         card_body(
           textInput("new_name", "Poll name (unique, e.g. week3_q1)", width = "100%"),
           textAreaInput("new_question", "Question", width = "100%", rows = 3),
-          textAreaInput("new_choices", "Choices — one per line", width = "100%",
-                        rows = 8,
-                        placeholder = paste(
-                          "A. Sample means follow a normal distribution",
-                          "B. Population means follow a normal distribution",
-                          "C. Sample variances are always equal",
-                          "D. I'm not sure", sep = "\n"))
+          conditionalPanel(
+            "input.new_type == 'choice'",
+            textAreaInput("new_choices", "Choices — one per line", width = "100%",
+                          rows = 8,
+                          placeholder = paste(
+                            "A. Sample means follow a normal distribution",
+                            "B. Population means follow a normal distribution",
+                            "C. Sample variances are always equal",
+                            "D. I'm not sure", sep = "\n"))
+          )
         )
       )
     )
@@ -213,12 +251,18 @@ server <- function(input, output, session) {
     if (is.null(nm)) NULL else p[p$poll_name == nm, ][1, ]
   })
 
+  # "choice", "numeric", or "text" — .poll_type() comes from poll_functions.R
+  active_type <- reactive({
+    row <- active_row()
+    if (is.null(row)) "choice" else .poll_type(row$choices)
+  })
+
   observe(load_polls())   # initial load
 
   output$active_label <- renderText({
     nm <- active_name(polls())
     if (is.null(nm)) "No poll is currently active."
-    else paste0("Active poll: ", nm)
+    else paste0("Active poll: ", nm, " (", active_type(), ")")
   })
 
   # --- Results -------------------------------------------------------------
@@ -239,38 +283,114 @@ server <- function(input, output, session) {
     tally_answers(res, strsplit(row$choices, "\\|")[[1]])
   })
 
+  numeric_values <- reactive({
+    res <- results()
+    req(res)
+    v <- suppressWarnings(as.numeric(res$answer))
+    v[!is.na(v)]
+  })
+
   output$n_responses <- renderText({
     res <- results()
     if (is.null(res)) "—" else format(nrow(res), big.mark = ",")
   })
 
-  # Responses that no longer match any current choice (e.g. the poll's choices
-  # were edited in the sheet after students had already answered).
+  # Responses that cannot be plotted: for a multiple choice poll, answers that
+  # no longer match any listed choice (the choices were edited after students
+  # answered); for a numeric poll, entries that are not numbers.
   output$stale_note <- renderUI({
-    row <- active_row(); res <- results()
+    res <- results()
+    row <- active_row()
     if (is.null(row) || is.null(res) || nrow(res) == 0) return(NULL)
-    n_off <- sum(!res$answer %in% strsplit(row$choices, "\\|")[[1]])
+
+    n_off <- switch(
+      active_type(),
+      choice  = sum(!res$answer %in% strsplit(row$choices, "\\|")[[1]]),
+      numeric = sum(is.na(suppressWarnings(as.numeric(res$answer)))),
+      0
+    )
     if (n_off == 0) return(NULL)
+
     div(class = "alert alert-warning mb-0 py-2 small",
-        sprintf("%d response(s) do not match any current choice and are not plotted.",
+        sprintf("%d response(s) could not be plotted and are not shown in the chart.",
                 n_off))
+  })
+
+  # Text polls have no meaningful chart — the frequency table is the display.
+  output$results_area <- renderUI({
+    tagList(
+      if (!identical(active_type(), "text")) {
+        card(full_screen = TRUE,
+             card_body(plotOutput("results_plot", height = "440px")))
+      },
+      card(
+        card_header(textOutput("table_title", inline = TRUE)),
+        card_body(tableOutput("results_table"))
+      )
+    )
+  })
+
+  output$table_title <- renderText({
+    switch(active_type(),
+           choice  = "Counts",
+           numeric = "Summary",
+           text    = "Responses")
   })
 
   output$results_plot <- renderPlot({
     row <- active_row()
     validate(need(row, "No poll is active. Pick one and click 'Make this the active poll'."))
-    df <- counts()
-    validate(need(sum(df$n) > 0, paste0(row$question, "\n\nNo responses yet.")))
-    poll_bar_chart(df, row$question)
+
+    if (identical(active_type(), "numeric")) {
+      v <- numeric_values()
+      validate(need(length(v) > 0, paste0(row$question, "\n\nNo responses yet.")))
+      poll_histogram(v, row$question)
+    } else {
+      df <- counts()
+      validate(need(sum(df$n) > 0, paste0(row$question, "\n\nNo responses yet.")))
+      poll_bar_chart(df, row$question)
+    }
   }, res = 96)
 
   output$results_table <- renderTable({
-    df <- counts()
-    out <- data.frame(
-      Choice    = gsub("\n", " ", as.character(df$choice)),
-      Responses = df$n
+    res <- results()
+    req(res)
+
+    switch(
+      active_type(),
+
+      choice = {
+        # tally_answers() reverses only the factor *levels* (for the y-axis);
+        # the rows are already in the instructor's choice order.
+        df <- counts()
+        data.frame(Choice    = gsub("\n", " ", as.character(df$choice)),
+                   Responses = df$n)
+      },
+
+      numeric = {
+        v <- numeric_values()
+        data.frame(
+          Statistic = c("n", "Mean", "Median", "SD", "Minimum", "Maximum"),
+          Value = c(fmt_stat(length(v)),
+                    fmt_stat(if (length(v)) mean(v)   else NA),
+                    fmt_stat(if (length(v)) median(v) else NA),
+                    fmt_stat(if (length(v) > 1) sd(v) else NA),
+                    fmt_stat(if (length(v)) min(v)    else NA),
+                    fmt_stat(if (length(v)) max(v)    else NA)),
+          stringsAsFactors = FALSE
+        )
+      },
+
+      text = {
+        if (nrow(res) == 0) {
+          data.frame(Response = character(0), Count = integer(0))
+        } else {
+          tab <- sort(table(res$answer), decreasing = TRUE)
+          data.frame(Response = names(tab), Count = as.integer(tab),
+                     stringsAsFactors = FALSE)
+        }
+      }
     )
-    out[rev(seq_len(nrow(out))), ]   # back to the instructor's choice order
   }, striped = TRUE, width = "100%")
 
   output$all_polls <- renderTable({
@@ -279,8 +399,12 @@ server <- function(input, output, session) {
     data.frame(
       Poll     = p$poll_name,
       Active   = ifelse(as.logical(p$current_poll), "yes", ""),
+      Type     = vapply(p$choices, .poll_type, character(1), USE.NAMES = FALSE),
       Question = p$question,
-      Choices  = gsub("\\|", "  •  ", p$choices),
+      Answers  = ifelse(vapply(p$choices, .poll_type, character(1),
+                               USE.NAMES = FALSE) == "choice",
+                        gsub("\\|", "  •  ", p$choices),
+                        "(typed by the student)"),
       Created  = p$created_at
     )
   }, striped = TRUE, width = "100%")
@@ -303,12 +427,20 @@ server <- function(input, output, session) {
   observeEvent(input$create, {
     name     <- trimws(input$new_name)
     question <- trimws(input$new_question)
-    choices  <- trimws(strsplit(input$new_choices, "\n")[[1]])
-    choices  <- choices[nzchar(choices)]
+    type     <- input$new_type
 
-    if (!nzchar(name))      return(notify("Give the poll a name.", "warning"))
-    if (!nzchar(question))  return(notify("Enter a question.", "warning"))
-    if (length(choices) < 2) return(notify("Enter at least two choices, one per line.", "warning"))
+    if (!nzchar(name))     return(notify("Give the poll a name.", "warning"))
+    if (!nzchar(question)) return(notify("Enter a question.", "warning"))
+
+    if (identical(type, "choice")) {
+      choices <- trimws(strsplit(input$new_choices, "\n")[[1]])
+      choices <- choices[nzchar(choices)]
+      if (length(choices) < 2) {
+        return(notify("Enter at least two choices, one per line.", "warning"))
+      }
+    } else {
+      choices <- if (identical(type, "numeric")) "Numeric" else "String"
+    }
 
     ok <- safely(create_new_poll(name, question, choices),
                  success = paste0("Poll '", name, "' created."))

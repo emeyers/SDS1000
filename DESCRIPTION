@@ -20,4 +20,4 @@ Suggests:
     googlesheets4,
     ggplot2
 URL: https://emeyers.github.io/SDS1000/
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0

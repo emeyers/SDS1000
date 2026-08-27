@@ -49,6 +49,47 @@ POLL_SCRIPT_URL <- SDS1000:::poll_script_url
 
 
 # -----------------------------------------------------------------------------
+# Internal helper: what kind of answer does a poll expect?
+#
+# Reads the value stored in the sheet's `choices` column and returns one of
+# "choice", "numeric", or "text".
+# -----------------------------------------------------------------------------
+.poll_type <- function(choices_cell) {
+  key <- tolower(trimws(choices_cell))
+  if (key %in% c("numeric", "number")) return("numeric")
+  if (key %in% c("string", "text"))    return("text")
+  "choice"
+}
+
+
+# -----------------------------------------------------------------------------
+# Internal helper: turn the `choices` argument into the value stored in the
+# sheet's `choices` column.
+#
+#   multiple choice -> "A. one|B. two|C. three"
+#   free response   -> the single word "Numeric" or "String"
+# -----------------------------------------------------------------------------
+.choices_cell <- function(choices) {
+
+  if (length(choices) == 1) {
+    key <- tolower(trimws(choices))
+    if (key %in% c("numeric", "number")) return("Numeric")
+    if (key %in% c("string", "text"))    return("String")
+  }
+
+  if (length(choices) < 2) {
+    stop(
+      "'choices' must contain at least two options, or be the single word ",
+      '"Numeric" or "String" for a free-response poll.',
+      call. = FALSE
+    )
+  }
+
+  paste(choices, collapse = "|")
+}
+
+
+# -----------------------------------------------------------------------------
 # create_new_poll(poll_name, question, choices)
 #
 # Adds a new poll to the 'polls' sheet. The poll starts inactive; call
@@ -57,8 +98,10 @@ POLL_SCRIPT_URL <- SDS1000:::poll_script_url
 # Args:
 #   poll_name : unique short identifier, e.g. "week3_q1"
 #   question  : full question text shown to students
-#   choices   : character vector of answer choices,
-#               e.g. c("A. True", "B. False", "C. Not sure")
+#   choices   : either a character vector of at least two answer choices,
+#               e.g. c("A. True", "B. False", "C. Not sure"),
+#               or the single word "Numeric" or "String" to have students
+#               type a number / a free-text answer instead of picking.
 #   sheet_id  : Google Sheet ID (defaults to POLL_SHEET_ID above)
 # -----------------------------------------------------------------------------
 create_new_poll <- function(poll_name, question, choices,
@@ -68,9 +111,7 @@ create_new_poll <- function(poll_name, question, choices,
     stop("'poll_name' must be a single non-empty character string.", call. = FALSE)
   }
 
-  if (length(choices) < 2) {
-    stop("'choices' must contain at least two options.", call. = FALSE)
-  }
+  choices_cell <- .choices_cell(choices)
 
   existing <- tryCatch(
     googlesheets4::read_sheet(sheet_id, sheet = "polls", col_types = "c"),
@@ -92,7 +133,7 @@ create_new_poll <- function(poll_name, question, choices,
   new_row <- data.frame(
     poll_name    = poll_name,
     question     = question,
-    choices      = paste(choices, collapse = "|"),
+    choices      = choices_cell,
     current_poll = "FALSE",
     created_at   = format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"),
     stringsAsFactors = FALSE
@@ -275,6 +316,15 @@ function jsonOut(obj) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+// A poll is multiple choice unless its "choices" cell is the single
+// word Numeric or String, which asks the student to type an answer.
+function pollType(raw) {
+  var key = String(raw).trim().toLowerCase();
+  if (key === "numeric" || key === "number") return "numeric";
+  if (key === "string"  || key === "text")   return "text";
+  return "choice";
+}
+
 // Returns only the currently active poll, so questions that have
 // not been activated yet are never sent to students.
 function doGet(e) {
@@ -293,11 +343,14 @@ function doGet(e) {
 
     for (var r = 1; r < values.length; r++) {
       if (String(values[r][iCurrent]).toUpperCase() === "TRUE") {
+        var raw  = String(values[r][iChoices]);
+        var type = pollType(raw);
         return jsonOut({
           status    : "ok",
           poll_name : String(values[r][iName]),
           question  : String(values[r][iQuestion]),
-          choices   : String(values[r][iChoices]).split("|")
+          type      : type,
+          choices   : type === "choice" ? raw.split("|") : []
         });
       }
     }

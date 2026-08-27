@@ -69,6 +69,10 @@ cannot see questions you have not activated yet.
    ```
    (one value per column: A1 through E1)
 
+   > The `choices` column holds either pipe-separated options
+   > (`A. yes|B. no|C. maybe`) or the single word `Numeric` or `String` for a
+   > poll the student types an answer into. See **Response types** in Section 5.
+
    **responses** tab — paste this into row 1:
    ```
    timestamp | poll_name | answer | name
@@ -220,6 +224,45 @@ create_new_poll(
   choices   = c("A. x-bar", "B. s", "C. mu", "D. p-hat")
 )
 ```
+
+### Response types
+
+A poll is multiple choice by default. To have students **type** an answer
+instead of picking one, pass the single word `"Numeric"` or `"String"` as
+`choices`:
+
+```r
+# Students are asked to enter a number
+create_new_poll(
+  poll_name = "week3_q3",
+  question  = "How many hours did you sleep last night?",
+  choices   = "Numeric"
+)
+
+# Students are asked to type free text
+create_new_poll(
+  poll_name = "week3_q4",
+  question  = "In your own words, what does a p-value measure?",
+  choices   = "String"
+)
+```
+
+| `choices` value | What the student sees | How results are shown |
+|---|---|---|
+| Two or more options | A numbered menu | Bar chart of counts, with unchosen options still listed |
+| `"Numeric"` | A prompt that re-asks until they enter a number | Histogram plus n / mean / median / SD / min / max |
+| `"String"` | A prompt for free text | Frequency table, most common answer first |
+
+The value is stored verbatim in the `choices` column of the `polls` tab, so you
+can also switch a poll's type by editing that cell directly in the sheet —
+replace the pipe-separated options with `Numeric` or `String`, or vice versa.
+Capitalization does not matter, and `Number` and `Text` work as synonyms.
+
+> Free-response polls need the `doGet` handler from the current
+> `poll_script_template()` (it reports the poll's type). If your deployed script
+> predates that, `get_latest_poll()` falls back to reading the type off the
+> choices value, so polls keep working either way — but redeploy when convenient
+> (Section 2) so the type comes from one place.
 
 ### Option B: Shiny admin app
 

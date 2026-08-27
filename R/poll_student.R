@@ -62,17 +62,96 @@ get_latest_poll <- function() {
     return(invisible(NULL))
   }
 
-  choices <- unlist(poll$choices)
+  if (identical(poll_response_type(poll), "choice")) {
 
-  # Display question and capture student selection
-  selection <- utils::menu(choices, title = paste0("\nPoll question: ", poll$question))
+    choices <- unlist(poll$choices)
 
-  if (selection == 0L) {
-    message("No answer submitted.")
-    return(invisible(NULL))
+    # Display question and capture student selection
+    selection <- utils::menu(choices, title = paste0("\nPoll question: ", poll$question))
+
+    if (selection == 0L) {
+      message("No answer submitted.")
+      return(invisible(NULL))
+    }
+
+    answer <- choices[selection]
+
+  } else {
+
+    answer <- prompt_free_response(
+      poll$question,
+      numeric = identical(poll_response_type(poll), "numeric")
+    )
+
+    if (is.null(answer)) {
+      message("No answer submitted.")
+      return(invisible(NULL))
+    }
   }
 
-  submit_poll(poll$poll_name, choices[selection])
+  submit_poll(poll$poll_name, answer)
+}
+
+
+#' Determine what kind of answer a poll expects
+#'
+#' Polls are multiple choice unless the instructor set the poll's
+#' \code{choices} to the single word \code{"Numeric"} or \code{"String"}.
+#'
+#' @param poll A parsed poll returned by the poll web app.
+#'
+#' @return One of \code{"choice"}, \code{"numeric"}, or \code{"text"}.
+#' @keywords internal
+poll_response_type <- function(poll) {
+
+  # Newer deployments of the Apps Script report the type directly. Falling
+  # back to the raw choices keeps free-response polls working if the script
+  # has not been redeployed yet.
+  if (!is.null(poll$type) && nzchar(poll$type)) {
+    return(tolower(poll$type))
+  }
+
+  choices <- unlist(poll$choices)
+
+  if (length(choices) == 1) {
+    key <- tolower(trimws(choices))
+    if (key %in% c("numeric", "number")) return("numeric")
+    if (key %in% c("string", "text"))    return("text")
+  }
+
+  "choice"
+}
+
+
+#' Ask the student to type an answer
+#'
+#' @param question Character. The poll question to display.
+#' @param numeric Logical. If \code{TRUE}, only a number is accepted.
+#'
+#' @return The student's answer as a character string, or \code{NULL} if they
+#'   pressed Enter without typing anything.
+#' @keywords internal
+prompt_free_response <- function(question, numeric) {
+
+  if (!interactive()) {
+    stop("Answering this poll requires an interactive R session.", call. = FALSE)
+  }
+
+  cat("\nPoll question: ", question, "\n", sep = "")
+
+  hint <- if (numeric) "Enter a number" else "Type your answer"
+
+  repeat {
+    entry <- trimws(readline(paste0(hint, " (or press Enter to cancel): ")))
+
+    if (!nzchar(entry)) return(NULL)
+
+    if (!numeric) return(entry)
+
+    if (!is.na(suppressWarnings(as.numeric(entry)))) return(entry)
+
+    message("That does not look like a number. Please try again.")
+  }
 }
 
 
