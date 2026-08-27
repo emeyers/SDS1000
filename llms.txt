@@ -11,8 +11,8 @@ Note: we recommend you cut and paste all these commands to avoid typos.
 
 ``` r
 
-install.packages("devtools")
-devtools::install_github("emeyers/SDS1000")
+install.packages("remotes")
+remotes::install_github("emeyers/SDS1000")
 ```
 
 ## Initial setup using the SDS1000 package
