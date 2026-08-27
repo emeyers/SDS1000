@@ -138,6 +138,13 @@ ui <- page_navbar(
                     min = 3, max = 30, value = 5, step = 1),
         actionButton("refresh_now", "Refresh now", class = "btn-outline-secondary w-100"),
         hr(),
+        actionButton("archive", "Archive responses",
+                     class = "btn-outline-secondary w-100"),
+        div(class = "text-muted small mt-1 mb-2",
+            "Files the responses so far under a new archive number, so the ",
+            "same question can be asked again with a clean slate."),
+        actionButton("restore", "Restore archived...",
+                     class = "btn-outline-secondary w-100 mb-2"),
         actionButton("close_all", "Close all polls",
                      class = "btn-outline-danger w-100")
       ),
@@ -212,30 +219,42 @@ server <- function(input, output, session) {
   bump    <- reactiveVal(0)   # manual results refresh
   notify  <- function(msg, type = "message") showNotification(msg, type = type)
 
-  # Run a sheet operation, surfacing any error as a notification instead of
-  # crashing the app mid-class.
-  safely <- function(expr, success = NULL) {
+  # Reads: return the value, or NULL if the call failed. Errors surface as a
+  # notification instead of crashing the app mid-class.
+  safely <- function(expr) {
+    tryCatch(suppressMessages(force(expr)),
+             error = function(e) {
+               notify(conditionMessage(e), type = "error")
+               NULL
+             })
+  }
+
+  # Writes: return TRUE only if the call completed. The functions in
+  # poll_functions.R all return invisible(NULL) on success, so their return
+  # value cannot be used as a success flag — only reaching the end can.
+  run_action <- function(expr, success) {
     tryCatch({
-      out <- suppressMessages(force(expr))
-      if (!is.null(success)) notify(success)
-      out
+      suppressMessages(force(expr))
+      notify(success)
+      TRUE
     }, error = function(e) {
       notify(conditionMessage(e), type = "error")
-      NULL
+      FALSE
     })
   }
 
-  load_polls <- function() {
+  load_polls <- function(select = NULL) {
     p <- safely(googlesheets4::read_sheet(POLL_SHEET_ID, sheet = "polls",
                                           col_types = "c"))
     if (is.null(p)) return(invisible(NULL))
     polls(p)
-    selected <- isolate(input$poll_pick)
+    keep <- isolate(input$poll_pick)
     updateSelectInput(
       session, "poll_pick",
       choices  = p$poll_name,
-      selected = if (!is.null(selected) && selected %in% p$poll_name) selected
-                 else active_name(p)
+      selected = if (!is.null(select))                          select
+                 else if (!is.null(keep) && keep %in% p$poll_name) keep
+                 else                                           active_name(p)
     )
   }
 
@@ -414,14 +433,90 @@ server <- function(input, output, session) {
 
   observeEvent(input$activate, {
     req(input$poll_pick)
-    ok <- safely(set_current_poll(input$poll_pick),
-                 success = paste0("'", input$poll_pick, "' is now the active poll."))
-    if (!is.null(ok)) { load_polls(); bump(bump() + 1) }
+    if (run_action(set_current_poll(input$poll_pick),
+                   paste0("'", input$poll_pick, "' is now the active poll."))) {
+      load_polls()
+      bump(bump() + 1)
+    }
   })
 
   observeEvent(input$close_all, {
-    ok <- safely(close_all_polls(), success = "All polls closed.")
-    if (!is.null(ok)) load_polls()
+    if (run_action(close_all_polls(), "All polls closed.")) load_polls()
+  })
+
+  # Archiving clears the responses tab, so confirm before doing it.
+  observeEvent(input$archive, {
+    res <- safely(googlesheets4::read_sheet(POLL_SHEET_ID, sheet = "responses",
+                                            col_types = "c"))
+    if (is.null(res)) return()
+
+    if (nrow(res) == 0) {
+      return(notify("The responses tab is already empty.", type = "warning"))
+    }
+
+    showModal(modalDialog(
+      title = "Archive responses?",
+      paste0(nrow(res), " response(s) will be moved to the archive tab under a ",
+             "new archive number, and cleared from the responses tab. Results ",
+             "shown here will reset to empty."),
+      footer = tagList(
+        modalButton("Cancel"),
+        actionButton("archive_confirm", "Archive", class = "btn-primary")
+      )
+    ))
+  })
+
+  observeEvent(input$archive_confirm, {
+    removeModal()
+    n <- safely(archive_responses())
+    if (is.null(n) || n == 0) return()
+    notify(paste0("Responses archived as archive number ", n, "."))
+    bump(bump() + 1)
+  })
+
+  observeEvent(input$restore, {
+    summ <- safely(archive_summary())
+    if (is.null(summ)) return()
+
+    if (nrow(summ) == 0) {
+      return(notify("Nothing has been archived yet.", type = "warning"))
+    }
+
+    res    <- safely(googlesheets4::read_sheet(POLL_SHEET_ID, sheet = "responses",
+                                               col_types = "c"))
+    n_live <- if (is.null(res)) 0L else nrow(res)
+
+    picker <- setNames(
+      summ$archive_number,
+      sprintf("Archive %d - %d response(s): %s",
+              summ$archive_number, summ$n_responses, summ$polls)
+    )
+
+    showModal(modalDialog(
+      title = "Restore archived responses",
+      selectInput("restore_number", "Which archive?", choices = picker,
+                  width = "100%"),
+      "These responses move back into the responses tab and are removed from ",
+      "the archive.",
+      if (n_live > 0) {
+        div(class = "alert alert-warning py-2 small mt-3",
+            sprintf(paste0("The responses tab currently holds %d response(s). ",
+                           "The restored rows will be added to them, mixing the ",
+                           "two together."), n_live))
+      },
+      footer = tagList(
+        modalButton("Cancel"),
+        actionButton("restore_confirm", "Restore", class = "btn-primary")
+      )
+    ))
+  })
+
+  observeEvent(input$restore_confirm, {
+    removeModal()
+    n <- safely(restore_archived_responses(as.integer(input$restore_number)))
+    if (is.null(n) || n == 0) return()
+    notify(paste0(n, " response(s) restored to the responses tab."))
+    bump(bump() + 1)
   })
 
   observeEvent(input$create, {
@@ -442,19 +537,23 @@ server <- function(input, output, session) {
       choices <- if (identical(type, "numeric")) "Numeric" else "String"
     }
 
-    ok <- safely(create_new_poll(name, question, choices),
-                 success = paste0("Poll '", name, "' created."))
-    if (is.null(ok)) return()
+    if (!run_action(create_new_poll(name, question, choices),
+                    paste0("Poll '", name, "' created."))) {
+      return()
+    }
 
     if (isTRUE(input$activate_now)) {
-      safely(set_current_poll(name),
-             success = paste0("'", name, "' is now the active poll."))
+      run_action(set_current_poll(name),
+                 paste0("'", name, "' is now the active poll."))
     }
 
     updateTextInput(session, "new_name", value = "")
     updateTextAreaInput(session, "new_question", value = "")
     updateTextAreaInput(session, "new_choices", value = "")
-    load_polls()
+
+    # Select the poll just created, so switching to the Run poll tab shows it.
+    load_polls(select = name)
+    bump(bump() + 1)
   })
 }
 

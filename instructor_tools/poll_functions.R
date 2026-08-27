@@ -63,6 +63,36 @@ POLL_SCRIPT_URL <- SDS1000:::poll_script_url
 
 
 # -----------------------------------------------------------------------------
+# Internal helper: find the tab that holds archived responses.
+#
+# Accepts the documented name ("archived") but also matches a tab the sheet
+# happens to call something like "archived_responses".
+# -----------------------------------------------------------------------------
+.resolve_archive_sheet <- function(sheet_id, preferred) {
+
+  tabs <- googlesheets4::sheet_names(sheet_id)
+
+  if (preferred %in% tabs) return(preferred)
+
+  # Deliberately loose: matches "archived", "archive", and the easy
+  # misspelling "archieved_responses".
+  hits <- grep("^archi", tabs, ignore.case = TRUE, value = TRUE)
+
+  if (length(hits) == 1) {
+    message("Using the '", hits, "' tab for archived responses.")
+    return(hits)
+  }
+
+  stop(
+    "Could not find a tab named '", preferred, "' in the poll sheet.\n",
+    "Tabs found: ", paste(tabs, collapse = ", "), "\n",
+    "Pass the right one as archive_sheet = \"...\".",
+    call. = FALSE
+  )
+}
+
+
+# -----------------------------------------------------------------------------
 # Internal helper: turn the `choices` argument into the value stored in the
 # sheet's `choices` column.
 #
@@ -207,6 +237,226 @@ close_all_polls <- function(sheet_id = POLL_SHEET_ID) {
 
   message("All polls closed.")
   invisible(NULL)
+}
+
+
+# -----------------------------------------------------------------------------
+# archive_responses()
+#
+# Moves every row from the 'responses' tab to the archive tab, stamping the
+# batch with an 'archive_number' that increments each time you archive.
+#
+# Use this between repeat askings of the same question: archive, ask again,
+# archive again. Each batch keeps its own archive_number, so responses from
+# different points in the course can be told apart later. The per-response
+# 'timestamp' column still records when each answer was submitted.
+#
+# The archive is written before the responses tab is cleared, so if anything
+# goes wrong no responses are lost.
+#
+# Args:
+#   sheet_id      : Google Sheet ID (defaults to POLL_SHEET_ID above)
+#   archive_sheet : name of the tab to archive into (default "archived")
+#
+# Returns (invisibly) the archive_number given to this batch, or 0 if there
+# was nothing to archive.
+# -----------------------------------------------------------------------------
+archive_responses <- function(sheet_id = POLL_SHEET_ID,
+                              archive_sheet = "archived") {
+
+  responses <- googlesheets4::read_sheet(sheet_id, sheet = "responses",
+                                         col_types = "c")
+
+  if (nrow(responses) == 0) {
+    message("The responses tab is already empty - nothing to archive.")
+    return(invisible(0L))
+  }
+
+  archive_sheet <- .resolve_archive_sheet(sheet_id, archive_sheet)
+
+  existing <- tryCatch(
+    googlesheets4::read_sheet(sheet_id, sheet = archive_sheet, col_types = "c"),
+    error = function(e) NULL
+  )
+
+  if (is.null(existing) || nrow(existing) == 0) {
+    next_number <- 1L
+  } else {
+    # Rows archived before this column existed count as batch 0.
+    if (!"archive_number" %in% names(existing)) {
+      existing$archive_number <- "0"
+    }
+    seen <- suppressWarnings(as.integer(existing$archive_number))
+    next_number <- max(0L, seen, na.rm = TRUE) + 1L
+  }
+
+  responses$archive_number <- as.character(next_number)
+
+  if (is.null(existing) || nrow(existing) == 0) {
+    combined <- responses
+  } else {
+    # Line the old rows up with the new ones, whatever shape they were in.
+    for (missing_col in setdiff(names(responses), names(existing))) {
+      existing[[missing_col]] <- NA_character_
+    }
+    combined <- rbind(existing[, names(responses), drop = FALSE], responses)
+  }
+
+  # Write the archive FIRST. If this fails, the responses tab is untouched.
+  googlesheets4::sheet_write(combined, ss = sheet_id, sheet = archive_sheet)
+
+  # Then clear the responses rows, leaving the header row in place.
+  googlesheets4::range_clear(
+    sheet_id,
+    sheet = "responses",
+    range = paste0("A2:Z", nrow(responses) + 1)
+  )
+
+  message(nrow(responses), " response(s) moved to '", archive_sheet,
+          "' as archive number ", next_number, ".")
+
+  invisible(next_number)
+}
+
+
+# -----------------------------------------------------------------------------
+# archive_summary()
+#
+# One row per archive batch: its number, how many responses it holds, and
+# which polls those responses were for. Useful on its own, and used to build
+# the picker in the Shiny app.
+#
+# Args:
+#   sheet_id      : Google Sheet ID (defaults to POLL_SHEET_ID above)
+#   archive_sheet : name of the archive tab (default "archived")
+# -----------------------------------------------------------------------------
+archive_summary <- function(sheet_id = POLL_SHEET_ID,
+                            archive_sheet = "archived") {
+
+  empty <- data.frame(archive_number = integer(0), n_responses = integer(0),
+                      polls = character(0), stringsAsFactors = FALSE)
+
+  archive_sheet <- .resolve_archive_sheet(sheet_id, archive_sheet)
+
+  archived <- googlesheets4::read_sheet(sheet_id, sheet = archive_sheet,
+                                        col_types = "c")
+
+  if (nrow(archived) == 0 || !"archive_number" %in% names(archived)) {
+    message("Nothing has been archived yet.")
+    return(empty)
+  }
+
+  nums <- suppressWarnings(as.integer(archived$archive_number))
+  keep <- !is.na(nums)
+
+  if (!any(keep)) {
+    message("Nothing has been archived yet.")
+    return(empty)
+  }
+
+  batches <- factor(nums[keep], levels = sort(unique(nums[keep])))
+  by_poll <- split(archived$poll_name[keep], batches)
+
+  data.frame(
+    archive_number = as.integer(levels(batches)),
+    n_responses    = as.integer(vapply(by_poll, length, integer(1))),
+    polls          = vapply(by_poll,
+                            function(x) paste(unique(x), collapse = ", "),
+                            character(1)),
+    row.names      = NULL,
+    stringsAsFactors = FALSE
+  )
+}
+
+
+# -----------------------------------------------------------------------------
+# restore_archived_responses(archive_number)
+#
+# The inverse of archive_responses(): moves one archived batch back into the
+# 'responses' tab, so poll_results(), plot_poll() and the Shiny app can see it
+# again. The rows are removed from the archive.
+#
+# The responses tab is written before the archive is trimmed, so if anything
+# goes wrong no responses are lost.
+#
+# Args:
+#   archive_number : which batch to restore (see archive_summary())
+#   sheet_id       : Google Sheet ID (defaults to POLL_SHEET_ID above)
+#   archive_sheet  : name of the archive tab (default "archived")
+#
+# Returns (invisibly) the number of responses restored.
+# -----------------------------------------------------------------------------
+restore_archived_responses <- function(archive_number,
+                                       sheet_id = POLL_SHEET_ID,
+                                       archive_sheet = "archived") {
+
+  if (missing(archive_number) || length(archive_number) != 1 ||
+      is.na(suppressWarnings(as.integer(archive_number)))) {
+    stop("'archive_number' must be a single number, ",
+         "e.g. restore_archived_responses(2).", call. = FALSE)
+  }
+  archive_number <- as.integer(archive_number)
+
+  archive_sheet <- .resolve_archive_sheet(sheet_id, archive_sheet)
+
+  archived <- googlesheets4::read_sheet(sheet_id, sheet = archive_sheet,
+                                        col_types = "c")
+
+  if (nrow(archived) == 0) {
+    message("The '", archive_sheet, "' tab is empty - nothing to restore.")
+    return(invisible(0L))
+  }
+
+  if (!"archive_number" %in% names(archived)) {
+    stop("The '", archive_sheet, "' tab has no archive_number column, ",
+         "so there are no batches to restore.", call. = FALSE)
+  }
+
+  nums <- suppressWarnings(as.integer(archived$archive_number))
+  take <- !is.na(nums) & nums == archive_number
+
+  if (!any(take)) {
+    stop("No responses found with archive number ", archive_number, ".\n",
+         "Available: ",
+         paste(sort(unique(nums[!is.na(nums)])), collapse = ", "),
+         call. = FALSE)
+  }
+
+  responses <- googlesheets4::read_sheet(sheet_id, sheet = "responses",
+                                         col_types = "c")
+
+  restored <- archived[take, setdiff(names(archived), "archive_number"),
+                       drop = FALSE]
+
+  if (nrow(responses) == 0) {
+    combined <- restored
+  } else {
+    message("The responses tab already held ", nrow(responses),
+            " response(s); the restored rows are being added to them.")
+    for (missing_col in setdiff(names(responses), names(restored))) {
+      restored[[missing_col]] <- NA_character_
+    }
+    combined <- rbind(responses, restored[, names(responses), drop = FALSE])
+  }
+
+  # Write the responses tab FIRST. If this fails, the archive is untouched.
+  googlesheets4::sheet_write(combined, ss = sheet_id, sheet = "responses")
+
+  remaining <- archived[!take, , drop = FALSE]
+
+  if (nrow(remaining) == 0) {
+    googlesheets4::range_clear(
+      sheet_id, sheet = archive_sheet,
+      range = paste0("A2:Z", nrow(archived) + 1)
+    )
+  } else {
+    googlesheets4::sheet_write(remaining, ss = sheet_id, sheet = archive_sheet)
+  }
+
+  message(sum(take), " response(s) from archive number ", archive_number,
+          " moved back to the responses tab.")
+
+  invisible(sum(take))
 }
 
 

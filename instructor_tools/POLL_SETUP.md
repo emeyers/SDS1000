@@ -15,7 +15,7 @@ The poll system has three moving parts:
 [Google Sheet]  — PRIVATE: never shared with anyone
   • polls        (one row per question)
   • responses    (one row per student submission)
-  • archived     (responses moved here after closing a poll)
+  • archived     (responses moved here by archive_responses())
         ↑
         │ googlesheets4 + gs4_auth()  ← instructor R session, reads/writes directly
         │
@@ -78,10 +78,13 @@ cannot see questions you have not activated yet.
    timestamp | poll_name | answer | name
    ```
 
-   **archived** tab — same headers as responses:
+   **archived** tab — the same headers plus one more:
    ```
-   timestamp | poll_name | answer | name
+   timestamp | poll_name | answer | name | archive_number
    ```
+
+   > `archive_responses()` writes this tab wholesale, so if you leave the
+   > `archive_number` header off it will be added the first time you archive.
 
 5. Note the **Sheet ID** from the browser URL — it is the long string of
    letters and numbers between `/d/` and `/edit`:
@@ -345,6 +348,75 @@ submit.
    ...
 ```
 
+### Asking the same question more than once
+
+Some questions are worth repeating — "How well do you feel you understand the
+current material?" asked after each topic, or the same diagnostic question in
+several sections of the course. Rather than creating a near-duplicate poll each
+time, **archive** between askings:
+
+```r
+set_current_poll("understanding")   # ask it
+plot_poll()                         # show results
+archive_responses()                 # file them away, clearing the responses tab
+
+# ... teach the next topic, then ask the same poll again ...
+plot_poll()                         # only the new responses
+archive_responses()
+```
+
+In the app, the **Archive responses** button on the Run poll tab does the same
+thing, after confirming how many responses will be moved.
+
+Each archive gets the next `archive_number` — 1, 2, 3, and so on — stamped on
+every row in that batch. So to compare how understanding shifted across a
+class:
+
+```r
+googlesheets4::gs4_auth()
+arch <- googlesheets4::read_sheet(SDS1000:::poll_sheet_id, sheet = "archived")
+
+subset(arch, poll_name == "understanding")   # every asking
+table(arch$archive_number, arch$answer)      # one row per asking
+```
+
+The per-response `timestamp` column still records when each individual answer
+was submitted, so you can date each batch without a separate column.
+
+> Archiving writes the archive tab **before** clearing the responses tab, so a
+> failure part-way through cannot lose responses. It archives *everything* in
+> the responses tab, not just the active poll — archive at a natural break,
+> once you are done with the questions asked so far.
+
+### Putting an archived batch back
+
+`archive_responses()` has an inverse. To pull one batch back into the responses
+tab — so `poll_results()`, `plot_poll()` and the app can see it again:
+
+```r
+archive_summary()
+#   archive_number n_responses         polls
+# 1              1          28 understanding
+# 2              2          26 understanding
+
+restore_archived_responses(1)   # 28 responses move back; batch 2 stays archived
+```
+
+In the app, **Restore archived...** on the Run poll tab lists the batches with
+their sizes and polls, and asks which to restore.
+
+Restoring *moves* the rows — they leave the archive. As with archiving, the
+destination is written first, so nothing can be lost part-way through. If the
+responses tab is not empty when you restore, the rows are added to what is
+already there and you are warned, since that mixes a live poll's answers in
+with the restored ones.
+
+> **Archive tab name.** These functions look for a tab called `archived`, but
+> fall back to any single tab whose name starts with `archi` — so
+> `archived_responses`, or a misspelled `archieved_responses`, work too. If your
+> sheet uses something else entirely, pass it explicitly:
+> `archive_responses(archive_sheet = "my_tab")`.
+
 ---
 
 ## Section 7 — Function Reference
@@ -360,8 +432,12 @@ source("instructor_tools/poll_functions.R")
 |---|---|
 | `create_new_poll(poll_name, question, choices)` | Add a new poll to the sheet |
 | `set_current_poll(poll_name)` | Activate a poll for students |
+| `close_all_polls()` | Deactivate every poll |
 | `poll_results(poll_name = NULL)` | Retrieve response data frame |
 | `plot_poll(poll_name = NULL, title = NULL)` | Plot a bar chart of responses |
+| `archive_responses()` | Move all responses to the archive under a new archive number |
+| `archive_summary()` | One row per archive batch: number, size, polls covered |
+| `restore_archived_responses(archive_number)` | Move one archived batch back into the responses tab |
 | `poll_script_template()` | Print the Apps Script code |
 
 All functions default `poll_name` to the currently active poll when omitted.
