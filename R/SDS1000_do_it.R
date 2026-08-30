@@ -47,14 +47,19 @@ setMethod(
   signature(e1 = "doer", e2="ANY"),
   function (e1, e2) {
 
-    # create a formula for the second argument in the multiplication
-    e2_lazy <- lazyeval::f_capture(e2)
+    # capture the expression that was given as the second argument in the
+    # multiplication (rather than its value), along with the environment that
+    # the expression was written in. S4 dispatch has already forced e2 by this
+    # point, so the expression has to be recovered with substitute() rather
+    # than with a promise-based capture such as lazyeval::f_capture().
+    e2_expression <- substitute(e2)
+    e2_environment <- parent.frame()
 
-    # get n from the n argument in the run constructor
+    # get n from the n argument in the do_it() constructor
     n = e1@n
 
-   # evaluate the formula n times
-   sapply(integer(n), function(...) { lazyeval::f_eval(e2_lazy) } )
+   # evaluate the expression n times
+   sapply(integer(n), function(...) { eval(e2_expression, e2_environment) } )
 
 })
 

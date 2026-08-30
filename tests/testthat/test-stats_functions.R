@@ -91,3 +91,116 @@ test_that("get_chisqr_stat function works", {
 })
 
 
+
+
+
+
+test_that("get_MAD_stat function works", {
+
+  # the group means are 1.5, 5.5 and 10.5, so the absolute differences between
+  # the pairs of means are 4, 9 and 5, which average to 6
+  the_data <- c(1, 2, 5, 6, 10, 11)
+  grouping <- c("A", "A", "B", "B", "C", "C")
+
+  expect_equal(get_MAD_stat(the_data, grouping), 6)
+
+})
+
+
+
+
+test_that("get_MAD_stat with two groups is the difference between the two means", {
+
+  the_data <- c(2, 4, 10, 20)
+  grouping <- c("A", "A", "B", "B")
+
+  expect_equal(get_MAD_stat(the_data, grouping), abs(3 - 15))
+
+  # the statistic does not depend on the order the groups are in
+  expect_equal(get_MAD_stat(rev(the_data), rev(grouping)), abs(3 - 15))
+
+})
+
+
+
+
+test_that("get_MAD_stat is 0 when all the group means are the same", {
+
+  the_data <- c(1, 3, 0, 4, 2, 2)
+  grouping <- c("A", "A", "B", "B", "C", "C")
+
+  expect_equal(get_MAD_stat(the_data, grouping), 0)
+
+})
+
+
+
+
+test_that("get_MAD_stat works with a factor grouping variable", {
+
+  the_data <- c(1, 2, 5, 6, 10, 11)
+  grouping <- c("A", "A", "B", "B", "C", "C")
+
+  expect_equal(get_MAD_stat(the_data, as.factor(grouping)),
+               get_MAD_stat(the_data, grouping))
+
+})
+
+
+
+
+test_that("stats_by_group function works", {
+
+  data_vector <- c(1, 2, 3, 10, 20, 30)
+  group_vector <- as.factor(c("A", "A", "A", "B", "B", "B"))
+
+  the_means <- stats_by_group(data_vector, group_vector)
+
+  expect_equal(as.vector(the_means), c(2, 20))
+  expect_equal(names(the_means), c("A", "B"))
+
+  # the same answer as calculating the means by hand
+  expect_equal(the_means, tapply(data_vector, group_vector, mean))
+
+})
+
+
+
+
+test_that("stats_by_group can use statistics other than the mean", {
+
+  data_vector <- c(1, 2, 30, 10, 20, 300)
+  group_vector <- as.factor(c("A", "A", "A", "B", "B", "B"))
+
+  expect_equal(as.vector(stats_by_group(data_vector, group_vector, stat = median)),
+               c(2, 20))
+
+  expect_equal(as.vector(stats_by_group(data_vector, group_vector, stat = length)),
+               c(3, 3))
+
+  expect_equal(as.vector(stats_by_group(data_vector, group_vector, stat = max)),
+               c(30, 300))
+
+})
+
+
+
+
+test_that("stats_by_group works with a character grouping variable", {
+
+  data_vector <- c(1, 2, 3, 10, 20, 30)
+  group_vector <- c("A", "A", "A", "B", "B", "B")
+
+  expect_equal(as.vector(stats_by_group(data_vector, group_vector)), c(2, 20))
+
+})
+
+
+
+
+test_that("stats_by_group gives an error when the vectors are different lengths", {
+
+  expect_error(stats_by_group(c(1, 2, 3), as.factor(c("A", "B"))),
+               "must be the same length")
+
+})

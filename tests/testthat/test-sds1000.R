@@ -81,15 +81,18 @@ test_that("goto_directory downloads files when prompted", {
   # set the root path to a temporary directory
   test_root_path <- setup_test_root_path()
 
-  # unfortunately can't mock menu so going to just download the file first to avoid call to menu()
-  # use goto_directory for a test directory, mocking menu and rstudioapi
-  #testthat::with_mocked_bindings(
-  #   goto_directory("class_code/class_-1", "class -1"),
-  #   menu = function(...) 1,
-  #   `rstudioapi::filesPaneNavigate` = function(...) {}
-  # )
-
+  # downloading the files first avoids the call to menu() that goto_class()
+  # would otherwise make. See test-download_functions.R for tests that answer
+  # that prompt by standing in for menu().
   download_github_directory("class_code/class_-1")
+
+  # goto_class() asks RStudio to show the directory in its file pane, which
+  # only works when the tests are being run from inside RStudio
+  testthat::local_mocked_bindings(
+    filesPaneNavigate = function(...) invisible(NULL),
+    .package = "rstudioapi"
+  )
+
   goto_class(-1)
 
   
@@ -140,12 +143,18 @@ test_that("can backup and restore a directory", {
   print(backups)
   expect_true(any(grepl("homework_-1", backups)))
   
+  # backups are named using a timestamp that is only accurate to the second, so
+  # two backups of the same directory made within the same second end up with
+  # the same file name and overwrite each other. Waiting here keeps the backup
+  # made above and the one that restore_from_backup() makes below apart.
+  Sys.sleep(1.1)
+
   # download new copy of homework -1 to test restore
   download_github_directory("homework/homework_-1")
-  
+
   # check that the new copy does not have the dummy file
   expect_false(file.exists(file.path(dir_to_backup, "dummy.txt")))
-  
+
   # restore from backup
   restore_from_backup(list_backups()[1])
   
@@ -238,5 +247,8 @@ test_that("can move the sds1000_class_material/ directory when changing the root
 
 
 # move RStudio back to display the original working directory
-rstudioapi::filesPaneNavigate(original_wd)
+# (only possible when the tests are being run from inside RStudio)
+if (rstudioapi::isAvailable()) {
+  rstudioapi::filesPaneNavigate(original_wd)
+}
 

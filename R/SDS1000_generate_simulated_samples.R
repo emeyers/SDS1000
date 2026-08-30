@@ -329,9 +329,9 @@ ct <- function(p, df, side = c("upper", "both", "lower")) {
 #' @export
 get_sprinkle_sample <- function(n) {
   
-  deprecate_soft("0.2026.3", "get_sprinkle_sample()", "rsprinkles()")
-  
-  rsprinkles()
+  lifecycle::deprecate_soft("0.2026.3", "get_sprinkle_sample()", "rsprinkles()")
+
+  rsprinkles(n)
   
 }
 
@@ -361,7 +361,7 @@ get_sprinkle_sample <- function(n) {
 #' @export
 get_approval_sample <- function(n, degree_of_approval = FALSE) {
   
-  deprecate_soft("0.2026.3", "get_approval_sample()", "rapprovals()")
+  lifecycle::deprecate_soft("0.2026.3", "get_approval_sample()", "rapprovals()")
   
   rapprovals(n, degree_of_approval = degree_of_approval)
   

@@ -1,7 +1,7 @@
 Package: SDS1000
 Type: Package
 Title: Tools for the class Introductory Statistics
-Version: 0.2026.3
+Version: 0.2026.4
 Author: Ethan Meyers
 Maintainer: Ethan Meyers <ethan.meyers@gmail.com>
 Description: A package with functions for downloading material and  
@@ -14,9 +14,11 @@ Imports:
     devtools,
     fs,
     lifecycle,
+    rstudioapi,
     utils
 Suggests:
-    testthat (>= 2.1.0),
+    testthat (>= 3.2.0),
+    withr,
     googlesheets4,
     ggplot2
 URL: https://emeyers.github.io/SDS1000/
