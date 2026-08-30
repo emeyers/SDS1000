@@ -24,7 +24,9 @@ get_proportion(v, category_name)
 ``` r
  set.seed(100)
  sprinkle_sample <- get_sprinkle_sample(100)
-#> Error in deprecate_soft("0.2026.3", "get_sprinkle_sample()", "rsprinkles()"): could not find function "deprecate_soft"
+#> Warning: `get_sprinkle_sample()` was deprecated in SDS1000 0.2026.3.
+#> ℹ Please use `rsprinkles()` instead.
  get_proportion(sprinkle_sample, "red")
-#> Error: object 'sprinkle_sample' not found
+#>  red 
+#> 0.17 
 ```

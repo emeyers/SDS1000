@@ -13,7 +13,7 @@ with other functions that generate random samples.'></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">SDS1000</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2026.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2026.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,7 +83,11 @@ approve". If this is set to false, then a vector that only has the levels
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span> <span class="co"># Generate a sample from 10 individuals</span></span></span>
 <span class="r-in"><span> <span class="fu">get_approval_sample</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in deprecate_soft("0.2026.3", "get_approval_sample()", "rapprovals()"):</span> could not find function "deprecate_soft"</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`get_approval_sample()` was deprecated in SDS1000 0.2026.3.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `rapprovals()` instead.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] disapprove approve    approve    approve    disapprove disapprove</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] disapprove disapprove disapprove approve   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Levels: disapprove &lt; approve</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

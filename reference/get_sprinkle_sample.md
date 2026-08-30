@@ -23,5 +23,6 @@ get_sprinkle_sample(n)
 ``` r
  # Generate a sample from 10 sprinkle colors
  get_sprinkle_sample(10)
-#> Error in deprecate_soft("0.2026.3", "get_sprinkle_sample()", "rsprinkles()"): could not find function "deprecate_soft"
+#>  [1] orange orange white  orange red    green  yellow green  white  red   
+#> Levels: green orange pink red white yellow
 ```

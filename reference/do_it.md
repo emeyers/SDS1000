@@ -35,5 +35,4 @@ S4 objects.
 
 ``` r
  many_hellos <- do_it(10) * { "hello" }
-#> Error in loadNamespace(x): there is no package called ‘lazyeval’
 ```

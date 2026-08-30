@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SDS1000</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2026.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2026.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,9 +72,11 @@ proportion of values in that category will be returned.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span> <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span></span>
 <span class="r-in"><span> <span class="va">sprinkle_sample</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_sprinkle_sample.html">get_sprinkle_sample</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in deprecate_soft("0.2026.3", "get_sprinkle_sample()", "rsprinkles()"):</span> could not find function "deprecate_soft"</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`get_sprinkle_sample()` was deprecated in SDS1000 0.2026.3.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `rsprinkles()` instead.</span>
 <span class="r-in"><span> <span class="fu">get_proportion</span><span class="op">(</span><span class="va">sprinkle_sample</span>, <span class="st">"red"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'sprinkle_sample' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  red </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0.17 </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

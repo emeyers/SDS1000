@@ -30,5 +30,9 @@ get_approval_sample(n, degree_of_approval = FALSE)
 ``` r
  # Generate a sample from 10 individuals
  get_approval_sample(10)
-#> Error in deprecate_soft("0.2026.3", "get_approval_sample()", "rapprovals()"): could not find function "deprecate_soft"
+#> Warning: `get_approval_sample()` was deprecated in SDS1000 0.2026.3.
+#> ℹ Please use `rapprovals()` instead.
+#>  [1] disapprove approve    approve    approve    disapprove disapprove
+#>  [7] disapprove disapprove disapprove approve   
+#> Levels: disapprove < approve
 ```
