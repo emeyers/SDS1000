@@ -35,7 +35,7 @@ the **Render** button to convert your Quarto document into a pdf document.
 We can also include LaTeX symbols in our text sections using specific Markdown
 syntax. For example, we can:
 
-a. Create Greek letters such as: $pi$, $\mu$, and $\rho$
+a. Create Greek letters such as: $\pi$, $\mu$, and $\rho$
 
 b. We can also put accents above characters such as: $\hat{p}$ and $\bar{x}$
 
