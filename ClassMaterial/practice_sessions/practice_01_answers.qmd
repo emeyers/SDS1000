@@ -310,11 +310,13 @@ vector of data.
 ```{r voter_barplot_and_pie_chart}
 
 
-# Create a bar plot of the sprinkle colors
+# Create a bar plot of  the approval ratings
+
 barplot(approval_table, ylab = "Count")
 
 
-# Create a pie chart of the sprinkle colors
+
+# Create a pie chart of the approval ratings
 pie(approval_table)
 
 ```
