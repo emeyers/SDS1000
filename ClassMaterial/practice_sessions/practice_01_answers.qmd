@@ -58,6 +58,11 @@ $\\$
 
 
 
+
+
+
+
+
 # Part 2: Introduction to R
   
   
@@ -157,28 +162,8 @@ triangle_area <- 0.5 * 5 * 6
 $\\$
 
 
-### 2.3 Functions
 
-Functions are used to perform specific tasks. Usually they take input values and return an output value.
-
-Function use syntax that ends with parenthesis: functionName(x)
-
-Any ideas what the functions below do?
-
-1. round(49.209, 2)	
-
-2. sum(c(2,3,4 ))
-
-**Note**: To get information about a function, use the ? before the function name. 
-
-For example: ?round
-
-
-$\\$
-
-
-
-### 2.4 Vectors
+### 2.3 Vectors
 
 Vectors are used to store multiple values in a single object. We can create
 vectors using the c() function.
@@ -200,6 +185,27 @@ w <-  1:10 # Sequence of numbers from 1 through 10
 
 w
 ```
+
+
+$\\$
+
+
+### 2.4 Functions
+
+Functions are used to perform specific tasks. Usually they take input values and return an output value.
+
+Function use syntax that ends with parenthesis: functionName(x)
+
+Any ideas what the functions below do?
+
+1. round(49.209, 2)	
+
+2. sum(c(2,3,4 ))
+
+**Note**: To get information about a function, use the ? before the function name. 
+
+For example: ?round
+
 
 
 **Exercises**: Answer the following using the vector `v` that we defined above.
@@ -224,6 +230,11 @@ result <- round(v_sum - v_sqrt, 2) # finding the last result
 $\\$
 
 
+
+
+
+
+
 # Part 3: Quick review of categorical data analysis in R
 
 Let's quickly review how to analyze categorical data in R using 
@@ -246,7 +257,7 @@ set.seed(1000)
 
 
 
-# Get a random sample of 1000  voter's opinion of president Trump
+# Get a random sample of 1000  voter's opinion
 approval_sample <- rapprovals(1000)
 
 
@@ -256,6 +267,8 @@ approval_sample [1:10]
 ```
 
 $\\$
+
+
   
 ### 3.2 Get the proportion:
 
