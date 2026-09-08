@@ -414,7 +414,7 @@ $\\$
 ### 4.1 Getting a simulated sample of sprinkles
 
 
-We can use the SDS1000 function `get_sprinkle_sample()` to get a vector of random
+We can use the SDS1000 function `rsprinkles()` to get a vector of random
 sprinkle colors. 
 
 ```{r sprinkle_sample}
@@ -428,7 +428,7 @@ set.seed(1000)
 
 
 # Get a random sample of 100 sprinkles
-sprinkle_sample <- get_sprinkle_sample(100)
+sprinkle_sample <- rsprinkles(100)
 
 
 # Show the first 10 sprinkles in the sample
