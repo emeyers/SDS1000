@@ -222,7 +222,7 @@ $\\$
 # Part 3: Quick review of categorical data analysis in R
 
 Let's quickly review how to analyze categorical data in R using 
-dataset of voters' opinions of President.
+dataset of voters' opinions.
 
 
 ### 3.1 Getting a simulated sample of voters
