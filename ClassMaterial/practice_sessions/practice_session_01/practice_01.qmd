@@ -268,15 +268,14 @@ of voters that approve.
 ```{r voter_frequency_table}
 
 # Create a table of the approval ratings
-approval_table <- table(approval_sample)
-approval_table
+# your code here#
 
 # Create a relative frequency table of the approval ratings
-approval_proportions <- prop.table(approval_table)
-approval_proportions
+# your code here#
+
 
 # Get the proportion that approves
-get_proportion(approval_sample, "approve")
+# your code here#
 
 ```
 
