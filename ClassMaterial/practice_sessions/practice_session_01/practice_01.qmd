@@ -175,7 +175,7 @@ $\\$
 
 Functions are used to perform specific tasks. Usually they take input values and return an output value.
 
-Function use syntax that ends with parenthesis: functionName(x)
+Function use syntax that ends with  parentheses: functionName(x)
 
 Any ideas what the functions below do?
 
@@ -256,13 +256,13 @@ $\\$
   
 ### 3.2 Get the proportion:
 
-#### Example: Get the proportion of voters that appropove of trump
+#### Example: Get the proportion of voters that appropove 
   
 We can use the `table()` and `prop.table()` functions to create a frequency and
 relative frequency table of approval ratings.
 
 We can also use the SDS1000 `get_proportion()` function to get the proportion
-of voters that approve of president Trump.
+of voters that approve.
 
 
 ```{r voter_frequency_table}
