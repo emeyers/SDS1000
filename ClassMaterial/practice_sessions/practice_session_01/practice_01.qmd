@@ -196,23 +196,8 @@ For example: ?round
 * Subtract `v_sqrt` from `v_sum`, and round it to 2 decimal places
 
 
-**Answers:**
-
-```{r}
-
-v_sum  <- sum(v)  # summing up all the vector's element 
-v_sum
-
-v_sqrt <- sqrt(v) # square root each element in the vector
-v_sqrt
-
-result <- round(v_sum - v_sqrt, 2) # finding the last result
-result
-```
-
 
 $\\$
-
 
 
 
