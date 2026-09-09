@@ -196,6 +196,10 @@ For example: ?round
 * Subtract `v_sqrt` from `v_sum`, and round it to 2 decimal places
 
 
+```{r}
+# your code here #
+```
+
 
 $\\$
 
