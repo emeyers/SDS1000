@@ -1,0 +1,300 @@
+---
+title: "Class 4 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+## Part 1: More practice analyzing quantitative data:  Internet pings 
+
+
+When an individual visits a webpage a 'ping' is generated
+
+Below is a random sample of ping counts from 7 people who pinged a website at least once:
+
+   12, 45, 6, 4, 158, 10, 59 
+
+Question: What is the mean and median ping count in this sample? 
+
+Also, see if you can calculate these values without using the `mean()` and 
+`median()` functions. Hint: the `sum()`, `length()`, and `sort()` functions may 
+be useful.
+
+```{r}
+
+# Create the ping data as a vector 
+
+
+
+
+# Calculate the mean ping count
+
+
+
+
+# Calculate the median ping count
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 2: Measures variability: the variance and standard deviation 
+
+
+Let's continue to analyze the [Gapminder data set](https://www.youtube.com/watch?v=jbkSRLYSojo) 
+which contains information about different countries. Recall, the key variables 
+in the Gapminder data set include:
+
+- `country`: The country of the observation
+- `continent`: The continent of the observation
+- `year`: The year of the observation
+- `lifeExp`: Life expectancy at birth (in years)
+- `pop`: Population of the country
+- `gdpPercap`: Gross domestic product per capita (in dollars)
+
+The code below loads the Gapminder data set and show the first 6 rows of the data. 
+
+
+
+```{r load_gapminder_data}
+
+load("gapminder_2007.rda")
+
+# Show the first 5 rows of the data
+head(gapminder_2007)
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+### Part 2.1: Review - histograms, mean, and median
+
+
+To start, please create a histogram of the GDP per capita. Then answer these
+questions:
+
+1. What shape does this histogram have? Is it symmetric, right-skewed, or left-skewed?
+
+2. Are there any extreme outliers in the data? 
+
+3. Based on the shape of the histogram, do you expect the mean or median value to be larger?
+
+Finally, use R to calculate the mean and the median and add these values as
+red and blue vertical lines to your plot to check your answers.
+
+
+```{r histogram_life_expectancy}
+
+# extract the gdp per capita to an object
+
+
+# Create a histogram of GDP per capita
+
+
+
+
+
+
+
+# Calculate the mean and median and add them as vertical lines to the histogram
+
+
+
+
+
+
+
+
+```
+
+
+**Answer:** 
+
+1. 
+
+2. 
+
+
+3. 
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Part 2.2: Calculating the variance and standard deviation
+
+
+Let's now calculate the variance and standard deviation of the GDP per capita
+across the countries in the data.
+
+Let's now calculate the variance and standard deviation of the life expectancy data for the year 2007.
+
+```{r variance_standard_deviation_life_expectancy}
+
+# Calculate the variance of life expectancy
+
+
+
+
+# Calculate the standard deviation of life expectancy
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 3: z-scores
+
+LeBron James is a one of the greatest basketball player of all time. The table
+below shows some of his statistics in the 2011 NBA season, along with the league
+average (mean) and standard deviation of these statistics. 
+
+Using the data in the table, calculate the z-score for each statistic to determine
+which statistic was most impressive relative to his peers. 
+
+
+| statistic       | LeBron James | League mean | League sd |
+|-----------------|--------------|-------------|-----------|
+| Field goal %    |    0.510     |    0.464    |  0.053    |
+| Points scored   |     2111     |     994     |    414	   |
+| Assists         |     554      |     220     |    170    |
+| Steals          |     124      |     68.2    |   31.5    |
+
+
+```{r z_scores_lebron}
+
+
+
+
+
+
+
+
+```
+
+
+
+**Answer**
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Part 4: Percentile rank
+
+The percentile rank is the percentage of values in a data set less than a 
+particular value x. 
+
+We can calculate the percentile rank using the SDS1000 function `ptail(x, vals)`
+to assess the proportion of data less than or equal to a particular value `x`.
+Note, this function returns the proportion (rather than percentage) of values 
+less than or equal to x. 
+
+
+
+```{r ptail}
+
+library(SDS1000)
+
+ping_data_small <- c(59, 6, 158, 12, 45)
+
+
+# proportion of data less than or equal to 15
+
+
+
+# proportion of data greater than or equal to 15
+
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+What proportion of countries have a GDP per capita greater than (or equal to) $30,000?
+
+
+```{r ptail_gdp}
+
+
+# proportion of countries that have a GDP per capita greater than $30,000
+
+
+
+
+# What proportion of the data is less than or equal to the median?
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
