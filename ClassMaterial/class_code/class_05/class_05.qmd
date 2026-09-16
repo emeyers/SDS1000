@@ -1,0 +1,242 @@
+---
+title: "Class 5 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+# Part 1: Quantiles, five number summary and boxplots
+
+
+
+$\\$
+
+
+
+
+## Part 1.1: Quantiles
+
+
+The $P^{th}$ percentile is the value of a quantitative variable which is greater 
+than P percent of the data. 
+
+We can calculate the percentiles of a sample of data using the `quantile()` function.
+
+The code loads information about the winner for the best actor and best atress Oscars
+award winners from 1929 to 2019, into vectors called `best_actor_age` and `best_actress_age`.
+
+Let's calculate the age at the 20th, 50th, and 80th percentiles for the best actor award winners.
+
+
+```{r}
+
+
+# Load the data 
+load("oscars.rda")
+
+# create the vectors that have the ages of the best actor and best actress award winners
+best_actor_age <- subset(oscars, award == "Best actor")$age
+best_actress_age <- subset(oscars, award == "Best actress")$age
+
+
+# Calculate the 20th, 50th, and 80th percentiles for best actor ages
+
+
+
+
+# As we discussed last class ptail() returns the percentile rank, which is the inverse of the quantile function
+library(SDS1000)
+
+
+
+```
+
+
+How can we interpret these results?
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 1.2: Five number summary and boxplots
+
+A five number summary consists of the minimum, first quartile (Q1), median (Q2), 
+third quartile (Q3), and maximum of a quantitative variable.
+
+We can calculate the five number summary using the `fivenum()` function.
+
+```{r}
+
+
+
+```
+
+
+
+We can also visualize the five number summary using a boxplot. We can create boxplots using
+the `boxplot()` function. 
+
+Let's create side-by-side boxplots comparing the ages of best actor and best actress award winners.
+
+
+```{r}
+
+
+
+
+
+
+
+
+```
+
+
+If you look at the boxplot of the ages of best actor you will notice that there is an outlier in the data. Is this outlier due to an error in the data or is it a valid data point?
+
+
+
+
+$\\$
+
+
+
+
+
+
+# Part 2: Scatter plots and correlation
+
+
+Let's use the data collected by [Fraumeni (1968)](https://academic.oup.com/jnci/article/41/5/1205/903436) 
+to examine the relationship between the number of cigarette's sold per capita
+and the rates of different types of cancer. 
+
+The data is loaded below into a data frame named `smoking`. Cancer rates are 
+reported as the number of deaths per 100,000 citizens. 
+
+
+```{r smoking_data}
+
+load("states_smoking.rda")
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### 2.1 Scatter plots
+
+Start by creating a scatter plot between the number of cigarette's sold per 
+capita (`CIG`) and the number of lung cancer deaths (`LUNG`). 
+
+
+```{r smoking_scatter_plot}
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+### 2.2 Scatter plots
+
+Now let's examine the correlation between the number of cigarette's sold per 
+capita (`CIG`) and the number of lug cancer deaths (`LUNG`). 
+
+```{r smoking_correlation}
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+### 2.3 Additional explorations
+
+Do you think there is a correlation between the number of cigarette's sold per
+capita (`CIG`) and the rate of bladder cancer (`BLAD`) and/or luekemia (`LEUK`)?
+
+Try the following to explore these questions:
+
+1. Create scatter plots of these relationships cigarette's sold per and these 
+types of cancer. Based on the scatter plot guess what the correlation values are.
+
+2. Calculate the correlation values between cigarette's sold per capita and these
+types of cancer. Do the correlation values match your expectations based on the
+scatter plots?
+
+3. Based on these results, do you think there is a real relationship between the
+number of cigarette's sold per capita and these types of cancer?
+
+
+
+```{r smoking_additional_explorations}
+
+# Scatter plot of CIG vs BLAD
+
+
+
+
+# Scatter plot of CIG vs LEUK
+
+
+
+
+
+# Correlation between CIG and BLAD
+
+
+
+# Correlation between CIG and LEUK
+
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+
+
+
