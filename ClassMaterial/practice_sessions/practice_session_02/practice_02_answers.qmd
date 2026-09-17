@@ -102,9 +102,9 @@ You can learn more about this dataset using `?` in the console or the `View()` f
 
 1. First, create a histogram of the variable `mpg`. Then,  create a boxplot of `mpg`. How do these two plots compare? 
 
-2. What proportion of cars have fuel consumption less than(or equal to) 15 mpg? 
+2. What proportion of cars have fuel consumption for less than(or equal to) 15 mpg? 
 
-3. What proportion of cars have fuel consumption more than(or equal to) 35 mpg? 
+3. What proportion of cars have fuel consumption for more than(or equal to) 35 mpg? 
 
 4. Create a boxplot of `mpg` by number of cylinders `cyl`.
 
@@ -137,13 +137,13 @@ boxplot(mtcars$mpg,
 
 
 
-#2 proportion of cars have a fuel consumption of less than(or equal to) 15 mpg 
+#2 proportion of cars have a fuel consumption for less than(or equal to) 15 mpg 
 
 prop_less_15<- ptail(15, mtcars$mpg )
 prop_less_15 
 
 
-#3 proportion of cars have a fuel consumption more than(or equal to)35 mpg 
+#3 proportion of cars have a fuel consumption for more than(or equal to)35 mpg 
 
 prop_more_35 <- ptail(35, mtcars$mpg, lower.tail = FALSE )
 prop_more_35
