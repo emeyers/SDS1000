@@ -1,1 +1,507 @@
 
+---
+title: "Practice Session 3 Answers"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+# Part 1 :  The Relationship Between Two Quantitative Variables/ Correlation and Regression 
+
+$\\$
+
+
+In this session you might use the formula of the correlation between two quantitative variables:
+
+
+$$r_{x y}=\frac{1}{(n-1) s_z s_y} \sum_{i=1}^n\left(x_i-\bar{x}\right)\left(y_i-\bar{y}\right)$$
+
+
+$\\$
+
+Remember that the fitted regression line is defined by the equation: 
+
+* $\hat{y} = a + bx$, or 
+
+* $\hat{\text{Response}} = a + b \cdot \text{(Explanatory)}$
+
+* Residuals = observed - predicted = y - $\hat{y}$
+
+Where: 
+
+* Response: is the response variable or the dependent variable
+
+* Explanatory: is the independent variable
+  
+* a: is the y-intercept
+  
+* b: is the slope of the regression line
+
+$\\$
+
+ You may use the following R functions: `plot()`, `lm()`, `cor()`, `abline()`. And you might need to download Lock5Data using `library(Lock5Data)`. 
+
+
+
+
+$\\$
+
+## 1.1 Describe scatterplots and correlation
+
+Here are several scatterplots. The calculated correlations are 0.006, - 0.977, - 0.487, and 0.777. Match each scatter plot with the appropriate correlation coefficient.
+
+
+![](scatterplot.png){width=50%}
+
+
+
+**Answers:**
+
+a.  0.006
+
+b.  0.777
+
+c. $- 0.977$
+
+d.  $- 0.487$
+
+
+
+$\\$
+
+
+## 1.2 Create scatterplots in R 
+
+
+Load the data `FloridaLakes` from library(Lock5Data).
+
+1. Describe the type of each of the variables `pH` ,`Calcium`, and `Alkalinity`. 
+
+
+2. Create a three scatter plots for each pair of the variables: `pH`  vs  `Calcium` ,`pH` vs `Alkalinity` , and  `Calcium` vs `Alkalinity` . Add the main title to each plot.
+
+3. What is the correlation coefficient between `pH` and `Calcium`. Is it positive or negative?
+
+4. What do these coefficients mean in the context of this data ?
+
+5. Try to calculate the correlation coefficient between pH and Calcium without using `R` function.
+
+  
+**Answers:**
+
+```{r}
+# download the data and load it into R
+library(Lock5Data)
+data(FloridaLakes)
+
+```
+
+1. Describe the type of each of the variables `pH` and `Calcium`, `Alkalinity`.
+
+The variables `pH` and `Calcium`, `Alkalinity` are quantitative variables (continuous)
+
+
+
+2. Create a scatter plots for each of the pair of variables ( add the main title of the plot).
+
+```{r}
+# Create scatter pH vs  Calcium 
+par(mfrow= c(1,3))
+
+plot(FloridaLakes$pH, 
+     FloridaLakes$Calcium,
+     main = "ph vs Calcium Scatter plot") 
+
+# Create scatter plot pH vs  Alkalinity  
+
+plot(FloridaLakes$pH, 
+     FloridaLakes$Alkalinity ,
+     main = "ph vs Alkalinity Scatter plot")
+
+# Create scatter plot Calcium vs  Alkalinity  
+
+plot(FloridaLakes$Calcium, FloridaLakes$Alkalinity,
+    main = "Calcium vs Alkalinity Scatter plot")
+
+```
+
+
+3. What is the correlation coefficient between `pH` and `Calcium`. Is it positive or negative.
+
+```{r}
+
+# correlation
+
+cor_pH_Cal <- cor(FloridaLakes$pH, FloridaLakes$Calcium) 
+
+cor_pH_Alk <- cor(FloridaLakes$pH, FloridaLakes$Alkalinity)
+
+cor_Cal_Alk <- cor(FloridaLakes$Calcium, FloridaLakes$Alkalinity)
+
+cor_pH_Cal
+cor_pH_Alk 
+cor_Cal_Alk
+
+```
+
+
+
+
+4. What do these coefficients mean in the context of this data.
+
+A correlation coefficient of 0.577  between `pH`and `Calcium` means that there is a linear positive association of moderate strength of 0.577.
+
+
+
+
+5. Calculate the correlation coefficient between `pH` and `Calcium`  without using `R` function.
+
+```{r}
+## Method 2 to calculate the correlation using the formula 
+
+n<- length(FloridaLakes$pH)
+
+X<-FloridaLakes$pH
+
+Y<- FloridaLakes$Calcium
+
+
+cor_pH_Cal<- sum((X - mean(X))*(Y-mean(Y)))*(1/(n - 1))*1/sd(X)*1/sd(Y)
+
+cor_pH_Cal
+
+```
+
+
+
+
+# Part 2: The relationship between two Quantitative Variables / Linear Regression
+
+
+Remember that the fitted regression line is defined by the equation: 
+
+* $\hat{y}=a+bx$ , or 
+
+* $\hat{Response}= a + b ( Explanatory)$
+
+* Residuals= observed- predicted 
+
+Where: 
+
+* $y$: the response (dependent) variable, the one we predict
+
+* $x$: the explanatory (independent) variable
+  
+* a: is the y-intercept
+  
+* b: is the slope of the regression line
+
+$\\$
+
+You may use the following R functions: `plot()`, `lm()`, `cor()`, `abline()`, `coef()`, `predict()`, `fivenum()`. If needed, install the `Lock5Data` package once with `install.packages("Lock5Data")`, then load it with `library(Lock5Data)`.
+
+
+$\\$
+
+## 2.1 Exercise 1: State if the following sentences are true or false.
+
+a. We choose the linear model that passes through the most data points on scatter plot.
+
+b. The residuals are observed y-values minus the y-value predicted by linear model.
+
+c. Least square means that the square of the largest residuals is as small as it could possibly be.
+
+d. Some of the residuals from the least squares line will be positive and some will be negative.
+
+e. Least squares means that some of the squares of the residuals are minimized.
+
+f. We write $\hat{y}$ to denote the predicted values and $y$ to denote the observed values.
+
+
+**Answers:**
+
+a.  False; we choose a model that minimizes the sum of squared residuals (i.e., sum of squared distances between each point and the regression line).
+
+
+b.  True; this is the definition of a residual.
+
+
+c.  False; the least squares method minimizes the **total** sum of squared distances, not the largest squared distance. It takes into account all observations, not a single observation.
+
+
+d.  True; for a least-squares line that includes an intercept, the residuals always sum to zero. So unless every residual equals 0, some residuals must be positive and some must be negative.
+
+
+e. False; the least squares method minimizes the **total** sum of squared distances. The least squares method does not minimize individual squared residuals; it minimizes their sum.
+
+
+f. True; this is the definition of $y$ and $\hat y$ in regression model.
+
+
+$\\$
+
+
+## 2.2 Exercise 2:
+
+
+Use data `FloridaLakes` and the two variables `Alkalinity` and `Calcium`.
+
+```{r}
+# Load the Lock5Data package and the data
+library(Lock5Data)
+data(FloridaLakes)
+```
+
+
+1. Find the correlation for the `Alkalinity` and `Calcium`.
+
+2. Using the appropriate R function, create a linear model to predict `Alkalinity` from `Calcium`.
+
+3. Find the coefficients of the regression and write the correct equation of this linear model.
+
+4. Interpret the intercept and slope of the model within the context of the data.
+
+5. Predict the `Alkalinity` level when Calcium = 2.5.
+
+6. The actual `Alkalinity` level was 8.5 when Calcium = 2.5. Find the residual for this data point.
+
+7. Find the five number summary for the variable `Calcium`.
+
+8. Predict the `Alkalinity` level when Calcium = 0.5.
+
+9. Do both of these predictions make sense given the data?
+
+
+**Answers:**
+
+
+1. Find the correlation for the `Alkalinity` and `Calcium`.
+
+```{r}
+alk <- FloridaLakes$Alkalinity
+cal <- FloridaLakes$Calcium
+
+cor_alk_cal <- cor(alk, cal)
+cor_alk_cal
+```
+
+2. Using the appropriate R function, create a linear model to predict `Alkalinity` from `Calcium`.
+
+```{r}
+# Fit a linear regression model
+alk_cal_fit <- lm(Alkalinity ~ Calcium, data = FloridaLakes)
+alk_cal_fit
+
+# Create a scatterplot of Alkalinity vs Calcium
+plot(Alkalinity ~ Calcium, data = FloridaLakes,
+     main = "Scatterplot of Alkalinity vs Calcium",
+     xlab = "Calcium Amount in Water", 
+     ylab = "Alkalinity Concentration (mg/L)",
+     col = "blue4")
+
+# Add the regression line to the plot
+abline(alk_cal_fit, col = "green4")
+```
+
+3. Find the coefficients of the regression and write the correct equation of this linear model.
+  
+After running the following code you will get the intercept and the slope values of the regression line equation as follows:
+
+$\hat{Alkalinity} = 9.206 + 1.276 \cdot Calcium$.
+
+```{r}
+# you can use one of the following methods:
+
+## method 1 
+print(alk_cal_fit)
+
+## or method 2 
+reg_coef <- coef(alk_cal_fit) 
+reg_coef
+```
+
+4. Interpret the intercept and slope of the model within the context of the data.
+
+Slope: for each additional 1 mg/L of calcium, the predicted alkalinity increases by 1.276 mg/L, on average.
+
+Intercept: when calcium is 0 mg/L, the predicted alkalinity is 9.206 mg/L. Note that Calcium = 0 is below the smallest observed value in the data (1.1 mg/L), so this intercept value is itself an extrapolation and should be interpreted with caution.
+
+
+5. Predict the `Alkalinity` level when Calcium = 2.5.
+
+```{r}
+# predict Alkalinity when Calcium = 2.5 
+
+## method 1 
+(predicted_alk_2.5 <- reg_coef[[1]] + reg_coef[[2]] * 2.5)
+
+## method 2 
+(predicted_alk_2.5 <- 9.206 + 1.276 * 2.5)
+
+## method 3: using predict() with newdata
+(predicted_alk_2.5 <- predict(alk_cal_fit, newdata = data.frame(Calcium = 2.5)))
+```
+
+
+6. The actual `Alkalinity` level was 8.5 when Calcium = 2.5. Find the residual for this data point.
+
+```{r}
+# residual when Calcium = 2.5
+
+## method 1: using the predicted value from Question 5
+(res_2.5 <- 8.5 - predicted_alk_2.5)
+
+## method 2: locate the matching row and pull its residual directly
+row_2.5 <- which(cal == 2.5)
+(res_2.5 <- alk_cal_fit$residuals[row_2.5])
+```
+
+
+7. Find the five number summary for the variable `Calcium`.
+
+```{r}
+fivenum(cal)
+```
+
+
+8. Predict the `Alkalinity` level when Calcium = 0.5
+
+```{r}
+(predicted_alk_0.5 <- reg_coef[[1]] + reg_coef[[2]] * 0.5)
+```
+
+
+9. Do both of these predictions make sense given the data?
+
+The level of Calcium = 2.5 is within the range of the data, but the level of Calcium = 0.5 is an extrapolation.
+
+
+$\\$
+
+
+
+# Part 3: Review
+
+## 3.1 Exercise 3:**
+
+From the data `ICUAdmissions` create descriptive statistics (such as: `boxplot`, `histogram`, `five number summary`) for the variables `Infection`, `Age`, and `HeartRate`.
+
+ 1. Create descriptive statistics using `one quantitative variable`.
+ 2. Create descriptive statistics using `one categorical variable`.
+ 3. Descriptive statistics for `two quantitative variables`.
+ 4. Descriptive statistics for `one quantitative and one categorical variable`.
+ 
+
+
+**Answers:**
+
+```{r}
+# Load the Lock5Data package and the data
+library(Lock5Data)
+data(ICUAdmissions)
+
+```
+
+
+# It seems that the variable types are:
+
+* Age: quantitative variable
+
+* Infection: categorical variable
+
+* HeartRate: quantitative variable
+
+$\\$
+
+# 3.1 Descriptive stats for "one quantitative variable"
+
+we can describe a quantitative variable with: `histogram`, `five number summary`, or `boxplot`
+
+```{r}
+# Histogram for Heart Rate
+heart_rate <- ICUAdmissions$HeartRate # Heart Rate - Pulse rate (beats per minute)
+  
+hist(heart_rate, 
+     main = "Histogram of Pulse Rate (beats per minute)",
+     xlab = "Pulse rate (beats per minute)", 
+     ylab = "Frequencies",
+     col = "lightgreen")
+     
+# Boxplot for Heart Rate
+boxplot(heart_rate,
+     main = "Boxplot of Pulse Rate (beats per minute)",
+     ylab = "Pulse rate (beats per minute)", 
+     col = "lightyellow")
+
+# Five-number summary for Heart Rate
+five_numbers_heart_rate <- fivenum(heart_rate)
+five_numbers_heart_rate
+
+# As a second example of a quantitative variable, the five-number summary for Age
+age <- ICUAdmissions$Age
+five_numbers_age <- fivenum(age)
+five_numbers_age
+```
+
+
+$\\$
+
+## 3.2. Descriptive stats for "one categorical variable":
+
+we can describe a categorical variable with: `bar plot`, `table`
+
+```{r}
+# one categorical variable such as (Infection)
+
+## one-way table (Infection)
+infection <- factor(ICUAdmissions$Infection, labels = c("No infection", "Infection"))
+
+infection_table <- table(infection)
+infection_table
+
+# create barplot
+barplot(infection_table, 
+     main = "Barplot of Patient's Infection Status",
+     xlab = "Infection Status", 
+     ylab = "Frequencies",
+     col = c("chocolate", "violet"))
+
+## one-way table proportions 
+(infection_props <- prop.table(infection_table))
+```
+
+$\\$
+
+## 3.3 Descriptive stats for "two quantitative variables":
+
+we can describe two quantitative variables with: `scatter plot`, `correlation`
+
+```{r}
+# scatter plot for Age and HeartRate
+plot(age, heart_rate,   
+     main = "Scatterplot for Patient's Age vs Pulse Rate",
+     xlab = "Patient's age (in years)", 
+     ylab = "Pulse rate (beats per minute)",
+     col = "pink3")
+
+# correlation for age and heart rate
+cor(age, heart_rate)
+```
+
+$\\$
+
+## 3.4 Descriptive stats for "one quantitative variable vs one categorical variable":
+
+we can describe `age` (quantitative) versus `Infection` (categorical variable) with `boxplot`.
+
+```{r}
+# boxplot of age (quantitative) versus categorical variable Infection (which has two levels)
+boxplot(age ~ infection,  
+     main = "Boxplot of Patient's Age vs Infection Levels",
+     xlab = "Infection Levels", 
+     ylab = "Patient's age (in years)",
+     col = c("orange1", "yellow3"))
+```
