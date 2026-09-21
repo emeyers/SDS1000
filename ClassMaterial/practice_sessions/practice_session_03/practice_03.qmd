@@ -8,15 +8,14 @@ editor_options:
 
 
 
-# Part 1 :  The Relationship Between Two Quantitative Variables/ Correlation and Regression 
-
+# Part 1 :  The Relationship Between Two Quantitative Variables/ Correlation 
 $\\$
 
 
 In this session you might use the formula of the correlation between two quantitative variables:
 
 
-$$r_{x y}=\frac{1}{(n-1) s_z s_y} \sum_{i=1}^n\left(x_i-\bar{x}\right)\left(y_i-\bar{y}\right)$$
+$$r_{x y}=\frac{1}{(n-1) s_z s_y} \sum_{ i=1}^n\left(x_i-\bar{x}\right)\left(y_i-\bar{y}\right)$$
 
 
 $\\$
@@ -25,19 +24,7 @@ Remember that the fitted regression line is defined by the equation:
 
 * $\hat{y} = a + bx$, or 
 
-* $\hat{\text{Response}} = a + b \cdot \text{(Explanatory)}$
 
-* Residuals = observed - predicted = y - $\hat{y}$
-
-Where: 
-
-* Response: is the response variable or the dependent variable
-
-* Explanatory: is the independent variable
-  
-* a: is the y-intercept
-  
-* b: is the slope of the regression line
 
 $\\$
 
@@ -101,9 +88,9 @@ Remember that the fitted regression line is defined by the equation:
 
 Where: 
 
-* $y$: the response (dependent) variable, the one we predict
+* $y$- the response (dependent) variable, the one we predict
 
-* $x$: the explanatory (independent) variable
+* $x$- the explanatory (independent) variable
   
 * a: is the y-intercept
   
@@ -189,5 +176,4 @@ data(ICUAdmissions)
 
 
 ```
-
 
