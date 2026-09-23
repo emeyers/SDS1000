@@ -16,7 +16,7 @@ $\\$
 In this session you might use the formula of the correlation between two quantitative variables:
 
 
-$$r_{x y}=\frac{1}{(n-1) s_z s_y} \sum_{i=1}^n\left(x_i-\bar{x}\right)\left(y_i-\bar{y}\right)$$
+$$r_{x y}=\frac{1}{(n-1) s_x s_y} \sum_{i=1}^n\left(x_i-\bar{x}\right)\left(y_i-\bar{y}\right)$$
 
 $\\$
 
@@ -140,14 +140,14 @@ A correlation coefficient of 0.577  between `pH`and `Calcium` means that there i
 ```{r}
 ## Method 2 to calculate the correlation using the formula 
 
-n<- length(FloridaLakes$pH)
+n <- length(FloridaLakes$pH)
 
-X<-FloridaLakes$pH
+X <-FloridaLakes$pH
 
-Y<- FloridaLakes$Calcium
+Y <- FloridaLakes$Calcium
 
 
-cor_pH_Cal<- sum((X - mean(X))*(Y-mean(Y)))*(1/(n - 1))*1/sd(X)*1/sd(Y)
+cor_pH_Cal <- sum((X - mean(X))*(Y-mean(Y)))*(1/(n - 1))*1/sd(X)*1/sd(Y)
 
 cor_pH_Cal
 
@@ -270,15 +270,15 @@ cor_alk_cal
 
 ```{r}
 # Fit a linear regression model
-alk_cal_fit <- lm(Alkalinity ~ Calcium, data = FloridaLakes)
+alk_cal_fit <- lm(alk ~ cal) #data = FloridaLakes)
 alk_cal_fit
 
 # Create a scatterplot of Alkalinity vs Calcium
-plot(Alkalinity ~ Calcium, data = FloridaLakes,
+plot(alk~ cal,           #data = FloridaLakes,
      main = "Scatterplot of Alkalinity vs Calcium",
      xlab = "Calcium Amount in Water", 
      ylab = "Alkalinity Concentration (mg/L)",
-     col = "blue4")
+      col = "blue4")
 
 # Add the regression line to the plot
 abline(alk_cal_fit, col = "green4")
@@ -314,27 +314,27 @@ Intercept: when calcium is 0 mg/L, the predicted alkalinity is 9.206 mg/L. Note 
 # predict Alkalinity when Calcium = 2.5 
 
 ## method 1 
-(predicted_alk_2.5 <- reg_coef[[1]] + reg_coef[[2]] * 2.5)
+(predicted_alk_2.5 <- reg_coef[1] + reg_coef[2] * 2.5)
+
 
 ## method 2 
 (predicted_alk_2.5 <- 9.206 + 1.276 * 2.5)
 
-## method 3: using predict() with newdata
-(predicted_alk_2.5 <- predict(alk_cal_fit, newdata = data.frame(Calcium = 2.5)))
+
+# method 3: using predict() with newdata
+(predicted_alk_2.5 <- predict(alk_cal_fit, newdata = data.frame(cal = 2.5)))
 ```
+
 
 
 6. The actual `Alkalinity` level was 8.5 when Calcium = 2.5. Find the residual for this data point.
 
 ```{r}
-# residual when Calcium = 2.5
+#residual when Calcium = 2.5
 
-## method 1: using the predicted value from Question 5
+# method 1: using the predicted value from Question 5
 (res_2.5 <- 8.5 - predicted_alk_2.5)
 
-## method 2: locate the matching row and pull its residual directly
-row_2.5 <- which(cal == 2.5)
-(res_2.5 <- alk_cal_fit$residuals[row_2.5])
 ```
 
 
@@ -348,7 +348,7 @@ fivenum(cal)
 8. Predict the `Alkalinity` level when Calcium = 0.5
 
 ```{r}
-(predicted_alk_0.5 <- reg_coef[[1]] + reg_coef[[2]] * 0.5)
+(predicted_alk_0.5 <- reg_coef[1] + reg_coef[2] * 0.5)
 ```
 
 
@@ -435,8 +435,9 @@ we can describe a categorical variable with: `bar plot`, `table`
 # one categorical variable such as (Infection)
 
 ## one-way table (Infection)
-infection <- factor(ICUAdmissions$Infection, labels = c("No infection", "Infection"))
+#infection <- factor(ICUAdmissions$Infection, labels = c("No infection", "infection") 
 
+infection <- ICUAdmissions$Infection
 infection_table <- table(infection)
 infection_table
 
