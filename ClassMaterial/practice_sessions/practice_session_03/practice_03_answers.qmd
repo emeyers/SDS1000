@@ -15,10 +15,8 @@ $\\$
 
 In this session you might use the formula of the correlation between two quantitative variables:
 
+$$r=\frac{1}{(n-1)} \sum_{i=1}^n\left(\frac{x_i-\bar{x}}{s_x}\right)\left(\frac{y_i-\bar{y}}{s_y}\right)$$
 
-$$r_{x y}=\frac{1}{(n-1) s_x s_y} \sum_{i=1}^n\left(x_i-\bar{x}\right)\left(y_i-\bar{y}\right)$$
-
-$\\$
 
  You may use the following R functions: `plot()`, `lm()`, `cor()`, `abline()`. And you might need to download Lock5Data using `library(Lock5Data)`. 
 
@@ -147,8 +145,7 @@ X <-FloridaLakes$pH
 Y <- FloridaLakes$Calcium
 
 
-cor_pH_Cal <- sum((X - mean(X))*(Y-mean(Y)))*(1/(n - 1))*1/sd(X)*1/sd(Y)
-
+cor_pH_Cal <- sum((X - mean(X))/sd(X) * (Y - mean(Y))/sd(Y))/(length(X) - 1)
 cor_pH_Cal
 
 ```
