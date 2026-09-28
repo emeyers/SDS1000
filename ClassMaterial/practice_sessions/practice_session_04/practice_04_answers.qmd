@@ -18,6 +18,7 @@ In general, a sampling distribution is the distribution of a **statistic** acros
 
 
 
+$\\$
 
 ## 1.2 Sampling Distribution Terminology
 
@@ -51,7 +52,7 @@ Match each term with its definition.\
 * (f) $\mu$ = Mean of a population
 
 
-
+$\\$
 
 
 ## 1.3 Generating Sampling Distributions
@@ -111,6 +112,7 @@ sd(polling_distribution)
 **Answer:** The standard deviation of a sampling distribution is called the **standard error (SE)**. Here the SE is about 0.016, which matches the theoretical value $\sqrt{0.44 \times 0.56 / 1000} \approx 0.0157$.
 
 
+$\\$
 
 ## 1.4 Properties of Sampling Distributions
 
@@ -138,6 +140,8 @@ Answer the following True/False questions relating to sampling distributions.
 * (d) True. By the Central Limit Theorem, the sampling distribution of the sample mean (and of a sample proportion) is approximately normal, assuming that your sampling procedure is unbiased and has a sufficient `n`. This does not hold for every statistic — for example, the sampling distribution of a sample maximum or a sample variance need not be normal.
 
 * (e) False. Smaller standard errors are typically preferred, since they mean our estimates vary less from sample to sample.
+
+$\\$
 
 
 
@@ -203,6 +207,7 @@ se
 
 ```
 
+$\\$
 
 
 # Part 3: Confidence Intervals
@@ -235,4 +240,3 @@ Match each term with its definition.\
 * (b) Interval Estimate = A range of plausible values for a population parameter, rather than a single number.
 * (c) Confidence Interval = A particular kind of interval estimate, produced by a method such that, over repeated samples, a specified percentage of the intervals will contain the population parameter.
 * (d) Confidence Level = The percentage of confidence intervals that will contain the population parameter over repeated sampling.
-
