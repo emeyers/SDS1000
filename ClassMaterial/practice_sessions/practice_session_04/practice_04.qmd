@@ -1,5 +1,5 @@
 ---
-title: "Practice Session 4 Answers"
+title: "Practice Session 4"
 format:
   pdf:
     output-file: practice_04_answers.pdf
@@ -184,4 +184,66 @@ Match each term with its definition.\
 
 * A range of plausible values for a population parameter, rather than a single number. It does not by itself carry a stated confidence level. Many interval estimates take the form point estimate $\pm$ margin of error, in which case the point estimate sits at the center.
 
+
+$\\$
+
+
+## 3.2 Confidence Interval for Baseball Salaries
+
+For this section, we will use the `BaseballSalaries2015` data set from the `Lock5Data` library.\ 
+
+
+1.) Using the `sample()` function, obtain a sample of $n = 100$ baseball player salaries. Make sure to sample **without replacement**. See the `help` page for `sample()` for details.
+
+```{r}
+library(Lock5Data)
+set.seed(1000)
+
+# your code here #
+```
+
+
+
+2.) Now, using the `do_it()` function, repeat this process $n = 10,000$ times, and calculate the mean each time.
+
+```{r}
+# your code here #
+```
+
+
+
+3.) Using your original sample of 100 salaries from part 1.), calculate a point estimate of the mean salary. 
+
+```{r}
+# your code here #
+```
+
+
+
+4.) Calculate the standard deviation of your sampling distribution from part 2.) to estimate the standard error.
+
+```{r}
+# your code here #
+```
+
+
+
+5.) Using your answers from part 3.) and 4.), generate a 95% interval estimate for the mean salary of baseball players. The interval estimate is of the form:\ 
+
+$$\text{Point Estimate} \pm 1.96 \cdot \text{Standard Error}$$. 
+
+```{r}
+# your code here #
+```
+
+
+6.) Interpret your interval estimate.
+
+
+
+7.) Compare your interval estimates to the actual mean salary from the entire data set. Comment on what you notice.
+
+```{r}
+# your code here #
+```
 
