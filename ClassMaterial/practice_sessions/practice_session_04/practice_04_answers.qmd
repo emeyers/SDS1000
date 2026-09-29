@@ -152,7 +152,7 @@ $\\$
 For this section, we will use the `BaseballSalaries2015` data set from the `Lock5Data` library. Salaries are recorded in millions of dollars.
 
 
-1. Using the `sample()` function, obtain a sample of $n = 50$ baseball player salaries. See the `help` page for `sample()` for details.
+1. Using the `sample()` function, obtain a sample of $n = 100$ baseball player salaries. See the `help` page for `sample()` for details.
 
 
 ```{r}
@@ -186,10 +186,10 @@ hist(salary_distribution, main = "Sampling Distribution of the Mean",
 
 ```
 
-Notice that the individual salaries are strongly right-skewed, yet the sampling distribution of the mean is roughly symmetric and bell-shaped. The population does not have to be normal for the sampling distribution of the sample mean to be approximately normal. Notice also that the x-axes measure different things: the left histogram shows individual players' salaries, while the right histogram shows the means of samples of 50 players (see the Challenge question in 1.3).
+Notice that the individual salaries are strongly right-skewed, yet the sampling distribution of the mean is roughly symmetric and bell-shaped. The population does not have to be normal for the sampling distribution of the sample mean to be approximately normal. Notice also that the x-axes measure different things: the left histogram shows individual players' salaries, while the right histogram shows the means of samples of 100 players (see the Challenge question in 1.3).
 
 
-3. Using your original sample of 50 salaries from question 1.), calculate a point estimate of the mean salary. 
+3. Using your original sample of 100 salaries from question 1.), calculate a point estimate of the mean salary. 
 
 ```{r}
 
