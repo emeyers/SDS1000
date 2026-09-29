@@ -240,3 +240,76 @@ Match each term with its definition.\
 * (b) Interval Estimate = A range of plausible values for a population parameter, rather than a single number.
 * (c) Confidence Interval = A particular kind of interval estimate, produced by a method such that, over repeated samples, a specified percentage of the intervals will contain the population parameter.
 * (d) Confidence Level = The percentage of confidence intervals that will contain the population parameter over repeated sampling.
+
+
+
+
+## 3.2 Confidence Interval for Baseball Salaries
+
+For this section, we will use the `BaseballSalaries2015` data set from the `Lock5Data` library.\ 
+
+1.) Using the `sample()` function, obtain a sample of $n = 100$ baseball player salaries. Make sure to sample **without replacement**. See the `help` page for `sample()` for details.
+
+```{r}
+library(Lock5Data)
+set.seed(1000)
+salary_sample <- sample(BaseballSalaries2015$Salary, size = 100, replace = F)
+```
+
+2.) Now, using the `do_it()` function, repeat this process $n = 10,000$ times, and calculate the mean each time.
+
+```{r}
+salary_distribution <- do_it(10000) * {
+  
+  curr_sample <- sample(BaseballSalaries2015$Salary, size = 100, replace = F)
+  mean(curr_sample)
+  
+}
+
+hist(salary_distribution, main = "Distribution of Salary Samples",
+     xlab = "Estimated Mean Salary")
+
+```
+
+3.) Using your original sample of 100 salaries from part 1.), calculate a point estimate of the mean salary. 
+
+```{r}
+mu_estimate = mean(salary_distribution)
+```
+
+4.) Calculate the standard deviation of your sampling distribution from part 2.) to estimate the standard error.
+
+```{r}
+se <-  sd(salary_distribution)
+```
+
+5.) Using your answers from part 3.) and 4.), generate a 95% interval estimate for the mean salary of baseball players. The interval estimate is of the form:\ 
+
+$$\text{Point Estimate} \pm 1.96 \cdot \text{Standard Error}$$. 
+
+```{r}
+int_estimate <-  c(mu_estimate - 1.96 * se, mu_estimate + 1.96 * se)
+int_estimate
+
+
+# or you can calculated it  
+# int_estimate <-  mu_estimate + c( - 1.96,  1.96) * se
+
+```
+
+
+6.) Interpret your interval estimate.\ 
+
+**NOTE: Answers may vary due to randomness in sampling**\ 
+
+*"The true average salary of baseball players for the 2015 season is likely to lie in the range [Lower-Bound, Upper-Bound], since 95% of the time we use this method the parameter is in such intervals."*
+
+7.) Compare your interval estimates to the actual mean salary from the entire data set. Comment on what you notice.
+
+```{r}
+mu <-  mean(BaseballSalaries2015$Salary)
+sigma <-  sd(BaseballSalaries2015$Salary)
+mu
+```
+
+We see that our interval contains the true mean salary.
