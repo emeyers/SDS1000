@@ -1,0 +1,398 @@
+---
+title: "Sampling Distribution Demonstration"
+runtime: shiny
+output: html_document
+---
+
+A demonstration of the relationship between a population, a sample, and a sampling distribution
+
+
+
+```{r setup, include=FALSE}
+
+
+# parameters for the different population distributions 
+#  (should keep these intact because all the displays have been scaled to use these)
+skew.shape.param <- 2
+skew.rate.param <- 1
+
+bimodal.mu1 <- 3.5 #2.5 
+bimodal.mu2 <- 6.5
+bimodal.sigma <- 1
+  
+norm.mu <- 5
+norm.sigma <- 1
+
+step.size <- .01
+
+
+# number of samples in the sampling distribution 
+sampling.dist.size <- 5000  
+
+# number of bootstrap replicates to use in the bootstrap distribution 
+num.bootstrap.replicates <- 5000
+
+
+
+# This generates a distribution of samples statistics from a function that create samples
+generate.sampling.distribution <- function(sample.generator.function, num.points.in.each.sample, num.samples, statistic.name)
+{
+  
+  sampling.distribution <- NULL
+
+  # repeat many times to create a full sampling distribution
+  for (i in 1:num.samples)
+  {
+    curr.sample <- sample.generator.function(num.points.in.each.sample)
+    
+    if (statistic.name == "Mean"){
+      sampling.distribution[i] <-  mean(curr.sample)
+    }
+    else if (statistic.name == "Median"){
+      sampling.distribution[i] <-  median(curr.sample)
+    }
+    else if (statistic.name == "Stdev"){
+      sampling.distribution[i] <-  sd(curr.sample)
+    } 
+  }
+
+  return(sampling.distribution)
+  
+}
+
+
+
+# functions to generate bimodal distributions and random samples (it is a sum of two normal distributions)
+dbimondal <- function(x, mu1, mu2, sigma){
+  return(.5 * dnorm(x, mu1, sigma) + .5 * dnorm(x, mu2, sigma))
+}
+
+rbimodal <- function(n, mu1, mu2, sigma){
+
+  dist1 <- rnorm(n, mean = mu1, sd = sigma)
+  dist2 <- rnorm(n, mean = mu2, sd = sigma)
+
+  dist.choice <- rbinom(n, size=1, prob=.5)
+  
+  final.sample <- dist1*(1 - dist.choice) + (dist2*dist.choice)
+
+  return(final.sample)
+}
+
+
+
+# functions to generate samples from different population distributions
+gamma.sample.generator <- function(x) rgamma(x, skew.shape.param, skew.rate.param)
+binomal.sample.generator <- function(x) rbimodal(x, bimodal.mu1, bimodal.mu2, bimodal.sigma)
+normal.sample.generator <- function(x) rnorm(x, norm.mu, norm.sigma)
+
+
+
+# this function returns a function that generates random resamples 
+resample.generator.generator <- function(example.sample){
+  
+  resample.generator <- function(x) {
+    
+    if (x != length(example.sample))
+    { print('diff lengths!')}
+    
+    sample(example.sample, size = x, replace = TRUE)
+  }
+  
+  return(resample.generator)
+  
+}
+
+
+
+
+# A function to get the x-axis limits to display things in a consistent way
+# The x-axis limits depend on the type of distribution plotted and the sample statistic computed
+
+get.xlimits <- function(distribution.type, statistic.type)
+{
+   
+     
+      if (distribution.type == "Right Skewed")
+      {
+
+        if (statistic.type == "Mean")
+          xlimits <- c(1.25, 2.75)  #c(1.5, 2.5)
+        else if (statistic.type == "Median")
+          xlimits <- c(1.3, 2.1)
+        else if (statistic.type == "Stdev")
+          xlimits <- c(.8, 2)
+      }
+      
+      else if (distribution.type == "Bimodal")
+      {
+        
+        if (statistic.type == "Mean")
+          xlimits <- c(4, 6)
+        else if (statistic.type == "Median")
+          xlimits <- c(3.5, 6.5)
+        else if (statistic.type == "Stdev")
+          xlimits <- c(1.4, 2.2)
+      }
+  
+      else if (input$distribution.type == "Normal")
+      {  
+
+        if (statistic.type == "Mean")
+          xlimits <- c(4.5, 5.5)
+         else if (statistic.type == "Median")
+          xlimits <- c(4.5, 5.5)
+        else if (statistic.type == "Stdev")
+          xlimits <- c(.5, 1.5)
+
+      }
+   
+   return(xlimits)
+}
+
+
+
+
+```
+
+
+
+
+```{r, echo = FALSE}
+
+
+# a function that plots the sampling distribution
+display.sampling.distribution <- reactive({
+  
+  
+      
+  # generate an appropriate sampling distribution...
+  if (input$distribution.type == "Right Skewed")
+  {
+    sampling.distribution <- generate.sampling.distribution(gamma.sample.generator, input$sample.size, sampling.dist.size, input$statistic.type)
+   }
+  
+  else if (input$distribution.type == "Bimodal")
+  {
+    sampling.distribution <- generate.sampling.distribution(binomal.sample.generator, input$sample.size, sampling.dist.size, input$statistic.type)
+    
+  }
+  else if (input$distribution.type == "Normal")
+  {  
+    sampling.distribution <- generate.sampling.distribution(normal.sample.generator, input$sample.size, sampling.dist.size, input$statistic.type)
+    
+  }
+  
+      
+  # get the x limits for plotting
+  xlimits <- get.xlimits(input$distribution.type, input$statistic.type)
+    
+  
+  the.title <- paste0("Sampling Distribution (SE = ", round(sd(sampling.distribution), 2), ", 
+                      center = ",  round(mean(sampling.distribution), 2) ,")")
+
+  
+  # plot the sampling distribution  
+  hist(sampling.distribution, n = sampling.dist.size/50, xlim = xlimits, 
+       main = the.title, xlab = "statistic value")
+  
+  # add a vertical line at the mean
+  abline(v = mean(sampling.distribution), col = "red")
+  
+  
+})
+
+
+
+
+# a function that plot a histogram from a single sample
+display.single.sample <- reactive({
+  
+  
+      xlimits <- get.xlimits(input$distribution.type, input$statistic.type)
+      
+      if (input$distribution.type == "Right Skewed") {
+        example.sample <- gamma.sample.generator(input$sample.size)
+      }
+      else if (input$distribution.type == "Bimodal") {
+        example.sample <- binomal.sample.generator(input$sample.size)
+      }
+      else if (input$distribution.type == "Normal") {  
+        example.sample <- normal.sample.generator(input$sample.size)
+      }
+
+      
+      # always use the x-axis set for the "Mean" when plotting the single sample
+      xlimits <- get.xlimits(input$distribution.type, "Mean")
+
+
+      num.bins <- max(input$sample.size/10, 10)
+      
+      if (input$statistic.type == "Mean"){
+        the.title <- bquote("An example sample (" ~ bar(x) == .(round(mean(example.sample), 2)) ~ ")")
+      }
+      else if (input$statistic.type == "Stdev"){
+        the.title <- bquote("An example sample (" ~ s == .(round(sd(example.sample), 2)) ~ ")")
+      }
+      else if (input$statistic.type == "Median"){
+        the.title <- bquote("An example sample (Med "  == .(round(median(example.sample), 2)) ~ ")")
+      }
+        
+      hist(example.sample, n = num.bins, main = the.title, xlab = "case values", xlim = c(0, 10))
+      #abline(v = mean(example.sample), col = "red")  
+
+      current.example.sample <<- example.sample
+      
+
+})
+
+
+# a function to display the bootstrap distribution
+display.bootstrap.resampling.distribution <- reactive({
+
+  print(input$show.bootstrap.dist)
+  
+  if (input$show.bootstrap.dist)
+  {
+      xlimits <- get.xlimits(input$distribution.type, input$statistic.type)
+
+      
+      # need this line so that the function refreshes everything an input sample size changes
+      input$sample.size
+  
+       
+       resample.generator <- resample.generator.generator(current.example.sample)
+       
+       bootstrap.distribution <- generate.sampling.distribution(resample.generator, length(current.example.sample), num.bootstrap.replicates, input$statistic.type)
+
+      
+        the.title <- paste0("Bootstrap Distribution (SE = ", round(sd(bootstrap.distribution), 2), ", 
+                      center = ",  round(mean(bootstrap.distribution), 2) ,")")
+
+        
+      # hist(bootstrap.distribution, n = num.bootstrap.replicates/10, xlim = xlimits, main = paste("Bootstrap Distribution (SE = ", round(sd(bootstrap.distribution), 3), ")"), xlab = "statistic value")
+
+              hist(bootstrap.distribution, n = num.bootstrap.replicates/50, xlim = xlimits, 
+                   main = the.title, xlab = "statistic value")       
+       
+       abline(v = mean(bootstrap.distribution), col = "red")
+  
+  
+  }
+
+    
+       
+  
+}) 
+
+
+```
+
+
+
+
+```{r, echo=FALSE}
+inputPanel(
+
+  # inputs to make the app work
+  selectInput("distribution.type", label = "Population Distribution", choices = c("Right Skewed", "Bimodal", "Normal")),
+  numericInput("sample.size", label = "Sample size (n)", value = 100),
+  selectInput("statistic.type", label = "statistic", choices = c("Mean", "Median", "Stdev")),
+  checkboxInput("show.bootstrap.dist", label = "Display Bootstrap Distribution", value = FALSE)
+  )
+
+
+
+splitLayout( 
+  
+    renderPlot({
+
+      # a function that plots the population distribution        
+      x <- seq(0, 10, by = step.size)
+      
+      
+
+      if (input$distribution.type == "Right Skewed") {
+        the.pop.dist <- dgamma(x, skew.shape.param, skew.rate.param)
+      }
+      else if (input$distribution.type == "Bimodal") {
+        the.pop.dist <- dbimondal(x, bimodal.mu1, bimodal.mu2, bimodal.sigma)
+      }
+      else if (input$distribution.type == "Normal") {
+        the.pop.dist <- dnorm(x, norm.mu, norm.sigma)
+      }
+
+      
+        temp.mean <- sum(x * the.pop.dist) * step.size
+      
+      
+      if (input$statistic.type == "Stdev"){
+        the.stat <-  sqrt(  sum(the.pop.dist *  (x - temp.mean)^2) * step.size     )
+        the.title <- bquote("Population Distribution (" ~ sigma ==  .(round(the.stat, 2)) ~ ")")
+      }
+      
+      
+      if (input$statistic.type == "Mean")        
+        the.title <- bquote("Population Distribution (" ~ mu ==  .(round(sum(x * the.pop.dist) * step.size, 1)) ~ ")")
+      
+      if (input$statistic.type == "Median"){   
+        the.stat <- x[which.min(abs(cumsum(the.pop.dist * step.size) - .5))]
+        print(the.stat)
+        the.title <- bquote("Population Distribution (Med " ==  .(the.stat) ~ ")")
+      }
+      
+      plot(x, the.pop.dist, type = 'l', main = the.title, ylab = "Population Density", xlab = "case values")
+      #abline(v = temp.mean, col = "red") 
+
+     }),
+
+  
+    renderPlot({
+      
+      # display the sampling distribution in the upper right panel
+      display.sampling.distribution() 
+ 
+      
+    })
+ 
+       
+)  # end the input panel
+    
+
+
+
+
+
+# add panels for 2 example samples on the bottom...
+#inputPanel(
+splitLayout( 
+  
+    # an example sample
+    renderPlot({
+
+      # display the histogram from one sample in the lower left panel
+      # save sample as a global variable (usually a very bad idea)
+      display.single.sample()
+      
+      # print(length(example.sample))
+      
+    }),
+    
+     # a bootstrap distribution - 
+     renderPlot({
+       
+       # for some reason this function is not being called again when the sample size changes...
+       display.bootstrap.resampling.distribution() 
+       
+    })
+    
+    
+)
+    
+    
+
+```
+
+
+
+
