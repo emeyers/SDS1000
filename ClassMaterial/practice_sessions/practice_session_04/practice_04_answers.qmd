@@ -271,11 +271,15 @@ hist(salary_distribution, main = "Distribution of Salary Samples",
 
 ```
 
-3.) Using your original sample of 100 salaries from part 1.), calculate a point estimate of the mean salary. 
+3.) Using your original sample of 100 salaries from part 1.), calculate a point estimate of the mean salary.
 
 ```{r}
-mu_estimate = mean(salary_distribution)
+
+point_estimate <- mean(salary_sample)
+point_estimate
+
 ```
+
 
 4.) Calculate the standard deviation of your sampling distribution from part 2.) to estimate the standard error.
 
@@ -283,13 +287,22 @@ mu_estimate = mean(salary_distribution)
 se <-  sd(salary_distribution)
 ```
 
+
+
 5.) Using your answers from part 3.) and 4.), generate a 95% interval estimate for the mean salary of baseball players. The interval estimate is of the form:\ 
 
 $$\text{Point Estimate} \pm 1.96 \cdot \text{Standard Error}$$. 
 
 ```{r}
-int_estimate <-  c(mu_estimate - 1.96 * se, mu_estimate + 1.96 * se)
+int_estimate <-  c(point_estimate - 1.96 * se, point_estimate + 1.96 * se)
 int_estimate
+
+
+# or you can calculated it  
+# int_estimate <-  point_estimate + c( - 1.96,  1.96) * se
+
+```
+
 
 
 # or you can calculated it  
