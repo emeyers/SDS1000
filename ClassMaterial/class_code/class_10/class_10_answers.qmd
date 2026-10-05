@@ -1,0 +1,239 @@
+---
+title: "Class 10 notes and code"
+format: pdf
+editor: source
+editor_options:
+  chunk_output_type: console
+---
+
+
+
+
+# Part 1: Normal quantiles
+
+We can use quantiles from a standard normal distribution to create confidence
+intervals for different confidence levels.
+
+For a given confidence level *C*, we want to find the quantile value z* such
+that C percent of the area of a standard normal distribution is between -z* and
+z*. To do this we can use the `cnorm()` function from the SDS1000 package.
+
+
+
+```{r}
+
+library(SDS1000)
+
+
+critical_val_95 <- cnorm(.95)
+critical_val_95
+
+
+critical_val_80 <- cnorm(.80)
+critical_val_80
+
+
+# Also see the mosaic package xcnorm function for visualizing critical values
+mosaic::xcnorm(.95)
+mosaic::xcnorm(.80)
+
+
+```
+
+
+
+$\\$
+
+Suppose we had data where the mean of the data was $\bar{x} = 12$ and we knew
+the standard error was $SE = 2$. What are the 80%, 90%, and 95% confidence
+intervals for $\mu$?
+
+
+```{r}
+
+x_bar <- 12
+SE <- 2
+
+
+# 80% confidence interval
+c(x_bar - cnorm(.80) * SE, x_bar + cnorm(.80) * SE)
+
+
+# 90% confidence interval
+c(x_bar - cnorm(.90) * SE, x_bar + cnorm(.90) * SE)
+
+
+# 95% confidence interval
+c(x_bar - cnorm(.95) * SE, x_bar + cnorm(.95) * SE)
+
+
+```
+
+
+Notice that the intervals get wider as the confidence level increases.
+
+
+
+
+$\\$
+
+
+
+
+
+#  Part 2: Simple example of sampling with replacement
+
+
+
+```{r}
+
+
+library(SDS1000)
+
+
+# simple vector
+my_sample <- c(3, 1, 4, 1, 5, 9)
+
+
+# resampling values in the vector with replacement
+boot_sample  <-  sample(my_sample,  6,  replace = TRUE)
+
+
+# print the bootstrap sample (some values can appear more than once)
+boot_sample
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+#  Part 3: Simple fake data bootstrap example
+
+
+```{r}
+
+# simple bootstrap example
+
+my_sample <- c(21, 29, 25, 19, 24, 22, 25, 26, 25, 29)
+
+
+# calculate the x-bar statistic
+obs_mean <- mean(my_sample)
+obs_mean
+
+
+# create the bootstrap distribution
+bootstrap_dist <-  do_it(10000) * {
+
+  curr_boot <- sample(my_sample, length(my_sample), replace = TRUE)
+  mean(curr_boot)
+
+}
+
+
+# visualize the bootstrap distribution
+hist(bootstrap_dist, 100,
+     xlab = "Mean of the bootstrap sample",
+     main = "Bootstrap distribution")
+
+
+# calculate the standard error
+SE_boot <- sd(bootstrap_dist)
+SE_boot
+
+
+# 95% confidence interval (2 is approximately cnorm(.95) = 1.96)
+CI_lower <-  obs_mean  - 2 * SE_boot
+CI_upper <-  obs_mean  + 2 * SE_boot
+
+
+c(CI_lower, CI_upper)
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+#  Part 4: Confidence interval for Gettysburg mean word length
+
+
+```{r}
+
+
+# set the random seed
+set.seed(123)
+
+
+# load the gettysburg data
+load("gettysburg.Rda")
+
+
+# store the word lengths in a vector object called word_lengths
+word_lengths <- gettysburg$num_letters
+
+
+# get a random sample from the word lengths
+
+n <- 10
+
+my_sample <- sample(word_lengths, size = n)
+
+
+
+# calculate the x-bar statistic
+obs_mean <- mean(my_sample)
+obs_mean
+
+
+# create the bootstrap distribution
+bootstrap_dist <-  do_it(10000) * {
+
+  curr_boot <- sample(my_sample, n, replace = TRUE)
+  mean(curr_boot)
+
+}
+
+
+# visualize the bootstrap distribution
+hist(bootstrap_dist, 100,
+     xlab = "Mean word length of the bootstrap sample",
+     main = "Bootstrap distribution of the mean word length")
+
+
+# calculate the standard error
+(SE_boot <- sd(bootstrap_dist))
+
+
+# 95% confidence interval
+CI_lower <-  obs_mean  - 2 * SE_boot
+CI_upper <-  obs_mean  + 2 * SE_boot
+
+
+c(CI_lower, CI_upper)
+
+
+# since we have the whole population here, we can check if the interval
+# captured the population mean word length (mu)
+mean(word_lengths)
+
+
+```
+
+
+The 95% confidence interval contains the population mean word length $\mu$ of
+about 4.29.
+
+
