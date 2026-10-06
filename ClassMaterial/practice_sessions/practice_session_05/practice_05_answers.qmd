@@ -167,7 +167,8 @@ The steps to Construct Bootstrap Confidence Interval are:
 * 3. Estimate the standard error SE by computing the standard deviation of the bootstrap distribution.
 
 
-* 4. Create the $95\%$  CI using the formula: $statistic\pm 2*SE$. (The 2 here is a convenient rounding of the exact 95% critical value, `cnorm(0.95)` ≈ 1.96.)
+* 4. Create the $95\%$  CI using the formula: $$statistic\pm 2*SE$$. 
+(The 2 here is a convenient rounding of the exact 95% critical value, `cnorm(0.95)` ≈ 1.96.)
 
 
 * 5. Interpret the confidence interval within the context. 
@@ -224,8 +225,7 @@ Congrats! You created a 95% CI with the bootstrap distribution!
 
 5. **Fifth**, interpret the confidence interval within the context.
 
-We are 95% confident that the population mean weekly exercise hours is between `r round(CI95_lower, 3)` and `r round(CI95_upper, 3)` hours.
-
+We are 95% confident that the population mean weekly exercise hours is between `8.358` and `12.842` hours.
 
 
 $\\$
@@ -273,5 +273,5 @@ CI99_lower_upper
 
 3. Compare the three confidence intervals you have obtained from the three different confidence levels: 90%, 95%, and 99%.
 
-As the confidence level increases from 90% to 95% to 99%, the critical value used in the margin of error gets larger, so the confidence interval gets wider — the 90% CI is the narrowest and the 99% CI is the widest, with the 95% CI in between. All three are centered at the same sample mean, `x_bar`. In this case: the 90% CI is (`r round(CI90_lower_upper[1], 3)`, `r round(CI90_lower_upper[2], 3)`), the 95% CI is (`r round(CI95_lower, 3)`, `r round(CI95_upper, 3)`), and the 99% CI is (`r round(CI99_lower_upper[1], 3)`, `r round(CI99_lower_upper[2], 3)`).
+As the confidence level increases from 90% to 95% to 99%, the critical value used in the margin of error gets larger, so the confidence interval gets wider — the 90% CI is the narrowest and the 99% CI is the widest, with the 95% CI in between. All three are centered at the same sample mean, `x_bar`.
 
