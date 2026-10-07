@@ -1,0 +1,371 @@
+---
+title: "Class 11 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+
+#  Part 1: Simple example of sampling with replacement
+
+
+
+```{r}
+
+
+library(SDS1000)
+
+
+# simple vector
+my_sample <- c(3, 1, 4, 1, 5, 9)
+
+
+
+# resampling values in the vector with replacement
+
+
+
+
+
+# print the bootstrap sample (some values can appear more than once)
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+#  Part 2: Simple fake data bootstrap example
+
+
+```{r}
+
+# simple bootstrap example
+
+my_sample <- c(21, 29, 25, 19, 24, 22, 25, 26, 25, 29)
+
+
+
+# calculate the x-bar statistic
+
+
+
+# create the bootstrap distribution
+
+
+
+
+
+
+# visualize the bootstrap distribution
+
+
+
+
+# calculate the standard error
+
+
+
+
+
+# 95% confidence interval (2 is approximately cnorm(.95) = 1.96)
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+#  Part 3: Confidence interval for Gettysburg mean word length
+
+
+```{r}
+
+
+# set the random seed
+set.seed(123)
+
+
+# load the gettysburg data
+load("gettysburg.Rda")
+
+
+# store the word lengths in a vector object called word_lengths
+word_lengths <- gettysburg$num_letters
+
+
+# get a random sample from the word lengths
+
+n <- 10
+
+my_sample <- sample(word_lengths, size = n)
+
+
+
+
+
+# calculate the x-bar statistic
+
+
+
+
+
+# create the bootstrap distribution
+
+
+
+
+
+# visualize the bootstrap distribution
+
+
+
+
+# calculate the standard error
+
+
+
+
+# 95% confidence interval
+
+
+
+
+# Is the population parameter (mu) in our confidence interval? 
+
+
+
+
+```
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+#  Part 4: Confidence interval examples
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Confidence interval example 1: One true love? 
+
+
+A survey asked 2625 people whether they agreed with the statement: 
+"There is only one true love for each person"
+
+1812 of the respondents disagreed.
+
+Compute a 90% confidence interval for the proportion who agreed (i.e., the
+proportion who believe there is only one true love for each person).
+
+
+
+
+
+```{r}
+
+library(SDS1000)
+
+
+# Create the data set
+
+believes_in_true_love <- c(rep(FALSE, 1812), rep(TRUE, 2625 - 1812))
+
+
+
+# Calculate the proportion of people who believe in one true love
+# Note: if you use the get_proportion function the word "TRUE" needs to be in quotes
+
+
+
+
+
+# Get an example of a bootstrap statistic
+
+# We can use the sample(data_vec, n) to get a sample of length n:
+
+
+
+
+
+
+
+
+# Create a bootstrap distribution in R
+
+
+
+
+
+
+
+
+
+# Visualize the bootstrap distribution
+
+
+
+
+
+
+# Get the bootstrap standard error SE*
+
+
+
+
+
+
+# Create a 90% confidence interval
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Confidence interval example 2: Average body temperature
+
+
+Let's create a 95% confidence interval for the mean body temperatures of humans
+using a sample of 50 people from the data collected by Mackowiak et al (1992).
+
+The data is loaded below from the Lock5 package. Start by visualizing the data
+then please create a 95% confidence interval for the mean body temperature using
+the bootstrap!
+
+
+
+```{r bodytemp_viz}
+
+# Load the data 
+library(Lock5Data)
+
+body_temps <- BodyTemp50$BodyTemp
+
+
+# Start by visualizing the data
+
+
+
+
+
+
+```
+
+
+
+
+Now create a 95% confidence interval for the mean body temperature using the
+bootstrap!
+
+See if you can also create an 80% and 99% confidence interval as well!
+
+
+
+
+```{r bodytemp_CI}
+
+
+# Calculate the observed mean
+
+
+
+
+# Create a bootstrap distribution in R
+
+
+
+
+
+
+# Visualize the bootstrap distribution
+
+
+
+
+# Get the bootstrap standard error SE*
+
+
+
+# Create a 95% confidence interval (2 is approximately cnorm(.95) = 1.96)
+
+
+
+
+
+# Create a 80% confidence interval
+
+
+
+
+# Create a 99% confidence interval
+
+
+
+
+
+```
+
+
+
+Based on your confidence intervals, is 98.6$^\circ$F (the value that is commonly
+quoted as the average human body temperature) a plausible value for the mean body
+temperature?
+
+
+
+
