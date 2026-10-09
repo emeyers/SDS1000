@@ -1,1 +1,301 @@
+---
+title: "Practice Session 6 Answers"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+## Part 1: Hypothesis Testing Terms and Definitions
+
+Generally speaking, hypothesis testing is a way for researchers to answer questions in a meaningful way. The methodology leverages statistical reasoning and probability to either reject or fail to reject a statement about the population as a whole. Hypothesis testing in statistics often focuses on questions about population parameters (e.g., $\mu$, $\pi$). We do not write hypotheses in terms of the sample statistics (e.g., $\bar{x}$, $\hat{p}$). This aligns with the general theme of the course, which focuses on using samples to better understand the population.
+
+
+### Practice 1:
+
+Please match the following terms with the appropriate definition.
+
+**Terms:**
+
+1. Null Hypothesis
+2. Alternative Hypothesis
+3. P-value
+
+**Definitions:**
+
+a. The probability of observing results at least as extreme as what we observed, assuming the null hypothesis is true.
+b. A statement of interest that represents the status quo, or that there is no effect or difference.
+c. A statement of interest that proposes there is an effect or difference.
+
+**Answers**
+
+1. **Null Hypothesis:** A statement of interest that represents the status quo, or that there is no effect or difference.
+2. **Alternative Hypothesis:** A statement of interest that proposes there is an effect or difference.
+3. **P-value:** The probability of observing results at least as extreme as what we observed, assuming the null hypothesis is true.
+
+
+
+$\\$ 
+
+
+
+## Part 2: Hypothesis Testing for a Single Proportion
+
+### Practice 2.1: Preferred Water Brand
+
+A national sales bureau believes that 30% of consumers prefer Fiji water as their first choice for water. Specifically, they choose it over Aquafina, Sam's Choice, and tap water. The Fiji company claims that this proportion is greater than 30%. Using the `WaterTaste` data set from the `Lock5Data` library, run a hypothesis test to check this claim. Look at the help page for the data set to see which variable is appropriate to use.
+
+```{r}
+library(SDS1000)
+library(Lock5Data)
+data(WaterTaste)
+set.seed(1000)
+
+```
+
+
+1. **First**: State the null and alternative hypotheses in words and in symbols.
+
+    
+
+
+2. **Second**: Calculate the observed statistic of interest.
+
+```{r}
+# your code here #
+```
+
+3. **Third**: Create a null distribution in R using `do_it()` and `rflip()`. Plot the null distribution, and add a vertical red line at your point estimate.
+
+```{r}
+# your code here #
+```
+
+4. **Fourth**: Calculate the p-value (probability of obtaining a result as or more extreme than what we observed) using the `ptail()` function.
+
+```{r}
+# your code here #
+```
+
+5. **Fifth**: Report the p-value. Make a decision on whether the results are statistically significant, and state your conclusion.
+
+
+
+$\\$
+
+
+### Practice 2.2: AP Multiple Choice
+
+Does the answer choice "C" occur less frequently than expected? Answer this question with a hypothesis test. Use the `APMultipleChoice` data set from the `Lock5Data` library. Make sure to follow all 5 steps of hypothesis testing. *Hint*: when defining the null hypothesis, consider how likely each answer choice would be if answers were selected at random.
+
+```{r}
+library(SDS1000)
+library(Lock5Data)
+data(APMultipleChoice)
+
+```
+
+**Answers**
+
+1. **First**: State the null and alternative hypotheses in words and in symbols.
+
+
+
+
+2. **Second**: Calculate the observed statistic of interest.
+
+```{r}
+# your code here #
+```
+
+3. **Third**: Create a null distribution in R using `do_it()` and `rflip()`. Plot the null distribution, and add a vertical red line at your point estimate. *Note*: there were 400 multiple-choice questions in the data set.
+
+```{r}
+# your code here #
+
+```
+
+4. **Fourth**: Calculate the p-value (probability of obtaining a result as or more extreme than what we observed) using the `ptail()` function.
+
+```{r}
+# your code here #
+
+```
+
+5. **Fifth**: Report the p-value. Make a decision on whether the results are statistically significant, and state your conclusion.
+
+
+
+
+$\\$
+
+### Part 3: More practice/  UFO Shapes
+
+UFOs, or Unidentified Flying Objects, have become commonplace in media and popular culture. Some witnesses claim that the objects have a cylindrical shape, while others believe they are more spherical. Load the data `ufo_data.csv` using the function `read.csv()`. The file is in the course materials folder; save it to your working directory (the same folder as this file) before running `read.csv()`. The data have already been filtered to include only sightings described as spheres or cylinders.
+
+Run a hypothesis test to check whether the proportion of sightings described as spherical differs from 0.75.
+
+
+1. State the null and alternative hypotheses in words and in symbols.
+
+
+    
+
+2. Calculate the observed statistic of interest.
+
+```{r}
+# your code here #
+
+```
+
+
+3. Create a null distribution in R using `do_it()` and `rflip()`. Plot the null distribution, and add a vertical red line at your point estimate.
+
+```{r}
+# your code here #
+
+```
+
+
+4. Calculate the p-value (probability of obtaining a result as or more extreme than what we observed) using the `ptail()` function.
+
+
+
+```{r}
+
+# your code here #
+
+```
+
+
+
+5. Report the p-value. Make a decision on whether the results are statistically significant, and state your conclusion.
+
+
+
+# Part 4: Extra Practice
+
+### Practice 4.1: Exploring the `ptail()` Function
+
+In this exercise, we will practice using some basic R coding to calculate a p-value without using the `ptail()` function.
+
+1. Consider the null distribution and point estimate from the AP Multiple Choice exercise. Using the `<=` operator, write a single line of code that will show which values in the null distribution are less than or equal to the point estimate. Run this code and observe what the values look like. Save this result to a vector. *Hint*: don't overthink this part. Just write the inequality as you would in math class.
+
+
+```{r}
+# your code here #
+
+```
+
+
+
+2. Using your vector from above, count how many values from the null distribution are less than or equal to the point estimate. Use the `sum()` function for this. *Hint*: `sum()` on a vector of `TRUE`/`FALSE` values counts the `TRUE`s, because R treats `TRUE` as 1 and `FALSE` as 0.
+
+```{r}
+# your code here #
+
+```
+
+
+
+3. Using your result from part 2, find the proportion of values in the null distribution that are less than or equal to the point estimate. Compare to the p-value from `ptail()` in Practice 2.2.
+
+```{r}
+# your code here #
+
+```
+
+
+$\\$
+
+### Practice 4.2: Hypothesis Testing for Difference in Two Means /Caffeine Taps
+
+
+A sample of college students was asked to tap their fingers at a rapid rate. The sample was then divided at random into two groups of ten students each. Each student drank the equivalent of about two cups of coffee, which included about 200 mg of caffeine for the students in one group but was decaffeinated coffee for the second group. After a two-hour period, each student was tested to measure finger tapping rate (taps per minute). The goal of the experiment was to determine whether caffeine produces an increase in the average tap rate.
+
+1. Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+    
+
+2. Create a boxplot to describe tap rates for Caffeine versus No Caffeine.
+
+```{r}
+# your code here #
+
+```
+
+
+
+3. Find summary statistics for the number of taps in the `Caffeine` and `NoCaffeine` groups. You might find the function `mosaic::favstats()` useful. *Note*: you can search online for this function's arguments.
+
+```{r}
+# your code here #
+
+```
+
+
+
+4. Split the `Taps` variable into two vectors, one for the `Caffeine` group and one for the `NoCaffeine` group.
+
+```{r}
+# your code here #
+
+```
+
+
+
+5. Compute the observed statistic (the difference in mean taps between the two groups).
+
+```{r}
+# your code here #
+
+```
+
+
+
+6. Create the null distribution.
+
+
+
+a. Combine the two groups into a single vector.
+
+```{r}
+# your code here #
+
+```
+
+
+b. Create the null distribution using the `do_it()` function. Each time, shuffle the combined vector, split it back into two groups of the original sizes, and find the difference in means.
+
+```{r}
+# your code here #
+
+```
+
+
+
+c. Plot a histogram of the null distribution and show the line of the observed mean difference using the `abline()` function.
+
+```{r}
+# your code here #
+
+```
+
+
+7. Calculate the p-value.
+
+```{r}
+# your code here #
+
+```
+
+
+8. Make a decision and state your conclusion.
+
+
+
+
+
+
 
