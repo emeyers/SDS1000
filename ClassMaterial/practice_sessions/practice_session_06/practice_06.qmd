@@ -1,5 +1,5 @@
 ---
-title: "Practice Session 6 Answers"
+title: "Practice Session 6"
 format: pdf
 editor: source
 editor_options: 
