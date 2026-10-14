@@ -1,0 +1,313 @@
+---
+title: "Class 13 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+# Part 1: Hypothesis tests
+
+In order to run a hypothesis test, we need to simulate statistics that would
+occur if "nothing interesting" is happening; i.e., if the "null hypothesis" is
+true.
+
+For hypothesis tests that involve proportions, we can do this by simulating
+flipping a coin n times, where n is the number of trials in our original data
+set. We can then count the number of heads we get, and see if this is larger
+than the number (or proportion) of positive outcomes we observed in our original
+data set.
+
+Using the `SDS1000` package, we can simulate coin flips using the `rflip()`
+function. For example, if we flip a coin 200 times, where each flip has a 25%
+chance of being heads, we can use `rflip(200, 0.25)` to get the number of
+heads we observed in our 200 flips.
+
+```{r coin_flip_example}
+
+library(SDS1000)
+
+options(scipen = 999)   # print small numbers without scientific notation
+
+#set.seed(1234)
+
+
+rflip(200, 0.25)
+
+
+```
+
+
+In the Doris and Buzz experiment, Buzz pressed the correct button in 15 out of
+16 trials. If Buzz were just guessing, he would be correct half the time, so we
+are testing $H_0: \pi = 0.5$ vs. $H_A: \pi > 0.5$.
+
+Can you do one simulation of the Doris and Buzz example? How many times do you
+need to flip the coin to simulate the experiment that was run?
+
+
+```{r doris_buzz_simulation}
+
+
+# Simulate one experiment
+rflip(16, 0.5)
+
+```
+
+
+
+To see if the result we observed in the Doris and Buzz experiment is unusual, we can
+repeat the simulation many times to create a null distribution of statistics. We
+can then see how many of the simulated statistics are as extreme or more extreme
+than the statistic we observed in the original experiment.
+
+
+
+```{r doris_buzz_null_distribution}
+
+
+# Simulate the null distribution
+null_dist <- do_it(10000) * {
+  rflip(16, 0.5)
+}
+
+# Visualize the null distribution
+hist(null_dist, breaks = 50, main = "Null Distribution of Heads in 16 Flips", 
+     xlab = "Number of Heads", xlim = c(0, 16))
+
+abline(v = 15, col = "red")
+
+```
+
+
+
+
+
+
+$\\$ 
+
+
+
+
+
+
+# Part 2: Calculating a p-value
+
+Let's now calculate the p-value for the Doris and Buzz experiment. We observed
+15 heads out of 16 flips. We can calculate the p-value by seeing how many of the
+simulated statistics are as extreme or more extreme than 15 heads.
+
+To calculate the p-value we can use the `ptail()` function from the `SDS1000`
+package, which takes as input the following arguments:
+
+1. Observed statistic value. 
+
+2. A vector of simulated statistics (i.e., our null distribution)
+
+3. A logical value, `lower.tail`, indicating whether we want to calculate the lower tail
+   probability (i.e., the proportion of simulated statistics less than or equal to
+   the observed statistic) or the upper tail probability (i.e., the proportion of
+   simulated statistics greater than or equal to the observed statistic).
+
+
+The `ptail()` function returns the p-value, which is the proportion of statistics 
+in our null distribution as or more extreme than the observed statistic.
+
+
+
+```{r doris_buzz_p_value}
+
+
+# Number of trials Buzz got correct
+obs_stat <-  15
+
+
+# Calculate the p-value
+p_value  <- ptail(obs_stat,  null_dist,  lower.tail = FALSE)
+
+p_value
+
+
+```
+
+
+
+$\\$
+
+
+
+
+
+# Part 3: Lie detector hypothesis test
+
+A study by Hollien, Harnsberger, Martin and Hollien (2010) tried to assess the 
+accuracy of lie detection software. 
+
+A sample of 48 participants were gathered and attached to a lie detection device.
+They were asked to read deceptive (lying) material out loud. 
+
+The lie detector correctly reported that 31 out of the 48 participants were lying. 
+
+Let's run a hypothesis test to see if the results provide evidence that lie 
+detectors are more than 60% accurate.
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 1: State the null and alternative hypotheses 
+
+
+Words:
+ - Null hypothesis: The lie detector is 60% accurate
+ - Alternative hypothesis: The lie detector is more than 60% accurate
+ 
+Symbols:
+ - $H_0: \pi = 0.6$
+ - $H_A: \pi > 0.6$
+
+
+
+$\\$
+
+
+
+
+### Step 2: Calculate the observed statistic
+
+
+
+```{r lie_detector_stat}
+
+
+# step 2: compute observed statistic
+
+(lie_phat <- 31/48)
+
+
+
+```
+
+
+
+$\\$
+
+
+
+
+### Step 3: Create the null distribution
+
+
+
+```{r lie_detector_null_distribution}
+
+null_dist <- do_it(10000) * {
+  
+  rflip(48, .6)/48
+  
+}
+
+
+
+# plot the null distribution
+hist(null_dist, breaks = 100, 
+     main = "Null distribution",
+     xlab = "Proportion of lies correctly detected")
+
+abline(v = lie_phat, col = "red")
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 4: Calculate the p-value
+
+```{r lie_detector_p_value}
+
+ptail(lie_phat, null_dist, lower.tail = FALSE)
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 5: Make a decision
+
+
+Since the p-value (about 0.31) is greater than the typical cutoff of 0.05, we fail to
+reject the null hypothesis and we could call the result "not statistically
+significant". We will discuss what this means in more detail (and whether we
+should even use the term "statistically significant") in future classes.
+
+
+
+
+$\\$
+
+
+
+
+**Question**: What would have happened if we had tested whether lie detector 
+tests get it correct more than 50% of the time? 
+
+Try it!
+
+
+```{r lie_detector_50_percent}
+
+# Steps 1-2: H_0: pi = 0.5 vs. H_A: pi > 0.5, and the same observed statistic (31/48)
+
+# Step 3: create the null distribution if the lie detector were correct 50% of the time
+null_dist_50 <- do_it(10000) * {
+
+  rflip(48, .5)/48
+
+}
+
+hist(null_dist_50, breaks = 100,
+     main = "Null distribution (50% accurate)",
+     xlab = "Proportion of lies correctly detected")
+
+abline(v = lie_phat, col = "red")
+
+
+# Step 4: calculate the p-value
+ptail(lie_phat, null_dist_50, lower.tail = FALSE)
+
+```
+
+
+**Answer:** With a null value of 50%, the p-value is about 0.03, which is less than
+0.05, so we would reject the null hypothesis and conclude that the lie detector is
+correct more than 50% of the time. The same data can lead to different
+conclusions depending on the null hypothesis we test: there is evidence that the
+lie detector does better than 50%, but not that it does better than 60%.
+
+
+
+
