@@ -1,0 +1,490 @@
+---
+title: "Class 14 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+## Part 1: Lie detector hypothesis test
+
+A study by Hollien, Harnsberger, Martin and Hollien (2010) tried to assess the 
+accuracy of lie detection software. 
+
+A sample of 48 participants were gathered and attached to a lie detection device.
+They were asked to read deceptive (lying) material out loud. 
+
+The lie detector correctly reported that 31 out of the 48 participants were lying. 
+
+Let's run a hypothesis test to see if the results provide evidence that lie 
+detectors are more than 60% accurate.
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 1: State the null and alternative hypotheses 
+
+
+Words:
+
+* Null hypothesis: The lie detector is 60% accurate
+* Alternative hypothesis: The lie detector is more than 60% accurate
+
+Symbols:
+
+* $H_0: \pi = 0.6$
+* $H_A: \pi > 0.6$
+
+
+
+$\\$
+
+
+
+
+### Step 2: Calculate the observed statistic
+
+
+
+```{r lie_detector_stat}
+
+
+# step 2: compute observed statistic
+
+(obs_stat <- 31/48)
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 3: Create the null distribution
+
+
+
+```{r lie_detector_null_distribution}
+
+
+library(SDS1000)
+
+
+null_dist <- do_it(10000) * {
+  
+  rflip(48, .6)/48
+  
+}
+
+
+
+# plot the null distribution
+hist(null_dist, breaks = 100, 
+     main = "Null distribution",
+     xlab = "Proportion of lies correctly detected")
+
+abline(v = obs_stat, col = "red")
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+```{r lie_detector_p_value}
+
+ptail(obs_stat, null_dist, lower.tail = FALSE)
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 5: Make a decision
+
+
+Since the p-value (about 0.31) is greater than the typical cutoff of 0.05, we fail to
+reject the null hypothesis and we could call the result "not statistically
+significant". We will discuss what this means in more detail (and whether we
+should even use the term "statistically significant") in future classes.
+
+
+
+
+$\\$
+
+
+
+
+**Question**: What would have happened if we had tested whether lie detector 
+tests get it correct more than 50% of the time? 
+
+Try it!
+
+
+```{r lie_detector_50_percent}
+
+# Steps 1-2: H_0: pi = 0.5 vs. H_A: pi > 0.5, and the same observed statistic (31/48)
+
+# Step 3: create the null distribution if the lie detector were correct 50% of the time
+null_dist_50 <- do_it(10000) * {
+
+  rflip(48, .5)/48
+
+}
+
+hist(null_dist_50, breaks = 100,
+     main = "Null distribution (50% accurate)",
+     xlab = "Proportion of lies correctly detected")
+
+abline(v = obs_stat, col = "red")
+
+
+# Step 4: calculate the p-value
+ptail(obs_stat, null_dist_50, lower.tail = FALSE)
+
+```
+
+
+**Answer:** With a null value of 50%, the p-value is about 0.03, which is less than
+0.05, so we would reject the null hypothesis and conclude that the lie detector is
+correct more than 50% of the time. The same data can lead to different
+conclusions depending on the null hypothesis we test: there is evidence that the
+lie detector does better than 50%, but not that it does better than 60%.
+
+
+
+
+
+$\\$
+
+
+
+
+## Part 2: Two-sided hypothesis tests
+
+Let's say we want to test whether the lie detector is different from 60% accurate.
+
+
+$\\$
+
+
+### Step 1: State the null and alternative hypotheses
+
+Words:  
+
+* Null hypothesis: The lie detector is 60% accurate
+* Alternative hypothesis: The lie detector is different from 60% accurate
+ 
+Symbols:  
+
+* $H_0: \pi = 0.6$  
+* $H_A: \pi \neq 0.6$   
+   
+   
+   
+
+$\\$   
+   
+
+
+### Step 2: Calculate the observed statistic
+
+
+```{r lie_detector_stat_2sided}
+
+(obs_stat <- 31/48)
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 3: Create the null distribution
+
+
+```{r lie_detector_null_distribution_2sided}
+
+library(SDS1000)
+
+null_dist <- do_it(10000) * {
+  
+  rflip(48, .6)/48
+  
+}
+
+# plot the null distribution
+hist(null_dist, breaks = 100,
+     main = "Null distribution",
+     xlab = "Proportion of lies correctly detected")
+
+
+stat_param_margin <- abs(obs_stat - 0.6)
+stat_param_margin
+
+abline(v = obs_stat, col = "red")
+abline(v = .6 - stat_param_margin, col = "red")
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+```{r lie_detector_p_value_2sided}
+
+
+pval_left <- ptail(0.6 - stat_param_margin, null_dist, lower.tail = TRUE)
+pval_right <- ptail(0.6 + stat_param_margin, null_dist, lower.tail = FALSE)
+
+p_value <- pval_left + pval_right
+
+p_value
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 5: Make a decision
+
+
+Since the p-value (about 0.55) is greater than the typical cutoff of 0.05, we
+fail to reject the null hypothesis and we could call the result "not
+statistically significant". Notice that the two-sided p-value is about twice
+the one-sided p-value we found in Part 1 (about 0.31), since we now count
+results that are as extreme in either direction.
+
+     
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 3: Hypothesis tests for two means
+
+
+A randomized controlled trial by Lyle et al (1987) investigated whether calcium
+lowered blood pressure.
+
+ - A treatment group of 10 men received a calcium supplement for 12 weeks.  
+ - A control group of 11 men received a placebo during the same period.  
+
+The blood pressure of these men was taken before and after the 12 weeks of the study.
+
+For each man, the data below give the decrease in blood pressure over the 12
+weeks (blood pressure before the study minus blood pressure after the study), so
+a positive value means that the man's blood pressure went down.
+
+Let's run a hypothesis test to see if there was a larger decrease in blood
+pressure for participants that received calcium compared to those that received
+a placebo.
+
+
+
+
+$\\$
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+Words:
+
+* Null hypothesis: The mean decrease in blood pressure is the same for both groups  
+* Alternative hypothesis: The mean decrease in blood pressure is greater for the treatment group  
+ 
+Symbols:
+
+* $H_0: \mu_{treat} = \mu_{control}$  
+* $H_A: \mu_{treat} > \mu_{control}$  
+ 
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 2: Calculate the observed statistic
+
+
+```{r calcium_obs_stat}
+
+
+# the data from the calcium study: the decrease in blood pressure (before - after) for each man
+treat <- c(7, -4, 18, 17, -3, -5,  1, 10, 11, -2)
+control <- c(-1,  12,  -1,  -3,   3,  -5,   5,   2, -11,  -1,  -3)
+
+
+
+# observed statistic
+obs_stat <- mean(treat) - mean(control)
+
+obs_stat
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 3: Create the null distribution
+
+
+```{r calcium_null_distribution}
+
+
+#  Combine data from both groups
+combined_data <- c(treat, control)
+
+
+null_dist <-  do_it(10000) * {
+
+       # shuffle data
+        shuff_data <- shuffle(combined_data)
+
+        # create fake treatment and control groups
+        shuff_treat   <-  shuff_data[1:length(treat)]
+        shuff_control  <-  shuff_data[(length(treat) + 1):length(combined_data)]
+
+        # calculate the shuffled statistic of interest
+        mean(shuff_treat) - mean(shuff_control)
+
+}
+
+
+# plot the null distribution
+hist(null_dist, breaks = 200,
+     main = "Null distribution",
+     xlab = "Difference in mean decrease in blood pressure")
+
+
+# add a red vertical line at the observed statistic
+abline(v = obs_stat, col = "red")
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+```{r calcium_p_value}
+
+ptail(obs_stat, null_dist, lower.tail = FALSE)
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 5: Make a decision
+
+
+The p-value (about 0.06) is just barely greater than the typical cutoff of 0.05,
+so if we used the strict rule of only rejecting the null hypothesis when the
+p-value is less than 0.05, we would fail to reject the null hypothesis here.
+
+
+     
+
+
+
+
+
+
+
