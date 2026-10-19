@@ -1,1 +1,303 @@
+---
+title: "Practice Session 7 Answers"
+output: pdf_document
+---
+
+```{r }
+
+library(SDS1000)
+library(Lock5Data)
+set.seed(1000)
+```
+
+## Intro
+
+The focus of this practice session is hypothesis testing. We will start by reviewing hypothesis tests for a single proportion, and then perform hypothesis tests for the difference of two means. We will also practice **stating** null and alternative hypotheses for other parameters (correlations and several means); running those tests will come after the midterm exam.
+
+As a reminder, every hypothesis test follows the same five steps:
+
+1. State the null and alternative hypotheses.
+2. Compute the observed statistic.
+3. Create the null distribution.
+4. Calculate the p-value.
+5. Make a decision and state a conclusion.
+
+
+## Question 1: Free Throws — Review of a Hypothesis Test for a Single Proportion
+
+Over his career, a basketball player has made 80% of his free throws. This season he has made 61 of his first 85 free throws. Is there evidence that his free-throw success rate this season is lower than his career rate of 80%? Use a significance level of $\alpha = 0.05$.
+
+**1.a** Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+- Null: The player's true free-throw success rate this season is 80%.
+- Alternative: The player's true free-throw success rate this season is less than 80%.
+
+$H_0: \pi = 0.80$ 
+vs. 
+$H_A: \pi < 0.80$
+
+
+**1.b** Compute the observed statistic (the sample proportion of free throws made).
+
+
+```{r}
+n_shots  <- 85
+obs_stat <- 61 / n_shots
+obs_stat
+```
+
+**2.** Create the null distribution. If the null hypothesis is true, each free throw goes in with probability 0.80. Use `rbinom()` to simulate 85 free throws, and convert the number made into a proportion.
+
+```{r}
+null_dist <- do_it(10000) * {
+  rflip(1, n_shots, 0.80) / n_shots
+}
+```
+
+**3.** Plot a histogram of the null distribution and add a vertical line at the observed statistic.
+
+```{r}
+hist(null_dist,
+     xlab = "Proportion of free throws made",
+     main = "Null distribution")
+
+abline(v = obs_stat, col = "red")
+```
+
+**4.** Calculate the p-value. Since $H_A$ says "less than", we look at the lower tail.
+
+```{r}
+p_value <- ptail(obs_stat, null_dist, lower.tail = TRUE)
+p_value
+```
+
+**5.** Make a decision and state your conclusion.
+
+Since the p-value (`r round(p_value, 4)`) is less than 0.05, we reject the null hypothesis. We have evidence that the player's free-throw success rate this season is lower than his career rate of 80%.
+
+$\\$
+
+
+
+## Question 2: Exercise Hours — Hypothesis Test for the Difference of Two Means
+
+A study wants to check whether the mean number of exercise hours per week for female students is less than the mean number for male students. Use the `ExerciseHours` data set and the two variables `Exercise` and `Sex`.
+
+```{r}
+data(ExerciseHours)
+```
+
+**1.a** Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+- Null: The mean exercise hours for female students is the same as for male students.
+- Alternative: The mean exercise hours for female students is less than for male students.
+
+$H_0: \mu_f = \mu_m$
+vs.
+$H_A: \mu_f < \mu_m$
+
+**1.b** Create a boxplot to compare hours of exercise for female versus male students.
+
+```{r}
+boxplot(Exercise ~ Sex, data = ExerciseHours,
+        main = "Weekly Exercise Hours by Sex",
+        xlab = "Sex",
+        ylab = "Exercise (hours per week)")
+```
+
+**1.c** Subset the data `ExerciseHours` into two groups: `F` and `M`.
+
+```{r}
+exercise_fem <- ExerciseHours$Exercise[ExerciseHours$Sex == "F"]
+exercise_mal <- ExerciseHours$Exercise[ExerciseHours$Sex == "M"]
+
+length(exercise_fem)
+length(exercise_mal)
+```
+
+**2.** Compute the observed statistic (the difference in mean exercise hours, female minus male).
+
+```{r}
+obs_stat <- mean(exercise_fem) - mean(exercise_mal)
+obs_stat
+```
+
+**3.** Create the null distribution.
+
+**3.a** Combine the female and male samples, shuffle them, split them back into two groups of the original sizes, and find the difference in means of the two shuffled groups.
+
+*Note:* `shuffle()` from the SDS1000 package does the same thing as base R's `sample()` used in Practice Session 6 — both return the values in a random order.
+
+```{r}
+combined_sample <- c(exercise_fem, exercise_mal)
+shuffled_sample <- shuffle(combined_sample)
+
+shuff_fem <- shuffled_sample[1:30]
+shuff_mal <- shuffled_sample[31:50]
+
+shuff_stat <- mean(shuff_fem) - mean(shuff_mal)
+shuff_stat
+```
+
+**3.b** Create the null distribution using the function `do_it()`.
+
+```{r}
+null_dist <- do_it(10000) * {
+  shuffled_sample <- shuffle(combined_sample)
+
+  shuff_fem <- shuffled_sample[1:30]
+  shuff_mal <- shuffled_sample[31:50]
+
+  mean(shuff_fem) - mean(shuff_mal)
+}
+```
+
+**3.c** Plot a histogram of the null distribution and add a vertical line at the observed difference in means.
+
+```{r}
+hist(null_dist,
+     xlab = "Difference in mean exercise hours (female - male)",
+     main = "Null distribution")
+
+abline(v = obs_stat, col = "blue")
+```
+
+**4.** Calculate the p-value. Since $H_A$ says "less than", we look at the lower tail.
+
+```{r}
+p_value <- ptail(obs_stat, null_dist, lower.tail = TRUE)
+p_value
+```
+
+**5.** Make a decision and state your conclusion.
+
+Since the p-value (`r round(p_value, 4)`) is greater than 0.05, we fail to reject the **null hypothesis**. There is not enough evidence to conclude that the average exercise hours for female students is less than the average exercise hours for male students.
+
+
+
+$\\$
+
+## Question 3: Stating Hypotheses for Other Parameters
+
+For the exam you need to be able to **state** the null and alternative hypotheses for several kinds of parameters, even though we will not run the tests for correlation or for several means until after the midterm. For each scenario below, define the parameter(s) and write the null and alternative hypotheses in words and in symbols. Do **not** run a test.
+
+**3.a** Data from the 2019 Major League Baseball season (`BaseballHits2019`) is used to ask: is there a positive correlation between the number of home runs a team hits and the number of games it wins?
+
+- Parameter: $\rho$, the population correlation between home runs and wins.
+- Null: There is no linear association between home runs and wins.
+- Alternative: There is a positive linear association between home runs and wins.
+
+$H_0: \rho = 0$ vs. $H_A: \rho > 0$
+
+**3.b** The `TextbookCosts` data set records textbook costs for courses in four fields: Arts, Humanities, Natural Science and Social Science. Does the mean textbook cost differ among the fields?
+
+- Parameters: $\mu_{Arts}$, $\mu_{Hum}$, $\mu_{NatSci}$, $\mu_{SocSci}$, the mean textbook cost in each field.
+- Null: The mean textbook cost is the same in all four fields.
+- Alternative: At least one field has a different mean textbook cost.
+
+$H_0: \mu_{Arts} = \mu_{Hum} = \mu_{NatSci} = \mu_{SocSci}$ vs. $H_A: \mu_i \neq \mu_j$ for some $i, j$
+
+**3.c** A researcher wants to know whether there is *any* linear association (positive or negative) between hours of sleep and GPA among college students.
+
+- Parameter: $\rho$, the population correlation between hours of sleep and GPA.
+
+$H_0: \rho = 0$ vs. $H_A: \rho \neq 0$
+
+**3.d** A hospital compares the mean antibody level produced by three different vaccines (A, B and C). Is there a difference among the vaccines?
+
+$H_0: \mu_A = \mu_B = \mu_C$ vs. $H_A: \mu_i \neq \mu_j$ for some $i, j$ in $\{A, B, C\}$
+
+**3.e** A poll asks whether the proportion of first-year students who live on campus is different from the proportion of seniors who live on campus.
+
+- Parameters: $\pi_{first}$ and $\pi_{senior}$, the proportions of first-year students and seniors who live on campus.
+
+$H_0: \pi_{first} = \pi_{senior}$ vs. $H_A: \pi_{first} \neq \pi_{senior}$
+
+
+
+
+$\\$
+
+
+## Extra Practice
+
+## Question 4: Caffeine Taps — Hypothesis Test for the Difference of Two Means
+
+A sample of male college students were asked to tap their fingers at a rapid rate. The sample was then divided at random into two groups of ten students each. Each student drank the equivalent of about two cups of coffee, which included about 200 mg of caffeine for the students in one group but was decaffeinated coffee for the second group. After a two-hour period, each student was tested to measure finger tapping rate (taps per minute). The goal of the experiment was to determine whether caffeine produces an **increase** in the average tap rate.
+
+```{r}
+data(CaffeineTaps)
+```
+
+**1.a** Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+- Null: There is no difference in the average tapping rate between the caffeinated and decaffeinated groups.
+- Alternative: The average tapping rate in the caffeinated group is higher than in the decaffeinated group.
+
+$H_0: \mu_c - \mu_{nc} = 0$ vs. $H_A: \mu_c - \mu_{nc} > 0$
+
+**1.b** Create a boxplot to compare tap rates for `Caffeine` versus `NoCaffeine`.
+
+```{r}
+boxplot(Taps ~ Group, data = CaffeineTaps,
+        main = "Finger Tap Rate by Coffee Type",
+        xlab = "Group",
+        ylab = "Taps per minute")
+```
+
+**1.c** Subset the data `CaffeineTaps` into two groups: `Caffeine` and `NoCaffeine`.
+
+```{r}
+caffeine <- CaffeineTaps$Taps[CaffeineTaps$Group == "Caffeine"]
+no_caffeine <- CaffeineTaps$Taps[CaffeineTaps$Group == "NoCaffeine"]
+```
+
+**2.** Compute the observed statistic (the difference in mean tap rate, caffeine minus no caffeine).
+
+```{r}
+obs_stat <- mean(caffeine) - mean(no_caffeine)
+obs_stat
+```
+
+**3.** Create the null distribution.
+
+**3.a** Combine the `Caffeine` and `NoCaffeine` samples.
+
+```{r}
+combined_sample <- c(caffeine, no_caffeine)
+```
+
+**3.b** Create the null distribution using the `do_it()` function.
+
+```{r}
+null_dist <- do_it(10000) * {
+  shuffled_sample <- shuffle(combined_sample)
+
+  shuff_caff <- shuffled_sample[1:10]
+  shuff_nocaff <- shuffled_sample[11:20]
+
+  mean(shuff_caff) - mean(shuff_nocaff)
+}
+```
+
+**3.c** Plot a histogram of the null distribution and add a vertical line at the observed difference in means.
+
+```{r}
+hist(null_dist,
+     xlab = "Difference in mean tap rate (caffeine - no caffeine)",
+     main = "Null distribution")
+
+abline(v = obs_stat, col = "blue")
+```
+
+**4.** Calculate the p-value. Since $H_A$ says "greater than", we look at the upper tail.
+
+```{r}
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
+p_value
+```
+
+**5.** Make a decision and state your conclusion.
+
+Since the p-value (`r round(p_value, 4)`) is less than 0.05, we reject the null hypothesis. We have evidence that drinking caffeinated coffee increases the average tap rate compared to drinking decaffeinated coffee. Because the students were randomly assigned to the two groups, we can conclude that caffeine *causes* the increase, but only for the population the sample represents: male college students.
 
