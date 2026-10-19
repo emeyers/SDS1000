@@ -1,6 +1,9 @@
 ---
 title: "Practice Session 7 Answers"
-output: pdf_document
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r }
