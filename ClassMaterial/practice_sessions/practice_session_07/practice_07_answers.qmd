@@ -76,7 +76,7 @@ p_value
 
 **5.** Make a decision and state your conclusion.
 
-Since the p-value (`r round(p_value, 4)`) is less than 0.05, we reject the null hypothesis. We have evidence that the player's free-throw success rate this season is lower than his career rate of 80%.
+Since the p-value is less than 0.05, we reject the null hypothesis. We have evidence that the player's free-throw success rate this season is lower than his career rate of 80%.
 
 
 
@@ -176,7 +176,7 @@ p_value
 
 **5.** Make a decision and state your conclusion.
 
-Since the p-value (`r round(p_value, 4)`) is greater than 0.05, we fail to reject the **null hypothesis**. There is not enough evidence to conclude that the average exercise hours for female students is less than the average exercise hours for male students.
+Since the p-value  is greater than 0.05, we fail to reject the **null hypothesis**. There is not enough evidence to conclude that the average exercise hours for female students is less than the average exercise hours for male students.
 
 
 
