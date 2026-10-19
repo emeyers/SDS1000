@@ -1,1 +1,246 @@
+---
+title: "Practice Session 7"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r }
+
+library(SDS1000)
+library(Lock5Data)
+set.seed(1000)
+```
+
+## Intro
+
+The focus of this practice session is hypothesis testing. We will start by reviewing hypothesis tests for a single proportion, and then perform hypothesis tests for the difference of two means. We will also practice **stating** null and alternative hypotheses for other parameters (correlations and several means); running those tests will come after the midterm exam.
+
+As a reminder, every hypothesis test follows the same five steps:
+
+1. State the null and alternative hypotheses.
+2. Compute the observed statistic.
+3. Create the null distribution.
+4. Calculate the p-value.
+5. Make a decision and state a conclusion.
+
+
+$\\$
+
+
+## Question 1: Free Throws — Review of a Hypothesis Test for a Single Proportion
+
+Over his career, a basketball player has made 80% of his free throws. This season he has made 61 of his first 85 free throws. Is there evidence that his free-throw success rate this season is lower than his career rate of 80%? Use a significance level of $\alpha = 0.05$.
+
+**1.a** Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+**1.b** Compute the observed statistic (the sample proportion of free throws made).
+
+
+```{r}
+# your code here #
+```
+
+
+**2.** Create the null distribution. If the null hypothesis is true, each free throw goes in with probability 0.80. Use `rflip()` to simulate 85 free throws, and convert the number made into a proportion.
+
+```{r}
+# your code here #
+```
+
+
+**3.** Plot a histogram of the null distribution and add a vertical line at the observed statistic.
+
+```{r}
+# your code here #
+```
+
+
+
+**4.** Calculate the p-value. Since $H_A$ says "less than", we look at the lower tail.
+
+```{r}
+# your code here #
+```
+
+**5.** Make a decision and state your conclusion.
+
+
+
+
+$\\$
+
+
+
+## Question 2: Exercise Hours — Hypothesis Test for the Difference of Two Means
+
+A study wants to check whether the mean number of exercise hours per week for female students is less than the mean number for male students. Use the `ExerciseHours` data set and the two variables `Exercise` and `Sex`.
+
+```{r}
+data(ExerciseHours)
+```
+
+**1.a** Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+
+**1.b** Create a boxplot to compare hours of exercise for female versus male students.
+
+```{r}
+# your code here #
+```
+
+**1.c** Subset the data `ExerciseHours` into two groups: `F` and `M`.
+
+```{r}
+# your code here #
+```
+
+**2.** Compute the observed statistic (the difference in mean exercise hours, female minus male).
+
+```{r}
+# your code here #
+```
+
+**3.** Create the null distribution.
+
+
+**3.a** Combine the female and male samples, shuffle them, split them back into two groups of the original sizes, and find the difference in means of the two shuffled groups.
+
+*Note:* `shuffle()` from the SDS1000 package does the same thing as base R's `sample()` used in Practice Session 6 — both return the values in a random order.
+
+```{r}
+# your code here #
+```
+
+
+
+**3.b** Create the null distribution using the function `do_it()`.
+
+```{r}
+# your code here #
+```
+
+
+
+**3.c** Plot a histogram of the null distribution and add a vertical line at the observed difference in means.
+
+```{r}
+# your code here #
+```
+
+
+**4.** Calculate the p-value. Since $H_A$ says "less than", we look at the lower tail.
+
+```{r}
+# your code here #
+```
+
+
+
+**5.** Make a decision and state your conclusion.
+
+
+
+
+
+$\\$
+
+
+
+## Question 3: Stating Hypotheses for Other Parameters
+
+For the exam you need to be able to **state** the null and alternative hypotheses for several kinds of parameters, even though we will not run the tests for correlation or for several means until after the midterm. For each scenario below, define the parameter(s) and write the null and alternative hypotheses in words and in symbols. Do **not** run a test.
+
+**3.a** Data from the 2019 Major League Baseball season (`BaseballHits2019`) is used to ask: is there a positive correlation between the number of home runs a team hits and the number of games it wins?
+
+
+
+**3.b** The `TextbookCosts` data set records textbook costs for courses in four fields: Arts, Humanities, Natural Science and Social Science. Does the mean textbook cost differ among the fields?
+
+
+
+**3.c** A researcher wants to know whether there is *any* linear association (positive or negative) between hours of sleep and GPA among college students.
+
+
+
+**3.d** A hospital compares the mean antibody level produced by three different vaccines (A, B and C). Is there a difference among the vaccines?
+
+
+
+
+**3.e** A poll asks whether the proportion of first-year students who live on campus is different from the proportion of seniors who live on campus.
+
+
+
+
+
+
+
+$\\$
+
+
+## Extra Practice
+
+## Question 4: Caffeine Taps — Hypothesis Test for the Difference of Two Means
+
+A sample of male college students were asked to tap their fingers at a rapid rate. The sample was then divided at random into two groups of ten students each. Each student drank the equivalent of about two cups of coffee, which included about 200 mg of caffeine for the students in one group but was decaffeinated coffee for the second group. After a two-hour period, each student was tested to measure finger tapping rate (taps per minute). The goal of the experiment was to determine whether caffeine produces an **increase** in the average tap rate.
+
+```{r}
+data(CaffeineTaps)
+```
+
+**1.a** Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+
+
+
+
+**1.b** Create a boxplot to compare tap rates for `Caffeine` versus `NoCaffeine`.
+
+```{r}
+# your code here #
+```
+
+**1.c** Subset the data `CaffeineTaps` into two groups: `Caffeine` and `NoCaffeine`.
+
+```{r}
+# your code here #
+```
+
+**2.** Compute the observed statistic (the difference in mean tap rate, caffeine minus no caffeine).
+
+```{r}
+# your code here #
+```
+
+**3.** Create the null distribution.
+
+**3.a** Combine the `Caffeine` and `NoCaffeine` samples.
+
+```{r}
+# your code here #
+```
+
+**3.b** Create the null distribution using the `do_it()` function.
+
+```{r}
+# your code here #
+
+```
+
+**3.c** Plot a histogram of the null distribution and add a vertical line at the observed difference in means.
+
+```{r}
+# your code here #
+```
+
+**4.** Calculate the p-value. Since $H_A$ says "greater than", we look at the upper tail.
+
+```{r}
+# your code here #
+```
+
+**5.** Make a decision and state your conclusion.
+
 
