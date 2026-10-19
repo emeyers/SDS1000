@@ -78,6 +78,8 @@ p_value
 
 Since the p-value (`r round(p_value, 4)`) is less than 0.05, we reject the null hypothesis. We have evidence that the player's free-throw success rate this season is lower than his career rate of 80%.
 
+
+
 $\\$
 
 
@@ -179,6 +181,8 @@ Since the p-value (`r round(p_value, 4)`) is greater than 0.05, we fail to rejec
 
 
 $\\$
+
+
 
 ## Question 3: Stating Hypotheses for Other Parameters
 
@@ -302,5 +306,5 @@ p_value
 
 **5.** Make a decision and state your conclusion.
 
-Since the p-value (`r round(p_value, 4)`) is less than 0.05, we reject the null hypothesis. We have evidence that drinking caffeinated coffee increases the average tap rate compared to drinking decaffeinated coffee. Because the students were randomly assigned to the two groups, we can conclude that caffeine *causes* the increase, but only for the population the sample represents: male college students.
+Since the p-value  is less than 0.05, we reject the null hypothesis. We have evidence that drinking caffeinated coffee increases the average tap rate compared to drinking decaffeinated coffee. Because the students were randomly assigned to the two groups, we can conclude that caffeine *causes* the increase, but only for the population the sample represents: male college students.
 
