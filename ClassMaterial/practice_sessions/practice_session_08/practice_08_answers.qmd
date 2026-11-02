@@ -1,1 +1,413 @@
+---
+title: "Practice Session 8 Answers"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r }
+
+library(SDS1000)
+library(Lock5Data)
+set.seed(1000)
+```
+
+
+## Intro
+
+The focus of this practice session will be to perform hypothesis tests for the difference of two  means or more. We will also conduct hypothesis testing for correlations.
+
+ Setting the seed makes the shuffles repeatable, so if you run the same code you will get exactly the same null distribution and p-value shown here.
+
+
+
+# Question 1: Caffeine Taps Hypothesis Test for the Difference of Two Means
+
+A sample of male college students were asked to tap their fingers at a rapid rate. The sample was then divided at random into two groups of ten students each. Each student drank the equivalent of about two cups of coffee, which included about 200 mg of caffeine for the students in one group but was decaffeinated coffee for the second group. After a two hour period, each student was tested to measure finger tapping rate (taps per minute). The goal of the experiment was to determine whether caffeine changes the average tap rate.
+
+```{r}
+
+library(Lock5Data)
+library(SDS1000)
+data(CaffeineTaps)
+```
+
+1.a Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+The question asks whether caffeine *changes* the average tap rate (in either direction), so this is a two-sided test.
+
+-   Null: There is no difference in the average tapping rate between the caffeinated and decaffeinated groups
+-   Alternative: The average tapping rate in the caffeinated group is different from the decaffeinated group
+
+-   $H_0: \mu_c - \mu_{nc} = 0$
+-   $H_A: \mu_c - \mu_{nc} \neq 0$
+
+
+
+
+1.b Create a boxplot to describe tap rates for Caffeine versus No Caffeine.
+
+```{r}
+boxplot(Taps ~ Group, data = CaffeineTaps,
+        main = "Finger Tap Rate by Group",
+        xlab = "Group", ylab = "Taps per minute")
+```
+
+
+
+
+1.c Subset the data `CaffeineTaps` to two groups: `Caffeine` and `NoCaffeine`.
+
+```{r}
+Caffeine <- CaffeineTaps$Taps[CaffeineTaps$Group == "Caffeine"]
+NoCaffeine <- CaffeineTaps$Taps[CaffeineTaps$Group == "NoCaffeine"]
+```
+
+
+
+
+2.  Compute the observed statistic (mean difference of tap number for the two groups).
+
+```{r}
+obs_stat <- mean(Caffeine) - mean(NoCaffeine)
+obs_stat
+```
+
+
+
+
+3.a Combine the two samples and create the null hypothesis distribution using the `do_it()` function.
+
+```{r}
+combined_sample <- c(Caffeine, NoCaffeine)
+
+set.seed(1000)
+null_dist <- do_it(10000) * {
+  shuffled_sample <- shuffle(combined_sample)
+  shuff_caff <- shuffled_sample[1:10]
+  shuff_nocaff <- shuffled_sample[11:20]
+
+  shuff_stat <- mean(shuff_caff) - mean(shuff_nocaff)
+}
+```
+
+
+
+
+3.b Plot a histogram of the null distribution and show the observed mean difference (solid line) and its mirror image on the other side of zero (dashed line) using the `abline()` function.
+
+```{r}
+hist(null_dist,
+     xlab = "Difference in Mean Tap Rate",
+     main = "Null distribution")
+
+
+null_val <- 0 
+stat_param_margin <- abs(obs_stat - null_val)
+stat_param_margin
+
+abline(v = obs_stat, col = "mediumvioletred", lty= 4, lw= 3  )
+abline(v = null_val- stat_param_margin, col = "midnightblue", lty= 2, lw= 3 )
+
+
+
+```
+
+4.  Calculate the p-value.
+
+
+```{r}
+
+pval_left <- ptail(null_val - stat_param_margin, null_dist, lower.tail = TRUE)
+
+pval_right <- ptail(null_val + stat_param_margin, null_dist, lower.tail = FALSE)
+
+p_value <- pval_left + pval_right
+p_value
+
+```
+
+5.  Make a decision and state your conclusion.
+
+Since our p-value is less than 0.05, we reject the null hypothesis and conclude the alternative. We therefore have evidence that the average tap rate differs between students who drink caffeinated coffee and those who drink decaffeinated coffee. In this sample the caffeinated group tapped faster, by `3.5 minutes` taps per minute on average.
+
+$\\$
+
+
+
+## Question 2: Baseball Hits Hypothesis Test for Correlations
+
+Do more home runs mean more wins? In other words, is there a positive correlation between the number of home runs a team hits and the number of wins? Test this hypothesis using a permutation test. Data from the 2019 Major League Baseball (MLB) season is available in the `BaseballHits2019` dataset in the `Lock5Data` library. Make sure to extract the appropriate columns from the data.
+
+```{r}
+
+library(Lock5Data)
+library(SDS1000)
+data(BaseballHits2019)
+
+```
+
+**Answers:**
+
+
+1.a Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+-   Null: There is no linear association between home runs and wins
+-   Alternative: There is a positive, linear association between home runs and wins
+
+-   $H_0: \rho = 0$
+-   $H_A: \rho > 0$
+
+
+
+1.b Create a scatterplot to visualize the association between `HomeRuns` and `Wins`.
+
+We name the home-run vector `home_runs` rather than `runs`: in baseball, runs and home runs are different statistics, and the data set has a separate `Runs` column.
+
+```{r}
+home_runs <- BaseballHits2019$HomeRuns
+wins <- BaseballHits2019$Wins
+
+plot(home_runs, wins,
+     xlab = "Home Runs", ylab = "Wins",
+     main = "Home Runs vs Wins in the 2019 MLB Season", 
+     pch = 21, col = "lightsalmon", bg = "seagreen")
+
+     #col= " limegreen",  border= " blue")
+```
+
+
+
+2.  Compute the observed statistic (correlation between `HomeRuns` and `Wins`).
+
+```{r}
+home_runs_wins_corr <- cor(home_runs, wins)
+home_runs_wins_corr
+```
+
+
+
+
+3.a Create the null hypothesis distribution.
+
+The `shuffle()` function from the `SDS1000` package puts the values in a random order. It does the same job as `sample()`, which we used in practice session 6, so the two are interchangeable here.
+
+```{r}
+set.seed(1000)
+null_dist <- do_it(10000) * {
+  cor(home_runs, shuffle(wins))
+}
+```
+
+
+
+3.b Plot a histogram of the null distribution and show the line of the observed correlation using the `abline()` function.
+
+```{r}
+hist(null_dist,
+     xlab = "Correlations between Home Runs and Wins",
+     main = "Null distribution",
+     xlim = c(-1, 1))
+
+abline(v = home_runs_wins_corr, col = "mediumturquoise", lw= 2, lty= 3)
+```
+
+
+
+4.  Calculate the p-value.
+
+```{r}
+p_value <- pnull(home_runs_wins_corr, null_dist, lower.tail = FALSE)
+p_value
+```
+
+We report $p < 0.0001$.
+
+
+5.  Make a decision and state your conclusion.
+
+Since our p-value is less than 0.0001 (well below 0.05), we reject the null hypothesis and conclude the alternative. We therefore have evidence that there is a positive correlation between wins and home runs.
+
+
+$\\$
+
+
+## Question 3: Comparing Multiple Samples/The Mean Absolute Deviation (MAD) Statistic
+
+
+The **mean absolute deviation** (MAD) is a statistic that we can calculate to compare differences among more than two groups. MAD is the mean of all pairwise absolute differences between group means. With 4 groups there are 6 pairs, so the MAD statistic is
+
+$$
+\text{MAD} = \frac{|\bar{x}_1-\bar{x}_2| + |\bar{x}_1-\bar{x}_3| + |\bar{x}_1-\bar{x}_4| + |\bar{x}_2-\bar{x}_3| + |\bar{x}_2-\bar{x}_4| + |\bar{x}_3-\bar{x}_4|}{6}
+$$
+
+With 3 groups (as in Question 5) there are 3 pairs, so we add 3 absolute differences and divide by 3.
+
+The `Lock5Data` library contains the data set `TextbookCosts`. Conduct a test to see if the mean textbook cost differs among subjects. Hint: Follow the steps that you did for the previous exercises, except now use the `get_MAD_stat()` function to compute your observed statistic and to generate your null distribution.
+
+```{r}
+
+library(SDS1000)
+library(Lock5Data)
+data(TextbookCosts)
+
+```
+
+1.  Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+-   Null: There is no difference in average textbook costs among subjects
+-   Alternative: There is a difference in average textbook costs among subjects
+
+In symbols, using H, NS, and SS as shorthand for the levels `Humanities`, `NaturalScience`, and `SocialScience`:
+
+-   $H_0: \mu_{\text{Arts}} = \mu_{H} = \mu_{NS} = \mu_{SS}$
+-   $H_A: \mu_i \neq \mu_j$ for some $i, j$ in $\{\text{Arts}, H, NS, SS\}$
+
+
+
+2.  Compute the observed MAD statistic. Use the `get_MAD_stat()` function.
+
+```{r}
+mad_stat <- get_MAD_stat(TextbookCosts$Cost, TextbookCosts$Field)
+mad_stat
+```
+
+As a check by hand: the group means are 93.0 (Arts), 70.4 (Humanities), 138.1 (NaturalScience), and 107.9 (SocialScience). The six pairwise absolute differences add up to 218.0, and $218.0/6 = 36.33$.
+
+
+
+3.a Create the null hypothesis distribution.
+
+```{r}
+set.seed(1000)
+null_dist <- do_it(10000) * {
+  shuffled_field <- shuffle(TextbookCosts$Field)
+  get_MAD_stat(TextbookCosts$Cost, shuffled_field)
+}
+```
+
+
+
+3.b Plot a histogram of the null distribution and show the line of the observed MAD statistic using the `abline()` function.
+
+```{r}
+hist(null_dist,
+     xlab = "MAD Statistic for Textbook Costs by Field",
+     main = "Null distribution")
+
+abline(v = mad_stat, col = "orangered", lw= 2, lty= 3 )
+```
+
+
+4.  Calculate the p-value.
+
+```{r}
+p_value <- pnull(mad_stat, null_dist, lower.tail = FALSE)
+p_value
+```
+
+
+
+5.  Make a decision and state your conclusion.
+
+Since our p-value (`0.0164`)  is less than 0.05, we reject the null hypothesis. We therefore have evidence that there is a difference in textbook cost among subjects.
+
+
+$\\$
+
+
+
+## Extra Practice
+
+
+## Question 4: Antibody Levels for Three Vaccines
+
+We will use data on antibody production (in $\mu$g/ml) after receiving a vaccine (Vaccine A, Vaccine B, or Vaccine C). A hospital administered three different vaccines and measured the antibody presence in the blood after a chosen time period, with six measurements for each vaccine. We treat the three vaccine groups as independent samples. The data are saved in `patient_vaccine.csv`, which is provided with this practice session; save it in your working directory before running the code.
+
+Is there a difference in antibody presence among the three vaccines?
+
+```{r}
+
+library(SDS1000)
+my_data <- read.csv("patient_vaccine.csv")
+
+```
+
+1.a Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+-   Null: The vaccines cause the same amount of antibodies to be produced
+-   Alternative: At least one of the vaccines causes a different amount of antibodies to be produced
+
+In symbols:
+
+-   $H_0: \mu_A = \mu_B = \mu_C$
+-   $H_A: \mu_i \neq \mu_j$ for some $i, j$ in $\{A, B, C\}$
+
+1.b Create side-by-side boxplots to show the variation in antibody production among the three vaccines.
+
+```{r}
+antibodies <- my_data$Antibodies
+vaccine <- my_data$Vaccine
+
+boxplot(antibodies ~ vaccine,
+        main = "Antibody Levels by Vaccine",
+        xlab = "Vaccine", ylab = "Antibodies (µg/ml)")
+```
+
+
+
+2.  Calculate the observed statistic.
+
+```{r}
+obs_stat <- get_MAD_stat(antibodies, vaccine)
+obs_stat
+```
+
+
+
+
+3.a Create the null hypothesis distribution.
+
+```{r}
+set.seed(1000)
+null_dist <- do_it(10000) * {
+  # shuffle the vaccine labels
+  shuffled_vaccine <- shuffle(vaccine)
+
+  # calculate the simulated statistic
+  get_MAD_stat(antibodies, shuffled_vaccine)
+}
+```
+
+
+
+
+3.b Plot a histogram of the null distribution and add a red vertical line at the observed statistic.
+
+```{r}
+hist(null_dist,
+     main = "Null distribution",
+     xlab = "Mean absolute deviation of group means")
+
+# add a red vertical line at the observed statistic
+abline(v = obs_stat, col = "deepskyblue2", lty=2, lw= 3)
+```
+
+
+
+
+4.  Calculate the p-value.
+
+```{r}
+p_value <- pnull(obs_stat, null_dist, lower.tail = FALSE)
+p_value
+```
+
+
+5.  State your conclusion.
+
+Since our p-value (`0.0443`) is less than 0.05, we reject the null hypothesis and conclude the alternative: there is a difference between the three vaccines in terms of the amounts of antibodies they produce.
+
+
 
