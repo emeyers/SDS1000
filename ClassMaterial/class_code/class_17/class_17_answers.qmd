@@ -1,0 +1,550 @@
+---
+title: "Class 17 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+## Part 1: Hypothesis tests for two means
+
+
+A study by Crum and Langer (2007) wanted to assess how one’s mindset can affect
+one’s physical health. They recruited 75 housekeepers and randomly assigned them
+to two groups:
+
+
+ - A treatment group of 41 housekeepers who were told that the work they do 
+satisfies the Surgeon General’s recommendation for an active lifestyle (which is true)
+ 
+ - A control group of 34 housekeepers who were told nothing.  
+
+Each housekeeper’s weight (in pounds) was measured at the start of the study and
+again four weeks later. The file `MindsetMatters_vecs.rda` contains two vectors,
+`informed_weight_loss` and `uninformed_weight_loss`, that give each
+housekeeper’s weight loss (weight at the start minus weight four weeks later), so
+a positive value means the housekeeper lost weight.
+
+Let’s assess if informing the housekeepers that they were satisfying the Surgeon
+General’s recommendation could cause them to lose more weight than the
+housekeepers who were told nothing.
+
+
+
+
+$\\$
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+Words:
+
+* Null hypothesis: The mean weight loss is the same for both groups  
+* Alternative hypothesis: The mean weight loss is greater for the informed group  
+ 
+Symbols:
+
+* $H_0: \mu_{informed} = \mu_{uninformed}$  
+* $H_A: \mu_{informed} > \mu_{uninformed}$  
+ 
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 2: Calculate the observed statistic
+
+
+```{r mindset_obs_stat}
+
+
+# The full data set with additional information if you are interested
+#MindsetMatters <- Lock5Data::MindsetMatters
+
+
+# load the weight loss data for the two groups
+load("MindsetMatters_vecs.rda")
+
+
+# observed statistic
+obs_stat <- mean(informed_weight_loss) - mean(uninformed_weight_loss)
+
+obs_stat
+
+
+```
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 3: create the null distribution
+
+
+```{r mindset_null_distribution}
+
+library(SDS1000)
+
+
+#  Combine data from both groups
+combined_data <- c(informed_weight_loss, uninformed_weight_loss)
+
+
+null_dist <-  do_it(10000) * {
+
+       # shuffle data
+        shuff_data <- shuffle(combined_data)
+
+        # create fake informed and control (uniformed) groups
+        shuff_informed   <-  shuff_data[1:41]
+        shuff_control  <-  shuff_data[42:75]
+
+        # calculate the shuffled statistic of interest
+        mean(shuff_informed) - mean(shuff_control)
+
+}
+
+
+# plot the null distribution
+hist(null_dist, breaks = 200,
+     main = "Null distribution",
+     xlab = "Difference in mean weight loss (lbs)")
+
+
+# add a red vertical line at the observed statistic
+abline(v = obs_stat, col = "red")
+
+
+```
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+### Step 4: calculate the p-value
+
+
+```{r mindset_p_value}
+
+ptail(obs_stat, null_dist, lower.tail = FALSE)
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 5: Make decision
+
+
+Since the p-value is less than the typical cutoff of 0.05 we are able to reject the
+null hypothesis. Additionally, because random assignment was used, we are able
+to say the effect was causal. Thus we can conclude that informing the
+housekeepers that the work they do satisfies the Surgeon General’s
+recommendation for an active lifestyle **caused** them to lose more weight on average.
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Part 2: Hypothesis tests for two means (Husbands and Wives data)
+
+
+Let's look at another example to test if the mean average of husbands tends to be
+greater than the mean average of wives.
+
+To address this qeuestion, we will use a data from a sample of 100 marriage
+licences from St. Lawrence County, NY that gives the ages of husbands and wives
+for newly married couples.
+
+But before we look at the data, let's start with step 1 by stating the null and
+alternative hypotheses, and then go from there...
+
+
+
+$\\$
+
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+
+Words:
+
+* Null hypothesis: The mean age of husbands is the same as the mean age of wives. 
+* Alternative hypothesis: The mean age of husbands is greater than the mean age of wives.  
+
+
+Symbols:  
+
+* $H_0: \mu_{husbands} = \mu_{wives}$  
+* $H_A: \mu_{husbands} > \mu_{wives}$  
+
+
+
+$\\$
+
+
+
+### Step 2a: Visualize the data
+
+Before we calculate our observed statistic let's visualize the data. 
+
+Please use an appropriate method we discussed in class to visualize the data.
+
+
+```{r husbands_and_wives_viz}
+
+# load the data
+library(Lock5Data)
+
+husbands <- MarriageAges$Husband
+wives <- MarriageAges$Wife
+
+# visualize the data using side-by-side box plots
+boxplot(husbands, wives,
+        names = c("Husbands", "Wives"),
+        main = "Marriage Ages",
+        ylab = "Age (years)",
+        col = c("lightblue", "lightpink"))
+
+```
+
+
+**Question**: From looking at the visualization you created, does it appear that 
+husbands tend to be older than wives?
+
+
+**Answer**: From my visualization it is hard to tell. Of course the box plot is 
+showing that the median age of husbands is greater than the median age of wives,
+but there is also a lot of overlap in the ages of husbands and wives. So, it is
+hard to tell just by looking at the box plot if the mean age of husbands is
+actually greater than the mean age of wives.
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 2b: Calculate the observed statistic
+
+Now let's do actual step 2 and calculate the observed statistic.
+
+
+```{r husbands_and_wives_obs_stat}
+
+# calculate the observed statistic
+obs_stat <- mean(husbands) - mean(wives)
+
+obs_stat
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 3: Create the null distribution
+
+
+```{r husbands_and_wives_null_distribution}
+
+library(SDS1000)
+
+# combine the data into a single vector
+combined <- c(husbands, wives)
+
+null_dist <- do_it(10000) * {
+
+  # shuffle the combined data
+  shuffled <- shuffle(combined)
+
+  # split the shuffled data into two groups
+  sim_husbands <- shuffled[1:length(husbands)]
+  sim_wives <- shuffled[(length(husbands) + 1):length(combined)]
+
+  # calculate the simulated statistic
+  mean(sim_husbands) - mean(sim_wives)
+
+}
+
+
+# plot the null distribution
+hist(null_dist, breaks = 200,
+     main = "Null distribution",
+     xlab = "Difference in mean ages")
+
+# add a red vertical line at the observed statistic
+abline(v = obs_stat, col = "red")
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+```{r husbands_and_wives_p_value}
+
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
+
+p_value
+
+```
+
+
+
+
+$\\$
+
+
+
+### Step 5: Make decision
+
+Since the p-value is slightly less than the typical cutoff of 0.05, we can
+(tentatively reject the null hypothesis and conclude that the mean age of
+husbands is greater than the mean age of wives.
+
+
+
+
+$\\$
+
+
+
+
+
+## Part 3: Hypothesis tests for more than two means
+
+
+A group of Hope College students wanted to see if there was an association
+between a student’s major and the time it takes to complete a small Sudoku-like
+puzzle
+
+
+They grouped majors into four categories
+
+* Applied science (as)
+* Natural science (ns)
+* Social science  (ss)
+* Arts/humanities  (ah)
+
+Let's run a hypothesis test to see if there is an association between a student's
+major and the time it takes to complete the puzzle.
+
+
+
+$\\$
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+
+
+Words:
+
+* Null hypothesis: The mean time to complete the puzzle is the same for all four groups  
+
+* Alternative hypothesis: The mean time to complete the puzzle is not the same 
+for all four groups  
+
+
+Symbols:  
+
+* $H_0: \mu_{as} = \mu_{ns} = \mu_{ss} = \mu_{ah}$   
+* $H_A$: At least one of the means is different  
+
+
+
+
+$\\$
+
+
+
+
+### Step 2a: Visualize the data
+
+```{r sudoku_viz}
+
+# load the data
+sudoku_data <- read.table("MajorPuzzle.txt", header = TRUE)
+
+completion_times <- sudoku_data$time
+majors <- sudoku_data$major
+
+# visualize the data using side-by-side box plots
+boxplot(completion_times ~ majors, 
+        main = "Time to complete puzzle by major",
+        ylab = "Time (seconds)",
+        col = c("lightblue", "lightgreen", "lightpink", "lightyellow"))
+
+```
+
+
+
+**Question**: From looking at the visualization you created, does it appear that
+the mean time to complete the puzzle is different for at least one of the four
+groups?
+
+
+**Answer**: From my visualization it appears that the mean time to complete the
+puzzle is different for at least one of the four groups. The box plot is showing
+that the median time for the natural science group is lower than the median times
+for the other three groups. However, there is also a lot of overlap in the times
+for the four groups. So, it is hard to tell just by looking at the box plot if
+the mean time to complete the puzzle is actually different for at least one of
+the four groups.
+
+
+
+
+$\\$
+
+
+
+
+### Step 2b: Calculate the observed statistic
+
+
+```{r sudoku_obs_stat}
+
+# calculate the observed statistic
+
+obs_stat <- get_MAD_stat(completion_times, majors)
+
+obs_stat
+
+```
+
+
+
+$\\$
+
+
+
+### Step 3: Create the null distribution
+
+
+```{r sudoku_null_distribution}
+
+library(SDS1000)
+
+
+# Create the null distribution
+
+null_dist <- do_it(10000) * {
+
+  # shuffle the completion times
+  shuffled_majors <- shuffle(majors)
+
+  # calculate the simulated statistic
+  get_MAD_stat(completion_times, shuffled_majors)
+
+}
+
+# plot the null distribution
+hist(null_dist, breaks = 200,
+     main = "Null distribution",
+     xlab = "Mean absolute deviation of group means")
+
+
+# add a red vertical line at the observed statistic
+abline(v = obs_stat, col = "red")
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+```{r sudoku_p_value}
+
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
+
+p_value
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 5: Make decision
+
+Since the p-value is greater than the typical cutoff of 0.05, we fail to reject
+the null hypothesis. Thus we can't conclude that the mean time to complete the
+puzzle is different for the different majors.
+
+
+
+
