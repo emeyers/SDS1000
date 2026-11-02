@@ -132,7 +132,7 @@ $\\$
 
 ## Question 2: Baseball Hits Hypothesis Test for Correlations
 
-Do more home runs mean more wins? In other words, is there a positive correlation between the number of home runs a team hits and the number of wins? Test this hypothesis using a permutation test. Data from the 2019 Major League Baseball (MLB) season is available in the `BaseballHits2019` dataset in the `Lock5Data` library. Make sure to extract the appropriate columns from the data.
+Do more home runs mean more wins? In other words, is there a positive correlation between the number of `home runs` a team hits and the number of wins? Test this hypothesis using a permutation test. Data from the 2019 Major League Baseball (MLB) season is available in the `BaseballHits2019` dataset in the `Lock5Data` library. Make sure to extract the appropriate columns from the data.
 
 ```{r}
 
@@ -169,7 +169,6 @@ plot(home_runs, wins,
      main = "Home Runs vs Wins in the 2019 MLB Season", 
      pch = 21, col = "lightsalmon", bg = "seagreen")
 
-     #col= " limegreen",  border= " blue")
 ```
 
 
@@ -186,7 +185,7 @@ home_runs_wins_corr
 
 3.a Create the null hypothesis distribution.
 
-The `shuffle()` function from the `SDS1000` package puts the values in a random order. It does the same job as `sample()`, which we used in practice session 6, so the two are interchangeable here.
+
 
 ```{r}
 set.seed(1000)
@@ -338,6 +337,8 @@ In symbols:
 
 -   $H_0: \mu_A = \mu_B = \mu_C$
 -   $H_A: \mu_i \neq \mu_j$ for some $i, j$ in $\{A, B, C\}$
+
+
 
 1.b Create side-by-side boxplots to show the variation in antibody production among the three vaccines.
 
