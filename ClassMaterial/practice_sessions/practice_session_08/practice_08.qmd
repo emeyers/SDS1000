@@ -1,1 +1,278 @@
+---
+title: "Practice Session 8 "
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+## Intro
+
+The focus of this practice session will be to perform hypothesis tests for the difference of two  means or more. We will also conduct hypothesis testing for correlations.
+
+ Setting the seed makes the shuffles repeatable, so if you run the same code you will get exactly the same null distribution and p-value shown here.
+
+
+
+# Question 1: Caffeine Taps Hypothesis Test for the Difference of Two Means
+
+A sample of male college students were asked to tap their fingers at a rapid rate. The sample was then divided at random into two groups of ten students each. Each student drank the equivalent of about two cups of coffee, which included about 200 mg of caffeine for the students in one group but was decaffeinated coffee for the second group. After a two hour period, each student was tested to measure finger tapping rate (taps per minute). The goal of the experiment was to determine whether caffeine changes the average tap rate.
+
+```{r}
+
+library(Lock5Data)
+library(SDS1000)
+set.seed(1000)
+data(CaffeineTaps)
+```
+
+1.a Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+
+
+1.b Create a boxplot to describe tap rates for Caffeine versus No Caffeine.
+
+```{r}
+# your code here#
+```
+
+
+
+1.c Subset the data `CaffeineTaps` to two groups: `Caffeine` and `NoCaffeine`.
+
+```{r}
+# your code here#
+```
+
+
+
+2.  Compute the observed statistic (mean difference of tap number for the two groups).
+
+```{r}
+# your code here#
+```
+
+
+
+3.a Combine the two samples and create the null hypothesis distribution using the `do_it()` function.
+
+```{r}
+# your code here#
+```
+
+
+3.b Plot a histogram of the null distribution and show the observed mean difference (solid line) and its mirror image on the other side of zero (dashed line) using the `abline()` function.
+
+```{r}
+# your code here#
+```
+
+4.  Calculate the p-value.
+
+
+```{r}
+# your code here#
+```
+
+5.  Make a decision and state your conclusion.
+
+
+$\\$
+
+
+
+## Question 2: Baseball Hits Hypothesis Test for Correlations
+
+Do more home runs mean more wins? In other words, is there a positive correlation between the number of `home runs` a team hits and the number of wins? Test this hypothesis using a permutation test. Data from the 2019 Major League Baseball (MLB) season is available in the `BaseballHits2019` dataset in the `Lock5Data` library. Make sure to extract the appropriate columns from the data.
+
+```{r}
+
+library(Lock5Data)
+library(SDS1000)
+set.seed(1000)
+data(BaseballHits2019)
+
+```
+
+
+1.a Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+
+
+1.b Create a scatterplot to visualize the association between `HomeRuns` and `Wins`.
+
+```{r}
+# your code here#
+```
+
+
+
+2.  Compute the observed statistic (correlation between `HomeRuns` and `Wins`).
+
+```{r}
+# your code here#
+```
+
+
+
+3.a Create the null hypothesis distribution.
+
+```{r}
+# your code here#
+```
+
+
+
+3.b Plot a histogram of the null distribution and show the line of the observed correlation using the `abline()` function.
+
+```{r}
+# your code here#
+```
+
+
+
+4.  Calculate the p-value.
+
+```{r}
+# your code here#
+```
+
+
+5.  Make a decision and state your conclusion.
+
+
+
+$\\$
+
+
+## Question 3: Comparing Multiple Samples/The Mean Absolute Deviation (MAD) Statistic
+
+
+The **mean absolute deviation** (MAD) is a statistic that we can calculate to compare differences among more than two groups. MAD is the mean of all pairwise absolute differences between group means. With 4 groups there are 6 pairs, so the MAD statistic is
+
+$$
+\text{MAD} = \frac{|\bar{x}_1-\bar{x}_2| + |\bar{x}_1-\bar{x}_3| + |\bar{x}_1-\bar{x}_4| + |\bar{x}_2-\bar{x}_3| + |\bar{x}_2-\bar{x}_4| + |\bar{x}_3-\bar{x}_4|}{6}
+$$
+
+With 3 groups (as in Question 5) there are 3 pairs, so we add 3 absolute differences and divide by 3.
+
+The `Lock5Data` library contains the data set `TextbookCosts`. Conduct a test to see if the mean textbook cost differs among subjects. Hint: Follow the steps that you did for the previous exercises, except now use the `get_MAD_stat()` function to compute your observed statistic and to generate your null distribution.
+
+```{r}
+
+library(SDS1000)
+library(Lock5Data)
+set.seed(1000)
+data(TextbookCosts)
+
+```
+
+1.  Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+
+
+2.  Compute the observed MAD statistic. Use the `get_MAD_stat()` function.
+
+```{r}
+# your code here#
+```
+
+
+
+3.a Create the null hypothesis distribution.
+
+```{r}
+# your code here#
+```
+
+
+
+3.b Plot a histogram of the null distribution and show the line of the observed MAD statistic using the `abline()` function.
+
+```{r}
+# your code here#
+```
+
+
+4.  Calculate the p-value.
+
+```{r}
+# your code here#
+```
+
+
+
+5.  Make a decision and state your conclusion.
+
+
+
+$\\$
+
+
+
+## Extra Practice
+
+
+## Question 4: Antibody Levels for Three Vaccines
+
+We will use data on antibody production (in $\mu$g/ml) after receiving a vaccine (Vaccine A, Vaccine B, or Vaccine C). A hospital administered three different vaccines and measured the antibody presence in the blood after a chosen time period, with six measurements for each vaccine. We treat the three vaccine groups as independent samples. The data are saved in `patient_vaccine.csv`, which is provided with this practice session; save it in your working directory before running the code.
+
+Is there a difference in antibody presence among the three vaccines?
+
+```{r}
+
+library(SDS1000)
+my_data <- read.csv("patient_vaccine.csv")
+
+```
+
+1.a Write the null hypothesis and alternative hypothesis in words and in symbols.
+
+
+1.b Create side-by-side boxplots to show the variation in antibody production among the three vaccines.
+
+```{r}
+# your code here#
+```
+
+
+
+2.  Calculate the observed statistic.
+
+```{r}
+# your code here#
+```
+
+
+
+
+3.a Create the null hypothesis distribution.
+
+```{r}
+# your code here#
+```
+
+
+
+
+3.b Plot a histogram of the null distribution and add a red vertical line at the observed statistic.
+
+```{r}
+# your code here#
+```
+
+
+
+4.  Calculate the p-value.
+
+```{r}
+# your code here#
+```
+
+
+5.  State your conclusion.
+
+
+
 
