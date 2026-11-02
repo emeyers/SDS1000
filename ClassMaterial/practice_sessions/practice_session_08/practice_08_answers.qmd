@@ -6,13 +6,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r }
-
-library(SDS1000)
-library(Lock5Data)
-set.seed(1000)
-```
-
 
 ## Intro
 
@@ -30,6 +23,7 @@ A sample of male college students were asked to tap their fingers at a rapid rat
 
 library(Lock5Data)
 library(SDS1000)
+set.seed(1000)
 data(CaffeineTaps)
 ```
 
@@ -108,7 +102,7 @@ stat_param_margin <- abs(obs_stat - null_val)
 stat_param_margin
 
 abline(v = obs_stat, col = "mediumvioletred", lty= 4, lw= 3  )
-abline(v = null_val- stat_param_margin, col = "midnightblue", lty= 2, lw= 3 )
+abline(v = null_val- stat_param_margin, col = "midnightblue", lty= 2, lw= 2 )
 
 
 
@@ -144,6 +138,7 @@ Do more home runs mean more wins? In other words, is there a positive correlatio
 
 library(Lock5Data)
 library(SDS1000)
+set.seed(1000)
 data(BaseballHits2019)
 
 ```
@@ -222,7 +217,7 @@ p_value <- pnull(home_runs_wins_corr, null_dist, lower.tail = FALSE)
 p_value
 ```
 
-We report $p < 0.0001$.
+We report $p = 0$.
 
 
 5.  Make a decision and state your conclusion.
@@ -250,6 +245,7 @@ The `Lock5Data` library contains the data set `TextbookCosts`. Conduct a test to
 
 library(SDS1000)
 library(Lock5Data)
+set.seed(1000)
 data(TextbookCosts)
 
 ```
@@ -273,7 +269,6 @@ mad_stat <- get_MAD_stat(TextbookCosts$Cost, TextbookCosts$Field)
 mad_stat
 ```
 
-As a check by hand: the group means are 93.0 (Arts), 70.4 (Humanities), 138.1 (NaturalScience), and 107.9 (SocialScience). The six pairwise absolute differences add up to 218.0, and $218.0/6 = 36.33$.
 
 
 
@@ -296,7 +291,7 @@ hist(null_dist,
      xlab = "MAD Statistic for Textbook Costs by Field",
      main = "Null distribution")
 
-abline(v = mad_stat, col = "orangered", lw= 2, lty= 3 )
+abline(v = mad_stat, col = "orangered", lw= 2, lty= 4 )
 ```
 
 
@@ -391,7 +386,7 @@ hist(null_dist,
      xlab = "Mean absolute deviation of group means")
 
 # add a red vertical line at the observed statistic
-abline(v = obs_stat, col = "deepskyblue2", lty=2, lw= 3)
+abline(v = obs_stat, col = "deepskyblue2", lty=4, lw= 3)
 ```
 
 
@@ -408,6 +403,5 @@ p_value
 5.  State your conclusion.
 
 Since our p-value (`0.0443`) is less than 0.05, we reject the null hypothesis and conclude the alternative: there is a difference between the three vaccines in terms of the amounts of antibodies they produce.
-
 
 
