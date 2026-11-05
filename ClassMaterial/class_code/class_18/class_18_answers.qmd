@@ -1,0 +1,379 @@
+---
+title: "Class 18 notes and code"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+
+## Part 1: Hypothesis tests for more than two means
+
+
+A study by Singh et al. (2014), published in the Journal of the American Medical
+Association (JAMA), examined the relationship between playing football,
+concussions, and the size of the hippocampus, a part of the brain that is
+important for memory.
+
+The study included three groups, with n = 25 participants in each group:
+
+* Healthy controls who had never played football (HC)
+* Football players with no history of concussions (FNC)
+* Football players with a history of concussions (FC)
+
+Let's run a hypothesis test to see if there is a difference in the mean
+hippocampus volume between these groups.
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+
+
+Words:
+
+* Null hypothesis: The mean hippocampus volume is the same for all three groups  
+
+* Alternative hypothesis: The mean hippocampus volume is not the same
+for all three groups
+
+
+Symbols:  
+
+* $H_0: \mu_{HC} = \mu_{FNC} = \mu_{FC}$   
+* $H_A$: At least one of the means is different  
+
+
+
+
+$\\$
+
+
+
+
+### Step 2a: Visualize the data
+
+```{r football_viz}
+
+# load the data from the Lock5Data package
+football_data <- Lock5Data::FootballBrain
+
+# the groups are labeled Control (HC), FBNoConcuss (FNC), and FBConcuss (FC)
+Hipp <- football_data$Hipp
+Group <- football_data$Group
+
+# visualize the data using side-by-side box plots
+boxplot(Hipp ~ Group,
+        main = "Hippocampus volume by group",
+        xlab = "Group",
+        ylab = "Total hippocampus volume (microliters)",
+        col = c("lightblue", "lightgreen", "lightpink"))
+
+```
+
+
+
+**Question**: From looking at the visualization you created, does it appear that
+the mean hippocampus volume is different for at least one of the three groups?
+
+
+**Answer**: Yes, from my visualization it appears that the mean hippocampus
+volume is different for at least one of the three groups. The healthy controls
+have the largest hippocampus volumes, the football players with a history of
+concussions have the smallest, and the football players without concussions are
+in between. There is some overlap between the groups, so we will run a hypothesis
+test to see whether these differences are larger than we would expect by chance.
+
+
+
+
+$\\$
+
+
+
+
+### Step 2b: Calculate the observed statistic
+
+
+```{r football_obs_stat}
+
+library(SDS1000)
+
+# the mean hippocampus volume in each group 
+stats_by_group(Hipp, Group, mean)
+
+# calculate the observed statistic
+obs_stat <- get_MAD_stat(Hipp, Group)
+
+obs_stat
+
+```
+
+
+
+$\\$
+
+
+
+### Step 3: Create the null distribution
+
+
+```{r football_null_distribution}
+
+# create the null distribution
+null_dist <- do_it(10000) * {
+
+  # shuffle the group labels
+  shuffled_group <- shuffle(Group)
+
+  # calculate the simulated statistic
+  get_MAD_stat(Hipp, shuffled_group)
+
+}
+
+# plot the null distribution, extending the x-axis so the observed statistic shows
+hist(null_dist, breaks = 100,
+     xlim = c(0, 1.1 * max(c(null_dist, obs_stat))),
+     main = "Null distribution",
+     xlab = "Mean absolute difference of group means (microliters)")
+
+# add a red vertical line at the observed statistic
+abline(v = obs_stat, col = "red")
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+```{r football_p_value}
+
+# larger MAD values mean the group means are more different, so we use the upper tail
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
+
+p_value
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 5: Make decision
+
+None of the 10,000 statistics in the null distribution are as large as the
+observed statistic, so the p-value is approximately 0, which is much less than
+the typical cutoff of 0.05. Thus we reject the null hypothesis and conclude that
+the mean hippocampus volume is different for at least one of the three groups.
+
+However, this was an observational study: the participants were not randomly
+assigned to play football or to get concussions. So we cannot conclude that
+playing football or getting concussions **caused** the smaller hippocampus
+volumes; other differences between the groups could also explain the result.
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Part 2: Hypothesis tests for correlation 
+
+
+Let's now look at hypothesis tests for correlation by examining whether cereals
+with more sugar tend to have more calories, using data from a random sample of
+30 cereals.
+
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+
+
+Words:
+
+* Null hypothesis: There is no correlation between sugar content and calorie
+content in the population of all cereals.
+
+* Alternative hypothesis: There is a positive correlation between sugar content
+and calorie content in the population of all cereals.
+
+
+Symbols:  
+
+* $H_0: \rho = 0$
+* $H_A$: $\rho > 0$
+
+
+
+$\\$
+
+
+
+
+### Step 2a: Visualize the data
+
+```{r cereal_viz}
+
+# load the data
+load("cereal.Rda")
+
+
+sugar <- cereal$Sugars
+calories <- cereal$Calories
+
+
+# visualize the data using a scatter plot
+plot(sugar, calories, 
+     main = "Calories vs Sugar in Cereals",
+     xlab = "Sugar (grams)",
+     ylab = "Calories")
+
+
+
+```
+
+
+
+**Question**: From looking at the visualization you created, does it appear that
+there is a positive correlation between sugar content and calorie content in cereals?
+
+
+
+
+**Answer**: From my visualization it appears that there is a positive correlation between
+ sugar content and calorie content in cereals. The scatter plot shows an upward trend,
+indicating that as the sugar content increases, the calorie content also tends to increase.
+
+
+
+
+
+$\\$
+
+
+
+
+### Step 2b: Calculate the observed statistic
+
+
+```{r cereal_obs_stat}
+
+# calculate the observed statistic
+
+obs_stat <- cor(sugar, calories)
+
+obs_stat
+
+
+```
+
+
+
+$\\$
+
+
+
+### Step 3: Create the null distribution
+
+
+```{r cereal_null_distribution}
+
+library(SDS1000)
+
+
+null_dist <- do_it(10000) * {
+
+  # shuffle the sugar content
+  shuffled_sugar <- shuffle(sugar)
+
+  # calculate the simulated statistic
+  cor(shuffled_sugar, calories)
+
+}
+
+
+# plot the null distribution
+hist(null_dist, breaks = 200,
+     main = "Null distribution",
+     xlab = "Correlation between sugar and calories")
+
+# add a red vertical line at the observed statistic
+abline(v = obs_stat, col = "red")
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+```{r cereal_p_value}
+
+p_value <- ptail(obs_stat, null_dist, lower.tail = FALSE)
+
+p_value
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 5: Make decision
+
+Since the p-value is much less than the typical cutoff of 0.05, we reject the
+null hypothesis, and we conclude that there is a positive correlation between
+sugar content and calorie content in the population of all cereals (not just in
+the 30 cereals in our sample).
+
+
+
+
+$\\$
+
+
+
+
+
+

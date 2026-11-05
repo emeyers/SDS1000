@@ -1,0 +1,374 @@
+---
+title: "Class 18 notes and code"
+format: pdf
+editor: source
+editor_options:
+  chunk_output_type: console
+---
+
+
+
+
+
+## Part 1: Hypothesis tests for more than two means
+
+
+A study by Singh et al. (2014), published in the Journal of the American Medical
+Association (JAMA), examined the relationship between playing football,
+concussions, and the size of the hippocampus, a part of the brain that is
+important for memory.
+
+The study included three groups, with n = 25 participants in each group:
+
+* Healthy controls who had never played football (HC)
+* Football players with no history of concussions (FNC)
+* Football players with a history of concussions (FC)
+
+Let's run a hypothesis test to see if there is a difference in the mean
+hippocampus volume between these groups.
+
+
+
+$\\$
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+
+
+Words:
+
+* Null hypothesis:
+
+* Alternative hypothesis:
+
+
+
+Symbols:
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+### Step 2a: Visualize the data
+
+```{r football_viz}
+
+# load the data from the Lock5Data package
+football_data <- Lock5Data::FootballBrain
+
+# the groups are labeled Control (HC), FBNoConcuss (FNC), and FBConcuss (FC)
+Hipp <- football_data$Hipp
+Group <- football_data$Group
+
+
+# visualize the data using side-by-side box plots
+
+
+
+
+
+
+```
+
+
+
+**Question**: From looking at the visualization you created, does it appear that
+the mean hippocampus volume is different for at least one of the three groups?
+
+
+**Answer**:
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+### Step 2b: Calculate the observed statistic
+
+
+```{r football_obs_stat}
+
+library(SDS1000)
+
+
+# calculate the observed statistic
+
+
+
+
+
+```
+
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 3: Create the null distribution
+
+
+```{r football_null_distribution}
+
+
+# create the null distribution
+
+
+
+
+
+
+
+
+
+
+
+
+# plot the null distribution
+
+
+
+
+
+# add a red vertical line at the observed statistic
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+```{r football_p_value}
+
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 5: Make decision
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+
+## Part 2: Hypothesis tests for correlation
+
+
+Let's now look at hypothesis tests for correlation by examining whether cereals
+with more sugar tend to have more calories, using data from a random sample of
+30 cereals.
+
+
+
+
+### Step 1: State the null and alternative hypotheses
+
+
+
+Words:
+
+* Null hypothesis:
+
+* Alternative hypothesis:
+
+
+
+
+
+Symbols:
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+### Step 2a: Visualize the data
+
+```{r cereal_viz}
+
+# load the data
+load("cereal.Rda")
+
+
+sugar <- cereal$Sugars
+calories <- cereal$Calories
+
+
+
+
+# visualize the data using a scatter plot
+
+
+
+
+
+
+```
+
+
+
+**Question**: From looking at the visualization you created, does it appear that
+there is a positive correlation between sugar content and calorie content in cereals?
+
+
+
+**Answer**:
+
+
+
+
+
+$\\$
+
+
+
+
+### Step 2b: Calculate the observed statistic
+
+
+```{r cereal_obs_stat}
+
+# calculate the observed statistic
+
+
+
+
+
+```
+
+
+
+$\\$
+
+
+
+### Step 3: Create the null distribution
+
+
+```{r cereal_null_distribution}
+
+library(SDS1000)
+
+
+# create the null distribution
+
+
+
+
+
+
+
+
+
+
+
+
+# plot the null distribution
+
+
+
+
+
+# add a red vertical line at the observed statistic
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Step 4: Calculate the p-value
+
+
+```{r cereal_p_value}
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+
+### Step 5: Make decision
+
+
+
+
+
+
+
+
+$\\$
