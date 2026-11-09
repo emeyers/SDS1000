@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<!--
+  Guess the regression coefficients app (webR version)
+
+  A standalone version of the Shiny app in app.R. The R code runs entirely in the
+  web browser using webR (https://docs.r-wasm.org/webr/), so no Shiny server is
+  needed. Host this single file on any static web host (e.g., GitHub Pages) or serve
+  it locally, e.g. from R:  httpuv::runStaticServer(".")
+
+  The simulation and plotting code is plain R, in the <script type="text/x-r">
+  block below. The JavaScript at the bottom only handles the inputs and draws the
+  plot that R makes onto the page.
+
+  As in the Shiny app, the data are 100 points with x between -5 and 5 and
+  y = beta0 + beta1 * x + noise (noise SD 5), where the true intercept and slope are
+  random numbers between -5 and 5. The random number seed is set to 1 when the page
+  loads, so everyone starts with the same data. The residuals turn green when the
+  intercept and slope equal the least squares values (rounded to one decimal place,
+  the step size of the sliders).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guess the Regression Line</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1f2328;
+    --muted: #57606a;
+    --panel-border: #d0d7de;
+    --control-bg: #f6f8fa;
+    --accent: #0b5cad;
+    --success: #1a7f2e;
+    --error: #b42318;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.4;
+  }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 1.6rem; margin: 0.2rem 0 0.3rem; }
+  .intro { color: var(--muted); margin: 0 0 1rem; }
+  .layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 16px; align-items: start; }
+  .controls {
+    display: flex; flex-direction: column; gap: 14px;
+    background: var(--control-bg); border: 1px solid var(--panel-border);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .control { display: flex; flex-direction: column; gap: 4px; }
+  .control label { font-weight: 600; font-size: 0.95rem; }
+  .slider-row { display: grid; grid-template-columns: minmax(0, 1fr) 76px; gap: 10px; align-items: center; }
+  .slider-row input[type="range"] { width: 100%; margin: 0; accent-color: var(--accent); }
+  .slider-row input[type="number"] {
+    font: inherit; padding: 5px 6px; width: 100%;
+    border: 1px solid var(--panel-border); border-radius: 6px; background: #fff;
+  }
+  .range-limits { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.8rem; margin-right: 86px; }
+  .buttons { display: flex; flex-direction: column; gap: 8px; }
+  button {
+    font: inherit; padding: 7px 14px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--accent); background: var(--accent); color: #fff;
+  }
+  .checkbox { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+  .checkbox input { width: 18px; height: 18px; margin: 0; flex: none; }
+  .checkbox label { font-weight: 400; }
+  button:disabled, input:disabled { opacity: 0.55; cursor: not-allowed; }
+  .status { color: var(--muted); }
+  .status:empty { display: none; }
+  .status.error { color: var(--error); font-weight: 600; }
+  .panel {
+    border: 1px solid var(--panel-border); border-radius: 8px; background: #fff;
+    padding: 6px; min-width: 0;
+  }
+  .panel canvas { display: block; width: 100%; aspect-ratio: 3 / 2; background: #fff; }
+  .result {
+    margin-top: 12px; padding: 10px 14px; border-left: 4px solid var(--accent);
+    background: var(--control-bg); border-radius: 0 6px 6px 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .result p { margin: 0.15rem 0; }
+  .result.found { border-left-color: var(--success); }
+  .result .found-message { color: var(--success); font-weight: 600; }
+  footer { color: var(--muted); font-size: 0.85rem; margin-top: 14px; }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    .panel canvas { aspect-ratio: 1 / 1; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Find the regression coefficients</h1>
+  <p class="intro">Change the intercept (a) and slope (b) of the red line to make the
+    residual sum of squares (RSS) as small as possible. The vertical segments are the
+    residuals; they all turn green when you find the least squares line (to one decimal
+    place).</p>
+
+  <div class="layout">
+    <div class="controls">
+      <div class="buttons">
+        <button id="new-sample" type="button" disabled>Generate new sample</button>
+        <button id="new-parameters" type="button" disabled>Generate new slope/intercept</button>
+      </div>
+      <div class="control">
+        <label for="a-slider">Intercept value (a)</label>
+        <div class="slider-row">
+          <input id="a-slider" type="range" min="-6" max="6" step="0.1" value="2" disabled>
+          <input id="a" type="number" step="0.1" value="2" aria-label="Intercept value (a)" disabled>
+        </div>
+        <div class="range-limits"><span>-6</span><span>6</span></div>
+      </div>
+      <div class="control">
+        <label for="b-slider">Slope value (b)</label>
+        <div class="slider-row">
+          <input id="b-slider" type="range" min="-6" max="6" step="0.1" value="2" disabled>
+          <input id="b" type="number" step="0.1" value="2" aria-label="Slope value (b)" disabled>
+        </div>
+        <div class="range-limits"><span>-6</span><span>6</span></div>
+      </div>
+      <div class="checkbox">
+        <input id="show-improvement" type="checkbox" disabled>
+        <label for="show-improvement">Show improvement as colored text</label>
+      </div>
+      <div id="status" class="status" role="status" aria-live="polite">Loading&hellip;</div>
+    </div>
+
+    <div>
+      <div class="panel"><canvas id="plot" role="img" aria-label="Scatter plot with a line and its residuals"></canvas></div>
+      <div id="result" class="result" aria-live="polite" hidden></div>
+    </div>
+  </div>
+
+  <footer>The R code runs in your browser using
+    <a href="https://docs.r-wasm.org/webr/">webR</a>. With the improvement colors on, the
+    RSS is green when it is smaller than it was for your previous line and red when it is
+    not.</footer>
+</main>
+
+
+<script type="text/x-r" id="r-code">
+# ---------------------------------------------------------------------------
+# R code for the guess the regression coefficients app. This is the same
+# simulation and plot as the Shiny app (app.R), reorganized into functions that
+# the web page calls.
+# ---------------------------------------------------------------------------
+
+# set the randomization seed so everyone can get the same results
+set.seed(1)
+
+num.points <- 100   # the number of points in each sample
+
+beta0 <- NULL   # the true intercept
+beta1 <- NULL   # the true slope
+x.vals <- NULL
+y.vals <- NULL
+sample.number <- 0   # counts the samples, to know when the data change
+
+
+# generate a new true intercept and slope, each between -5 and 5
+generate.parameters <- function() {
+  beta0 <<- runif(1, min = -5, max = 5)
+  beta1 <<- runif(1, min = -5, max = 5)
+  invisible(NULL)
+}
+
+# generate a new sample of data from the current true intercept and slope
+generate.sample <- function() {
+  x.vals <<- runif(num.points, min = -5, max = 5)
+  y.vals <<- beta0 + beta1 * x.vals + rnorm(num.points, 0, 5)
+  sample.number <<- sample.number + 1
+  invisible(NULL)
+}
+
+new.sample <- function() generate.sample()
+
+new.parameters <- function() {
+  generate.parameters()
+  generate.sample()
+}
+
+# start off with a set of parameters and a sample
+generate.parameters()
+generate.sample()
+
+
+# the least squares intercept and slope for the current sample
+least.squares <- function() unname(coef(lm(y.vals ~ x.vals)))
+
+# the RSS of the line y-hat = a + b * x, whether a and b are the least squares
+# values (when both are rounded to one decimal place, the step size of the
+# sliders), and the least squares values themselves
+fit.results <- function(a, b) {
+  rss <- sum((y.vals - (a + b * x.vals))^2)
+  opt <- least.squares()
+  found <- round(10 * a) == round(10 * opt[1]) && round(10 * b) == round(10 * opt[2])
+  c(rss, as.numeric(found), opt)
+}
+
+
+# The RSS is shown in green when it is smaller than it was for the previous line,
+# and in red when it is not. The color is remembered so that redrawing the same
+# line (e.g. when the window is resized) does not change it.
+previous.line <- c(NA, NA, NA)
+previous.rss <- Inf
+previous.color <- "black"
+
+improvement.color <- function(a, b, rss) {
+  this.line <- c(a, b, sample.number)
+  if (isTRUE(all(this.line == previous.line))) return(previous.color)
+  color <- if (rss < previous.rss) "#1a9e2a" else "red"
+  previous.line <<- this.line
+  previous.rss <<- rss
+  previous.color <<- color
+  color
+}
+
+
+# larger text and lines when the web page draws plots at a higher resolution
+set.plot.scale <- function(scale) {
+  par(cex = scale, lwd = scale, mar = c(4.2, 4.2, 3.4, 1), mgp = c(2.6, 0.8, 0))
+}
+
+plot.regression <- function(a, b, show.improvement, scale = 1) {
+  set.plot.scale(scale)
+  results <- fit.results(a, b)
+  rss <- round(results[1], 1)
+  found <- results[2] == 1
+  rss.color <- improvement.color(a, b, rss)
+  if (!show.improvement) rss.color <- "black"
+
+  # the title: y-hat = a + b x   RSS = ...  ("ŷ" is y-hat and "·" is a centered dot)
+  equation <- paste0("ŷ = ", a, if (b >= 0) " + " else " − ", abs(b), " · x")
+  rss.text <- format(rss, nsmall = 1, big.mark = ",")
+
+  # the y-axis goes from -30 to 30 (further if a point is outside of this range)
+  plot(x.vals, y.vals, xlab = "x", ylab = "y", xlim = c(-5, 5),
+       ylim = range(-30, 30, y.vals), las = 1)
+  title(paste0(equation, "        RSS = ", rss.text), col.main = rss.color, font.main = 1)
+
+  # lines which make it easier to see the x and y intercepts
+  abline(v = 0, col = "gray")
+  abline(h = 0, col = "gray")
+
+  # the residuals: red, or green when the least squares line has been found
+  residual.color <- if (found) "#1a9e2a" else "red"
+  segments(x.vals, a + b * x.vals, x.vals, y.vals, col = residual.color,
+           lwd = if (found) 1.5 * par("lwd") else par("lwd"))
+
+  abline(a = a, b = b, col = "red", lwd = 1.5 * par("lwd"))
+}
+</script>
+
+
+<script type="module">
+import { WebR } from "https://webr.r-wasm.org/v0.6.0/webr.mjs";
+
+const el = {
+  newSample: document.getElementById("new-sample"),
+  newParameters: document.getElementById("new-parameters"),
+  aSlider: document.getElementById("a-slider"),
+  bSlider: document.getElementById("b-slider"),
+  a: document.getElementById("a"),
+  b: document.getElementById("b"),
+  showImprovement: document.getElementById("show-improvement"),
+  status: document.getElementById("status"),
+  plot: document.getElementById("plot"),
+  result: document.getElementById("result"),
+};
+const allInputs = [el.newSample, el.newParameters, el.aSlider, el.bSlider, el.a, el.b, el.showImprovement];
+
+// state visible to automated tests
+window.appState = { ready: false, running: false, updates: 0, errors: [], results: null };
+
+function setStatus(message, isError = false) {
+  el.status.textContent = message;
+  el.status.classList.toggle("error", isError);
+}
+
+// a number typed into an input, or null if the input is empty or not a number
+function readNumber(input) {
+  if (input.value.trim() === "") return null;
+  const value = Number(input.value);
+  return Number.isFinite(value) ? value : null;
+}
+
+// removes floating point noise from slider values (e.g. 2.3000000000000003)
+const showNumber = (v) => String(Number(v.toPrecision(10)));
+
+// ---- R ------------------------------------------------------------------------------
+const webR = new WebR();
+
+// run an R plotting call and draw the plot it makes onto a canvas
+async function drawPlot(canvas, makeCall) {
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  const box = canvas.getBoundingClientRect();
+  const width = Math.round(box.width * ratio);
+  const height = Math.round(box.height * ratio);
+  const scale = ratio * Math.max(0.8, Math.min(1.35, box.width / 560));
+
+  const shelter = await new webR.Shelter();
+  try {
+    const capture = await shelter.captureR(makeCall(scale.toFixed(3)), {
+      captureGraphics: { width: width, height: height },
+    });
+    if (!capture.images.length) throw new Error("R did not produce a plot.");
+    const image = capture.images[capture.images.length - 1];
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(image, 0, 0, width, height);
+  } finally {
+    shelter.purge();
+  }
+}
+
+// ---- updates --------------------------------------------------------------------------
+// Actions (the buttons) run in order. Redraws are merged, so that dragging a slider
+// does not queue up many plots; a redraw always uses the newest inputs.
+let queue = Promise.resolve();
+let queued = 0;
+let redrawQueued = false;
+
+function enqueue(task) {
+  queued += 1;
+  window.appState.running = true;
+  queue = queue.then(async () => {
+    try {
+      await task();
+      window.appState.updates += 1;
+    } catch (err) {
+      console.error(err);
+      window.appState.errors.push(String(err && err.message ? err.message : err));
+      setStatus("Something went wrong: " + (err && err.message ? err.message : err), true);
+    } finally {
+      queued -= 1;
+      window.appState.running = queued > 0;
+    }
+  });
+}
+
+function requestRedraw() {
+  if (redrawQueued) return;
+  redrawQueued = true;
+  enqueue(async () => {
+    redrawQueued = false;
+    await redraw();
+  });
+}
+
+// leaves the plot as it is (and shows a message) if an input is not valid
+async function redraw() {
+  const a = readNumber(el.a);
+  const b = readNumber(el.b);
+  if (a === null) return setStatus("Please enter a number for the intercept (a).", true);
+  if (b === null) return setStatus("Please enter a number for the slope (b).", true);
+  const showImprovement = el.showImprovement.checked ? "TRUE" : "FALSE";
+
+  await drawPlot(el.plot, (s) => `plot.regression(${a}, ${b}, ${showImprovement}, ${s})`);
+  const [rss, found, aOpt, bOpt] = await webR.evalRRaw(`fit.results(${a}, ${b})`, "number[]");
+
+  const lines = [`ŷ = ${showNumber(a)} ${b < 0 ? "−" : "+"} ${showNumber(Math.abs(b))} · x`,
+                 `RSS = ${rss.toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}`];
+  const children = lines.map((text) => {
+    const p = document.createElement("p");
+    p.textContent = text;
+    return p;
+  });
+  if (found === 1) {
+    const p = document.createElement("p");
+    p.className = "found-message";
+    p.textContent = "You found the least squares line (to one decimal place)! The residuals are green.";
+    children.push(p);
+  }
+  el.result.replaceChildren(...children);
+  el.result.classList.toggle("found", found === 1);
+  el.result.hidden = false;
+  el.plot.setAttribute("aria-label", `Scatter plot of 100 points with the line ${lines[0]} ` +
+    `and its residuals; ${lines[1]}.` + (found === 1 ? " This is the least squares line." : ""));
+  window.appState.results = { a, b, rss, found: found === 1, aOpt, bOpt };
+  setStatus("");
+}
+
+// ---- input events ---------------------------------------------------------------------
+
+// a slider moved: copy its value into its box
+function sliderMoved(slider, box) {
+  box.value = showNumber(Number(slider.value));
+  requestRedraw();
+}
+
+// a box changed: move its slider (sliders stop at -6 and 6; the boxes do not)
+function boxChanged(box, slider) {
+  const value = readNumber(box);
+  if (value !== null) slider.value = value;
+  requestRedraw();
+}
+
+let typingTimer = null;
+function onTyping(box, slider) {
+  box.addEventListener("input", () => {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(() => boxChanged(box, slider), 250);
+  });
+  box.addEventListener("change", () => {
+    clearTimeout(typingTimer);
+    boxChanged(box, slider);
+  });
+}
+onTyping(el.a, el.aSlider);
+onTyping(el.b, el.bSlider);
+el.aSlider.addEventListener("input", () => sliderMoved(el.aSlider, el.a));
+el.bSlider.addEventListener("input", () => sliderMoved(el.bSlider, el.b));
+el.showImprovement.addEventListener("change", requestRedraw);
+
+el.newSample.addEventListener("click", () => enqueue(async () => {
+  await webR.evalRVoid("new.sample()");
+  await redraw();
+}));
+el.newParameters.addEventListener("click", () => enqueue(async () => {
+  await webR.evalRVoid("new.parameters()");
+  await redraw();
+}));
+
+// redraw when the window is resized
+let resizeTimer = null;
+window.addEventListener("resize", () => {
+  if (!window.appState.ready) return;
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(requestRedraw, 250);
+});
+
+// ---- start ------------------------------------------------------------------------
+async function start() {
+  try {
+    setStatus("Loading R in your browser… (the first time, this can take up to a minute)");
+    await webR.init();
+    await webR.evalRVoid(document.getElementById("r-code").textContent);
+    for (const input of allInputs) input.disabled = false;
+    window.appState.ready = true;
+    requestRedraw();
+  } catch (err) {
+    console.error(err);
+    window.appState.errors.push(String(err && err.message ? err.message : err));
+    setStatus("Could not start R in this browser: " + (err && err.message ? err.message : err), true);
+  }
+}
+
+start();
+</script>
+</body>
+</html>
