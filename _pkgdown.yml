@@ -4,7 +4,7 @@ template:
 
 navbar:
   structure:
-    left:  [intro, reference, transitioning, class_summaries]
+    left:  [intro, reference, transitioning, class_summaries, apps]
     right: [github]
   components:
     transitioning:
@@ -31,6 +31,29 @@ navbar:
           href: articles/class-summary-parametric-tests.html
         - text: "Parametric Confidence Intervals"
           href: articles/class-summary-parametric-cis.html
+    # interactive apps (webR versions of the class Shiny apps, in pkgdown/assets/apps/)
+    apps:
+      text: "Apps"
+      menu:
+        - text: "Regression"
+        - text: "Find the regression coefficients"
+          href: apps/guess_regression/index.html
+        - text: "-------"
+        - text: "Sampling distributions"
+        - text: "Sampling distribution of proportions"
+          href: apps/prop_sampling_dist/index.html
+        - text: "Gettysburg word lengths sampling distribution"
+          href: apps/gettysburg_sampling_distribution/index.html
+        - text: "Sampling and bootstrap distributions"
+          href: apps/sampling_bootstrap_app/index.html
+        - text: "-------"
+        - text: "Normal distribution"
+        - text: "Probability below a value"
+          href: apps/normal_area/index.html
+        - text: "Probability in an interval"
+          href: apps/normal_range/index.html
+        - text: "Quantiles"
+          href: apps/normal_quantile/index.html
 
 articles:
   - title: "Transitioning to Base R"

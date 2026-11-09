@@ -76,3 +76,10 @@ table tbody tr:nth-child(even) {
   margin:           1.25rem 0;
   font-size:        0.93rem;
 }
+
+/* ── Navbar "Apps" menu ──────────────────────────────────────────────────── */
+/* pkgdown limits navbar menus to 280px tall; let the Apps menu show all of its
+   links without scrolling (unless the window is very short) */
+#dropdown-apps + .dropdown-menu {
+  max-height: 80vh;
+}
