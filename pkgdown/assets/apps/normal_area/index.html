@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<!--
+  Normal distribution area app (webR version)
+
+  A standalone version of the Shiny app in app.R (formerly hosted at
+  https://ethan-meyers-test.shinyapps.io/normal_area/). The R code runs entirely in
+  the web browser using webR (https://docs.r-wasm.org/webr/), so no Shiny server is
+  needed. Host this single file on any static web host (e.g., GitHub Pages) or serve
+  it locally, e.g. from R:  httpuv::runStaticServer(".")
+
+  The probability and plotting code is plain R, in the <script type="text/x-r">
+  block below. It draws the same picture that mosaic::xpnorm() made in the Shiny
+  app using base R graphics, so that no extra R packages need to be downloaded.
+  The JavaScript at the bottom only handles the inputs and draws the plot that R
+  makes onto the page.
+
+  Optional URL parameters set the starting inputs, e.g.
+    index.html?x=110&mu=100&sigma=15
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Normal Distribution Area</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1f2328;
+    --muted: #57606a;
+    --panel-border: #d0d7de;
+    --control-bg: #f6f8fa;
+    --accent: #0b5cad;
+    --error: #b42318;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.4;
+  }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 1.6rem; margin: 0.2rem 0 0.3rem; }
+  .intro { color: var(--muted); margin: 0 0 1rem; }
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 16px; align-items: start; }
+  .controls {
+    display: flex; flex-direction: column; gap: 14px;
+    background: var(--control-bg); border: 1px solid var(--panel-border);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .control { display: flex; flex-direction: column; gap: 4px; }
+  .control label { font-weight: 600; font-size: 0.95rem; }
+  .control input[type="number"] {
+    font: inherit; padding: 6px 8px; width: 100%;
+    border: 1px solid var(--panel-border); border-radius: 6px; background: #fff;
+  }
+  input:disabled { opacity: 0.55; cursor: not-allowed; }
+  .status { color: var(--muted); }
+  .status:empty { display: none; }
+  .status.error { color: var(--error); font-weight: 600; }
+  .panel {
+    border: 1px solid var(--panel-border); border-radius: 8px; background: #fff;
+    padding: 6px; min-width: 0;
+  }
+  .panel canvas { display: block; width: 100%; aspect-ratio: 2 / 1; background: #fff; }
+  .result {
+    margin-top: 12px; padding: 10px 14px; border-left: 4px solid var(--accent);
+    background: var(--control-bg); border-radius: 0 6px 6px 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .result p { margin: 0.15rem 0; }
+  .result .main-result { font-size: 1.15rem; font-weight: 600; }
+  footer { color: var(--muted); font-size: 0.85rem; margin-top: 14px; }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    .panel canvas { aspect-ratio: 4 / 3; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Find the probability of getting a random value less than x</h1>
+  <p class="intro">For a normal distribution with mean &mu; and standard deviation &sigma;,
+    find the probability that a random value X is less than or equal to x, i.e., the
+    area under the density curve to the left of x (the dark purple area).</p>
+
+  <div class="layout">
+    <div class="controls">
+      <div class="control">
+        <label for="x">x</label>
+        <input id="x" type="number" value="1" step="0.1" disabled>
+      </div>
+      <div class="control">
+        <label for="mu">&mu;</label>
+        <input id="mu" type="number" value="0" disabled>
+      </div>
+      <div class="control">
+        <label for="sigma">&sigma;</label>
+        <input id="sigma" type="number" value="1" min="0" disabled>
+      </div>
+      <div id="status" class="status" role="status" aria-live="polite">Loading&hellip;</div>
+    </div>
+
+    <div>
+      <div class="panel"><canvas id="plot" role="img" aria-label="Normal density curve"></canvas></div>
+      <div id="result" class="result" aria-live="polite" hidden></div>
+    </div>
+  </div>
+
+  <footer>The R code runs in your browser using
+    <a href="https://docs.r-wasm.org/webr/">webR</a>. You can check these values in R with
+    <code>pnorm(x, &mu;, &sigma;)</code>.</footer>
+</main>
+
+
+<script type="text/x-r" id="r-code">
+# ---------------------------------------------------------------------------
+# R code for the normal area app: Pr(X <= x) when X ~ N(mu, sigma).
+# The Shiny app drew this plot with mosaic::xpnorm(x, mu, sigma); the base R
+# version below draws the same picture without needing the mosaic package.
+# ---------------------------------------------------------------------------
+
+# the colors that mosaic::xpnorm() uses (from the viridis palette)
+left.color  <- "#440154"
+right.color <- "#BDDF26"
+
+# probabilities are shown to 4 decimal places, like mosaic::xpnorm()
+prob.text <- function(p) {
+  if (p > 0 && p < 0.00005) return("< 0.0001")
+  if (p < 1 && p > 0.99995) return("> 0.9999")
+  paste("=", sprintf("%.4f", p))
+}
+
+# larger text and lines when the web page draws plots at a higher resolution;
+# the left margin grows with the width of the y-axis labels (e.g. 0.4 vs. 0.025)
+set.plot.scale <- function(scale, ylim) {
+  label.chars <- max(nchar(format(pretty(ylim))))
+  ylab.line <- 1.4 + 0.6 * label.chars
+  par(cex = scale, lwd = scale, mar = c(4.2, ylab.line + 1.2, 3.4, 1),
+      mgp = c(2.6, 0.8, 0))
+  ylab.line
+}
+
+# shade the area under the N(mu, sigma) density curve from a to b
+shade.region <- function(a, b, mu, sigma, color) {
+  if (b <= a) return(invisible(NULL))
+  xs <- seq(a, b, length.out = 400)
+  polygon(c(a, xs, b), c(0, dnorm(xs, mu, sigma), 0), col = color, border = NA)
+}
+
+# Pr(X <= x), Pr(X > x), and the z-score of x
+area.results <- function(x, mu, sigma) {
+  c(pnorm(x, mu, sigma), pnorm(x, mu, sigma, lower.tail = FALSE), (x - mu) / sigma)
+}
+
+plot.area <- function(x, mu, sigma, scale = 1) {
+  results <- area.results(x, mu, sigma)
+  the.title <- paste0("Pr(X ≤ ", format(x, digits = 7), ") ", prob.text(results[1]))
+
+  # show 4 standard deviations on each side of the mean (and x, if it is further out)
+  xlim <- c(min(mu - 4 * sigma, x), max(mu + 4 * sigma, x))
+  peak <- dnorm(mu, mu, sigma)
+  ylim <- c(0, peak * 1.15)
+  ylab.line <- set.plot.scale(scale, ylim)
+  plot(NA, xlim = xlim, ylim = ylim, xlab = "x", ylab = "", main = the.title,
+       font.main = 1, las = 1, yaxs = "i")
+  title(ylab = "density", line = ylab.line)
+  abline(v = pretty(xlim), h = pretty(ylim), col = "gray90", lwd = par("lwd"))
+  box()
+
+  # the area below x, and the area above x
+  shade.region(xlim[1], min(x, xlim[2]), mu, sigma, left.color)
+  shade.region(max(x, xlim[1]), xlim[2], mu, sigma, right.color)
+
+  xs <- seq(xlim[1], xlim[2], length.out = 1000)
+  lines(xs, dnorm(xs, mu, sigma), lwd = 1.5 * par("lwd"))
+  abline(h = 0, col = "gray40")
+
+  # a line at x, labeled with its z-score
+  segments(x, 0, x, peak * 1.02, lwd = 1.5 * par("lwd"))
+  text(x, peak * 1.075, paste("z =", round(results[3], 2)), xpd = NA)
+}
+</script>
+
+
+<script type="module">
+import { WebR } from "https://webr.r-wasm.org/v0.6.0/webr.mjs";
+
+const el = {
+  x: document.getElementById("x"),
+  mu: document.getElementById("mu"),
+  sigma: document.getElementById("sigma"),
+  status: document.getElementById("status"),
+  plot: document.getElementById("plot"),
+  result: document.getElementById("result"),
+};
+
+// state visible to automated tests
+window.appState = { ready: false, running: false, updates: 0, errors: [], results: null };
+
+// ---- starting inputs (optionally from the URL) ------------------------------------
+const params = new URLSearchParams(window.location.search);
+for (const name of ["x", "mu", "sigma"]) {
+  if (params.has(name) && params.get(name).trim() !== "" && Number.isFinite(Number(params.get(name)))) {
+    el[name].value = params.get(name);
+  }
+}
+
+function setStatus(message, isError = false) {
+  el.status.textContent = message;
+  el.status.classList.toggle("error", isError);
+}
+
+// a number typed into an input, or null if the input is empty or not a number
+function readNumber(input) {
+  if (input.value.trim() === "") return null;
+  const value = Number(input.value);
+  return Number.isFinite(value) ? value : null;
+}
+
+// numbers for display: removes floating point noise (e.g. 0.30000000000000004)
+const showNumber = (v, digits = 10) => String(Number(v.toPrecision(digits)));
+
+// probabilities are shown to 4 decimal places, like mosaic::xpnorm()
+function probText(p) {
+  if (p > 0 && p < 0.00005) return "< 0.0001";
+  if (p < 1 && p > 0.99995) return "> 0.9999";
+  return "= " + p.toFixed(4);
+}
+
+// ---- R ------------------------------------------------------------------------------
+const webR = new WebR();
+
+// run an R plotting call and draw the plot it makes onto a canvas
+async function drawPlot(canvas, makeCall) {
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  const box = canvas.getBoundingClientRect();
+  const width = Math.round(box.width * ratio);
+  const height = Math.round(box.height * ratio);
+  const scale = ratio * Math.max(0.8, Math.min(1.35, box.width / 560));
+
+  const shelter = await new webR.Shelter();
+  try {
+    const capture = await shelter.captureR(makeCall(scale.toFixed(3)), {
+      captureGraphics: { width: width, height: height },
+    });
+    if (!capture.images.length) throw new Error("R did not produce a plot.");
+    const image = capture.images[capture.images.length - 1];
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(image, 0, 0, width, height);
+  } finally {
+    shelter.purge();
+  }
+}
+
+// ---- updates --------------------------------------------------------------------------
+// Requests are merged so that quick changes to the inputs do not queue up; the
+// newest inputs are always used.
+let pending = false;
+let running = false;
+
+function request() {
+  pending = true;
+  if (!running) processRequests();
+}
+
+async function processRequests() {
+  running = true;
+  window.appState.running = true;
+  while (pending) {
+    pending = false;
+    try {
+      await update();
+      window.appState.updates += 1;
+    } catch (err) {
+      console.error(err);
+      window.appState.errors.push(String(err && err.message ? err.message : err));
+      setStatus("Something went wrong: " + (err && err.message ? err.message : err), true);
+    }
+  }
+  running = false;
+  window.appState.running = false;
+}
+
+// leaves the plot as it is (and shows a message) if an input is not valid
+async function update() {
+  const x = readNumber(el.x);
+  const mu = readNumber(el.mu);
+  const sigma = readNumber(el.sigma);
+  if (x === null) return setStatus("Please enter a number for x.", true);
+  if (mu === null) return setStatus("Please enter a number for μ.", true);
+  if (sigma === null || sigma <= 0) {
+    return setStatus("Please enter a number greater than 0 for σ.", true);
+  }
+
+  const args = `${x}, ${mu}, ${sigma}`;
+  const [pLess, pGreater, z] = await webR.evalRRaw(`area.results(${args})`, "number[]");
+  await drawPlot(el.plot, (s) => `plot.area(${args}, ${s})`);
+
+  const xs = showNumber(x);
+  const zs = String(Number(z.toFixed(4))); // z to 4 decimal places, like mosaic::xpnorm()
+  const lines = [
+    `If X ~ N(${showNumber(mu)}, ${showNumber(sigma)}), then`,
+    `Pr(X ≤ ${xs}) = Pr(Z ≤ ${zs}) ${probText(pLess)}`,
+    `Pr(X > ${xs}) = Pr(Z > ${zs}) ${probText(pGreater)}`,
+  ];
+  el.result.replaceChildren(...lines.map((text, i) => {
+    const p = document.createElement("p");
+    p.textContent = text;
+    if (i === 1) p.className = "main-result";
+    return p;
+  }));
+  el.result.hidden = false;
+  el.plot.setAttribute("aria-label", `Normal density curve with the area below x shaded. ${lines[1]}`);
+  window.appState.results = { x, mu, sigma, pLess, pGreater, z, text: lines.join("\n") };
+  setStatus("");
+}
+
+// update while typing (after a short pause) and when an input is changed
+let typingTimer = null;
+for (const input of [el.x, el.mu, el.sigma]) {
+  input.addEventListener("input", () => {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(request, 250);
+  });
+  input.addEventListener("change", () => {
+    clearTimeout(typingTimer);
+    request();
+  });
+}
+
+// redraw when the window is resized
+let resizeTimer = null;
+window.addEventListener("resize", () => {
+  if (!window.appState.ready) return;
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(request, 250);
+});
+
+// ---- start ------------------------------------------------------------------------
+async function start() {
+  try {
+    setStatus("Loading R in your browser… (the first time, this can take up to a minute)");
+    await webR.init();
+    await webR.evalRVoid(document.getElementById("r-code").textContent);
+    for (const input of [el.x, el.mu, el.sigma]) input.disabled = false;
+    window.appState.ready = true;
+    request();
+  } catch (err) {
+    console.error(err);
+    window.appState.errors.push(String(err && err.message ? err.message : err));
+    setStatus("Could not start R in this browser: " + (err && err.message ? err.message : err), true);
+  }
+}
+
+start();
+</script>
+</body>
+</html>
