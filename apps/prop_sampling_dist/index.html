@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<!--
+  Sampling distribution of proportions app (webR version)
+
+  A standalone version of the Shiny app in app.R (formerly hosted at
+  https://ethan-meyers-test.shinyapps.io/prop_sampling_dist/). The R code runs
+  entirely in the web browser using webR (https://docs.r-wasm.org/webr/), so no
+  Shiny server is needed. Host this single file on any static web host (e.g.,
+  GitHub Pages) or serve it locally, e.g. from R:  httpuv::runStaticServer(".")
+
+  The simulation and plotting code is plain R, in the <script type="text/x-r">
+  block below. The Shiny app drew the sampling distribution with ggplot2's
+  geom_dotplot(); the base R dot plot below draws the same kind of picture without
+  needing any extra R packages. As in the Shiny app, the random number seed is set
+  to 1 when the page loads (so everyone gets the same samples), and changing the
+  population proportion or the sample size starts a new sampling distribution.
+
+  Optional URL parameters set the starting inputs, e.g.
+    index.html?pi=0.5&n=100
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sampling Distribution of Proportions</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1f2328;
+    --muted: #57606a;
+    --panel-border: #d0d7de;
+    --control-bg: #f6f8fa;
+    --accent: #0b5cad;
+    --error: #b42318;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.4;
+  }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 1.6rem; margin: 0.2rem 0 0.3rem; }
+  .intro { color: var(--muted); margin: 0 0 1rem; }
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 16px; align-items: start; }
+  .controls {
+    display: flex; flex-direction: column; gap: 14px;
+    background: var(--control-bg); border: 1px solid var(--panel-border);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .control { display: flex; flex-direction: column; gap: 4px; }
+  .control label { font-weight: 600; font-size: 0.95rem; }
+  .control input[type="number"] {
+    font: inherit; padding: 6px 8px; width: 100%;
+    border: 1px solid var(--panel-border); border-radius: 6px; background: #fff;
+  }
+  .buttons { display: flex; flex-direction: column; gap: 8px; }
+  button {
+    font: inherit; padding: 7px 14px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--accent); background: var(--accent); color: #fff;
+  }
+  .checkbox { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+  .checkbox input { width: 18px; height: 18px; margin: 0; }
+  .checkbox label { font-weight: 400; }
+  button:disabled, input:disabled { opacity: 0.55; cursor: not-allowed; }
+  .status { color: var(--muted); }
+  .status:empty { display: none; }
+  .status.error { color: var(--error); font-weight: 600; }
+  .panel {
+    border: 1px solid var(--panel-border); border-radius: 8px; background: #fff;
+    padding: 6px; min-width: 0;
+  }
+  .panel canvas { display: block; width: 100%; aspect-ratio: 2 / 1; background: #fff; }
+  .caption { color: var(--muted); font-size: 0.9rem; margin: 6px 2px 0; }
+  table.stats { margin-top: 12px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  table.stats th, table.stats td { border: 1px solid var(--panel-border); padding: 5px 14px; text-align: right; }
+  table.stats th { background: var(--control-bg); font-weight: 600; }
+  footer { color: var(--muted); font-size: 0.85rem; margin-top: 14px; }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    .panel canvas { aspect-ratio: 4 / 3; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Create a sampling distribution of proportions</h1>
+  <p class="intro">Each click draws random samples of size n from a population where a
+    proportion &pi; of the cases are in the category of interest. The sample proportion
+    (p&#770;) of each sample is added as a dot to the sampling distribution below.</p>
+
+  <div class="layout">
+    <div class="controls">
+      <div class="control">
+        <label for="pi">Population proportion (&pi;)</label>
+        <input id="pi" type="number" value="0.2" min="0" max="1" step="0.01" disabled>
+      </div>
+      <div class="control">
+        <label for="n">Sample size (n)</label>
+        <input id="n" type="number" value="50" min="1" step="1" disabled>
+      </div>
+      <div class="buttons">
+        <button id="generate-1" type="button" disabled>Generate 1 sample</button>
+        <button id="generate-10" type="button" disabled>Generate 10 samples</button>
+        <button id="generate-100" type="button" disabled>Generate 100 samples</button>
+      </div>
+      <div class="checkbox">
+        <input id="show-stats" type="checkbox" disabled>
+        <label for="show-stats">Show sampling distribution statistics</label>
+      </div>
+      <div id="status" class="status" role="status" aria-live="polite">Loading&hellip;</div>
+    </div>
+
+    <div>
+      <div class="panel"><canvas id="plot" role="img" aria-label="Sampling distribution of sample proportions"></canvas></div>
+      <p class="caption" id="caption"></p>
+      <table class="stats" id="stats" hidden>
+        <thead><tr><th scope="col">Number of samples</th><th scope="col">Mean</th><th scope="col">SE</th></tr></thead>
+        <tbody><tr><td id="stat-count"></td><td id="stat-mean"></td><td id="stat-se"></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>The R code runs in your browser using
+    <a href="https://docs.r-wasm.org/webr/">webR</a>. The SE is the standard deviation of
+    the sample proportions in the sampling distribution.</footer>
+</main>
+
+
+<script type="text/x-r" id="r-code">
+# ---------------------------------------------------------------------------
+# R code for the sampling distribution of proportions app. This is the same
+# simulation as the Shiny app; the dot plot is drawn with base R instead of
+# ggplot2's geom_dotplot() so that no extra packages need to be downloaded.
+# ---------------------------------------------------------------------------
+
+# set the randomization seed so everyone can get the same results
+set.seed(1)
+
+# the current population proportion, sample size, and sampling distribution
+current.pi <- 0.2
+current.n <- 50
+sampling.distribution <- numeric(0)
+
+# start a new sampling distribution (when pi or n changes)
+reset.samples <- function(pi, n) {
+  current.pi <<- pi
+  current.n <<- n
+  sampling.distribution <<- numeric(0)
+  invisible(NULL)
+}
+
+# add the sample proportions from num.samples new random samples
+add.samples <- function(num.samples) {
+  new.samples <- rbinom(num.samples, size = current.n, prob = current.pi) / current.n
+  sampling.distribution <<- c(sampling.distribution, new.samples)
+  invisible(NULL)
+}
+
+# the number of samples, and the mean and SE of the sampling distribution
+# (0 when there are not enough samples; the web page shows these as "-")
+sampling.stats <- function() {
+  k <- length(sampling.distribution)
+  as.numeric(c(k, if (k > 0) mean(sampling.distribution) else 0,
+               if (k > 1) sd(sampling.distribution) else 0))
+}
+
+# larger text and lines when the web page draws plots at a higher resolution
+set.plot.scale <- function(scale) {
+  par(cex = scale, lwd = scale, mar = c(4.4, 4.6, 3.2, 1), mgp = c(2.8, 0.8, 0))
+}
+
+# A dot plot where each dot is one sample statistic. Dots are stacked in bins of
+# width bin.width (like geom_dotplot(method = "histodot")), so the y-axis is the
+# number of samples in each bin. When a stack gets too tall to fit, the y-axis
+# grows and the dots get smaller.
+dot.plot <- function(values, xlim, bin.width, xlab, main, line.at = NULL, scale = 1) {
+  set.plot.scale(scale)
+  plot.new()
+  plot.window(xlim = xlim, ylim = c(0, 1))
+  x.per.inch <- diff(par("usr")[1:2]) / par("pin")[1]
+  plot.height <- par("pin")[2]
+
+  dot.size <- bin.width / x.per.inch               # dot diameter (inches) when bins touch
+  bins <- round(values / bin.width)                # the bin that each value falls in
+  heights <- ave(seq_along(bins), bins, FUN = seq_along)   # position of each dot in its stack
+  tallest <- if (length(values) > 0) max(heights) else 0
+  y.max <- plot.height / dot.size                  # how many dots fit in one stack
+  if (tallest > 0.95 * y.max) {
+    y.max <- tallest / 0.95
+    dot.size <- plot.height / y.max
+  }
+  y.max <- max(y.max, 5)
+
+  plot.window(xlim = xlim, ylim = c(0, y.max), yaxs = "i")
+  abline(v = axTicks(1), h = axTicks(2), col = "gray90", lwd = par("lwd"))
+  axis(1); axis(2, las = 1); box()
+  title(main = main, font.main = 1, xlab = xlab, ylab = "Count")
+  if (!is.null(line.at)) abline(v = line.at, col = adjustcolor("red", 0.55), lwd = 1.5 * par("lwd"))
+
+  if (length(values) == 0) {
+    text(mean(xlim), y.max / 2, "Click a “Generate” button to draw samples", col = "gray40")
+    return(invisible(NULL))
+  }
+  radius <- 0.45 * dot.size * x.per.inch           # in x-axis units (a small gap between dots)
+  symbols(bins * bin.width, heights - 0.5, circles = rep(radius, length(values)),
+          inches = FALSE, add = TRUE, bg = "#1f2328", fg = "#1f2328")
+}
+
+plot.sampling.distribution <- function(scale = 1) {
+  k <- length(sampling.distribution)
+  the.title <- if (k == 0) paste0("No samples yet (n = ", current.n, ")") else
+    paste0(k, if (k == 1) " sample" else " samples", " of size n = ", current.n)
+  dot.plot(sampling.distribution, xlim = c(0, 1), bin.width = 1/200,
+           xlab = expression(paste("Sample proportion values (", hat(p), ")")),
+           main = the.title, line.at = current.pi, scale = scale)
+}
+</script>
+
+
+<script type="module">
+import { WebR } from "https://webr.r-wasm.org/v0.6.0/webr.mjs";
+
+const el = {
+  pi: document.getElementById("pi"),
+  n: document.getElementById("n"),
+  generate1: document.getElementById("generate-1"),
+  generate10: document.getElementById("generate-10"),
+  generate100: document.getElementById("generate-100"),
+  showStats: document.getElementById("show-stats"),
+  status: document.getElementById("status"),
+  plot: document.getElementById("plot"),
+  caption: document.getElementById("caption"),
+  stats: document.getElementById("stats"),
+  statCount: document.getElementById("stat-count"),
+  statMean: document.getElementById("stat-mean"),
+  statSE: document.getElementById("stat-se"),
+};
+const allInputs = [el.pi, el.n, el.generate1, el.generate10, el.generate100, el.showStats];
+
+// state visible to automated tests
+window.appState = { ready: false, running: false, updates: 0, errors: [], stats: null };
+
+// ---- starting inputs (optionally from the URL) ------------------------------------
+const params = new URLSearchParams(window.location.search);
+for (const name of ["pi", "n"]) {
+  if (params.has(name) && params.get(name).trim() !== "" && Number.isFinite(Number(params.get(name)))) {
+    el[name].value = params.get(name);
+  }
+}
+
+function setStatus(message, isError = false) {
+  el.status.textContent = message;
+  el.status.classList.toggle("error", isError);
+}
+
+// a number typed into an input, or null if the input is empty or not a number
+function readNumber(input) {
+  if (input.value.trim() === "") return null;
+  const value = Number(input.value);
+  return Number.isFinite(value) ? value : null;
+}
+
+// the population proportion and sample size, or null (with a message) if they are not valid
+function readInputs() {
+  const pi = readNumber(el.pi);
+  const n = readNumber(el.n);
+  if (pi === null || pi < 0 || pi > 1) {
+    setStatus("Please enter a population proportion (π) between 0 and 1.", true);
+    return null;
+  }
+  if (n === null || !Number.isInteger(n) || n < 1) {
+    setStatus("Please enter a sample size (n) that is a whole number of at least 1.", true);
+    return null;
+  }
+  return { pi, n };
+}
+
+const showStat = (v) => (Number.isFinite(v) ? v.toFixed(4) : "–");
+
+// ---- R ------------------------------------------------------------------------------
+const webR = new WebR();
+
+// run an R plotting call and draw the plot it makes onto a canvas
+async function drawPlot(canvas, makeCall) {
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  const box = canvas.getBoundingClientRect();
+  const width = Math.round(box.width * ratio);
+  const height = Math.round(box.height * ratio);
+  const scale = ratio * Math.max(0.8, Math.min(1.35, box.width / 560));
+
+  const shelter = await new webR.Shelter();
+  try {
+    const capture = await shelter.captureR(makeCall(scale.toFixed(3)), {
+      captureGraphics: { width: width, height: height },
+    });
+    if (!capture.images.length) throw new Error("R did not produce a plot.");
+    const image = capture.images[capture.images.length - 1];
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(image, 0, 0, width, height);
+  } finally {
+    shelter.purge();
+  }
+}
+
+// ---- updates --------------------------------------------------------------------------
+// Each action (a button click, a change to pi or n, a redraw) runs in order, so every
+// click adds its samples even when the buttons are clicked quickly.
+let queue = Promise.resolve();
+let queued = 0;
+
+function enqueue(task) {
+  queued += 1;
+  window.appState.running = true;
+  queue = queue.then(async () => {
+    try {
+      await task();
+      window.appState.updates += 1;
+    } catch (err) {
+      console.error(err);
+      window.appState.errors.push(String(err && err.message ? err.message : err));
+      setStatus("Something went wrong: " + (err && err.message ? err.message : err), true);
+    } finally {
+      queued -= 1;
+      window.appState.running = queued > 0;
+    }
+  });
+}
+
+let current = null; // the pi and n of the current sampling distribution
+
+async function redraw() {
+  await drawPlot(el.plot, (s) => `plot.sampling.distribution(${s})`);
+  const [count, rawMean, rawSE] = await webR.evalRRaw("sampling.stats()", "number[]");
+  const mean = count > 0 ? rawMean : NaN; // no mean without samples
+  const se = count > 1 ? rawSE : NaN;     // no SE with fewer than 2 samples
+  el.statCount.textContent = String(count);
+  el.statMean.textContent = showStat(mean);
+  el.statSE.textContent = showStat(se);
+  el.stats.hidden = !el.showStats.checked;
+  el.caption.textContent = `The red line is at the population proportion, π = ${current.pi}.`;
+  el.plot.setAttribute("aria-label", `Sampling distribution of ${count} sample proportions ` +
+    `from samples of size n = ${current.n}; mean ${showStat(mean)}, SE ${showStat(se)}.`);
+  window.appState.stats = { count, mean, se, pi: current.pi, n: current.n };
+}
+
+// start a new sampling distribution if pi or n has changed
+async function resetIfChanged(inputs) {
+  if (current && current.pi === inputs.pi && current.n === inputs.n) return false;
+  await webR.evalRVoid(`reset.samples(${inputs.pi}, ${inputs.n})`);
+  current = inputs;
+  return true;
+}
+
+function inputsChanged() {
+  enqueue(async () => {
+    const inputs = readInputs();
+    if (!inputs) return;
+    setStatus("");
+    if (await resetIfChanged(inputs)) await redraw();
+  });
+}
+
+function generate(numSamples) {
+  enqueue(async () => {
+    const inputs = readInputs();
+    if (!inputs) return;
+    setStatus("");
+    await resetIfChanged(inputs);
+    await webR.evalRVoid(`add.samples(${numSamples})`);
+    await redraw();
+  });
+}
+
+// update after a short pause while typing, and when an input is changed
+let typingTimer = null;
+for (const input of [el.pi, el.n]) {
+  input.addEventListener("input", () => {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(inputsChanged, 400);
+  });
+  input.addEventListener("change", () => {
+    clearTimeout(typingTimer);
+    inputsChanged();
+  });
+}
+el.generate1.addEventListener("click", () => generate(1));
+el.generate10.addEventListener("click", () => generate(10));
+el.generate100.addEventListener("click", () => generate(100));
+el.showStats.addEventListener("change", () => { el.stats.hidden = !el.showStats.checked; });
+
+// redraw when the window is resized
+let resizeTimer = null;
+window.addEventListener("resize", () => {
+  if (!window.appState.ready) return;
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => enqueue(async () => { if (current) await redraw(); }), 250);
+});
+
+// ---- start ------------------------------------------------------------------------
+async function start() {
+  try {
+    setStatus("Loading R in your browser… (the first time, this can take up to a minute)");
+    await webR.init();
+    await webR.evalRVoid(document.getElementById("r-code").textContent);
+    for (const input of allInputs) input.disabled = false;
+    window.appState.ready = true;
+    inputsChanged();
+  } catch (err) {
+    console.error(err);
+    window.appState.errors.push(String(err && err.message ? err.message : err));
+    setStatus("Could not start R in this browser: " + (err && err.message ? err.message : err), true);
+  }
+}
+
+start();
+</script>
+</body>
+</html>

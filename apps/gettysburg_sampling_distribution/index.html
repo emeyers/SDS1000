@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<!--
+  Gettysburg word length sampling distribution app (webR version)
+
+  A standalone version of the Shiny app in app.R (formerly hosted at
+  https://ethan-meyers-test.shinyapps.io/gettysburg_sampling_distribution/). The R
+  code runs entirely in the web browser using webR (https://docs.r-wasm.org/webr/),
+  so no Shiny server is needed. Host this single file on any static web host (e.g.,
+  GitHub Pages) or serve it locally, e.g. from R:  httpuv::runStaticServer(".")
+
+  The simulation and plotting code is plain R, in the <script type="text/x-r">
+  block below; the 268 words of the Gettysburg Address (the data in gettysburg.Rda)
+  are included in it. The Shiny app drew the sampling distribution with ggplot2's
+  geom_dotplot(); the base R dot plot below draws the same kind of picture without
+  needing any extra R packages. As in the Shiny app, the random number seed is set
+  to 1 when the page loads (so everyone gets the same samples), and changing the
+  sample size starts a new sampling distribution.
+
+  Optional URL parameter to set the starting sample size, e.g.  index.html?n=20
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gettysburg Word Lengths</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1f2328;
+    --muted: #57606a;
+    --panel-border: #d0d7de;
+    --control-bg: #f6f8fa;
+    --accent: #0b5cad;
+    --highlight: #1a9e2a;
+    --error: #b42318;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.4;
+  }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 1.6rem; margin: 0.2rem 0 0.3rem; }
+  .intro { color: var(--muted); margin: 0 0 1rem; }
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 16px; align-items: start; }
+  .controls {
+    display: flex; flex-direction: column; gap: 14px;
+    background: var(--control-bg); border: 1px solid var(--panel-border);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .control { display: flex; flex-direction: column; gap: 4px; }
+  .control label { font-weight: 600; font-size: 0.95rem; }
+  .control input[type="number"] {
+    font: inherit; padding: 6px 8px; width: 100%;
+    border: 1px solid var(--panel-border); border-radius: 6px; background: #fff;
+  }
+  .buttons { display: flex; flex-direction: column; gap: 8px; }
+  button {
+    font: inherit; padding: 7px 14px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--accent); background: var(--accent); color: #fff;
+  }
+  .checkbox { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+  .checkbox input { width: 18px; height: 18px; margin: 0; }
+  .checkbox label { font-weight: 400; }
+  button:disabled, input:disabled { opacity: 0.55; cursor: not-allowed; }
+  .status { color: var(--muted); }
+  .status:empty { display: none; }
+  .status.error { color: var(--error); font-weight: 600; }
+  .panel {
+    border: 1px solid var(--panel-border); border-radius: 8px; background: #fff;
+    padding: 6px; min-width: 0;
+  }
+  .panel canvas { display: block; width: 100%; aspect-ratio: 2 / 1; background: #fff; }
+  .caption { color: var(--muted); font-size: 0.9rem; margin: 6px 2px 0; }
+  .last-sample {
+    margin-top: 12px; padding: 10px 14px; border-left: 4px solid var(--highlight);
+    background: var(--control-bg); border-radius: 0 6px 6px 0;
+  }
+  .last-sample h2 { font-size: 1rem; margin: 0 0 6px; }
+  .words { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .words li {
+    background: #fff; border: 1px solid var(--panel-border); border-radius: 999px;
+    padding: 1px 10px; font-variant-numeric: tabular-nums;
+  }
+  .words li span { color: var(--muted); }
+  table.stats { margin-top: 12px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  table.stats th, table.stats td { border: 1px solid var(--panel-border); padding: 5px 14px; text-align: right; }
+  table.stats th { background: var(--control-bg); font-weight: 600; }
+  footer { color: var(--muted); font-size: 0.85rem; margin-top: 14px; }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    .panel canvas { aspect-ratio: 4 / 3; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Create a sampling distribution from Gettysburg word lengths</h1>
+  <p class="intro">The population is the 268 words of the Gettysburg Address. Each click
+    draws random samples of n words (without replacement) and adds the mean word length
+    (x&#772;) of each sample as a dot to the sampling distribution below.</p>
+
+  <div class="layout">
+    <div class="controls">
+      <div class="control">
+        <label for="n">Sample size (n)</label>
+        <input id="n" type="number" value="10" min="1" max="268" step="1" disabled>
+      </div>
+      <div class="buttons">
+        <button id="generate-1" type="button" disabled>Generate 1 sample</button>
+        <button id="generate-10" type="button" disabled>Generate 10 samples</button>
+        <button id="generate-100" type="button" disabled>Generate 100 samples</button>
+      </div>
+      <div class="checkbox">
+        <input id="show-sample" type="checkbox" checked disabled>
+        <label for="show-sample">Show the last sample</label>
+      </div>
+      <div class="checkbox">
+        <input id="show-stats" type="checkbox" disabled>
+        <label for="show-stats">Show sampling distribution statistics</label>
+      </div>
+      <div id="status" class="status" role="status" aria-live="polite">Loading&hellip;</div>
+    </div>
+
+    <div>
+      <div class="panel"><canvas id="plot" role="img" aria-label="Sampling distribution of sample means"></canvas></div>
+      <p class="caption" id="caption"></p>
+      <div class="last-sample" id="last-sample" hidden>
+        <h2 id="last-sample-title"></h2>
+        <ul class="words" id="last-sample-words"></ul>
+      </div>
+      <table class="stats" id="stats" hidden>
+        <thead><tr><th scope="col">Number of samples</th><th scope="col">Mean</th><th scope="col">SE</th></tr></thead>
+        <tbody><tr><td id="stat-count"></td><td id="stat-mean"></td><td id="stat-se"></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>The R code runs in your browser using
+    <a href="https://docs.r-wasm.org/webr/">webR</a>. The SE is the standard deviation of
+    the sample means in the sampling distribution.</footer>
+</main>
+
+
+<script type="text/x-r" id="r-code">
+# ---------------------------------------------------------------------------
+# R code for the Gettysburg word length sampling distribution app. This is the
+# same simulation as the Shiny app; the dot plot is drawn with base R instead of
+# ggplot2's geom_dotplot() so that no extra packages need to be downloaded.
+# ---------------------------------------------------------------------------
+
+# the 268 words of the Gettysburg Address (the words column of gettysburg.Rda)
+gettysburg.words <- c(
+  "four", "score", "and", "seven", "years", "ago", "our", "fathers", "brought",
+  "forth", "on", "this", "continent", "a", "new", "nation", "conceived", "in",
+  "liberty", "and", "dedicated", "to", "the", "proposition", "that", "all", "men",
+  "are", "created", "equal", "now", "we", "are", "engaged", "in", "a", "great",
+  "civil", "war", "testing", "whether", "that", "nation", "or", "any", "nation",
+  "so", "conceived", "and", "so", "dedicated", "can", "long", "endure", "we", "are",
+  "met", "on", "a", "great", "battlefield", "of", "that", "war", "we", "have",
+  "come", "to", "dedicate", "a", "portion", "of", "that", "field", "as", "a",
+  "final", "resting", "place", "for", "those", "who", "here", "gave", "their",
+  "lives", "that", "that", "nation", "might", "live", "it", "is", "altogether",
+  "fitting", "and", "proper", "that", "we", "should", "do", "this", "but", "in", "a",
+  "larger", "sense", "we", "cannot", "dedicate", "we", "cannot", "consecrate", "we",
+  "cannot", "hallow", "this", "ground", "the", "brave", "men", "living", "and",
+  "dead", "who", "struggled", "here", "have", "consecrated", "it", "far", "above",
+  "our", "poor", "power", "to", "add", "or", "detract", "the", "world", "will",
+  "little", "note", "nor", "long", "remember", "what", "we", "say", "here", "but",
+  "it", "can", "never", "forget", "what", "they", "did", "here", "it", "is", "for",
+  "us", "the", "living", "rather", "to", "be", "dedicated", "here", "to", "the",
+  "unfinished", "work", "which", "they", "who", "fought", "here", "have", "thus",
+  "far", "so", "nobly", "advanced", "it", "is", "rather", "for", "us", "to", "be",
+  "here", "dedicated", "to", "the", "great", "task", "remaining", "before", "us",
+  "that", "from", "these", "honored", "dead", "we", "take", "increased", "devotion",
+  "to", "that", "cause", "for", "which", "they", "gave", "the", "last", "full",
+  "measure", "of", "devotion", "that", "we", "here", "highly", "resolve", "that",
+  "these", "dead", "shall", "not", "have", "died", "in", "vain", "that", "this",
+  "nation", "under", "god", "shall", "have", "a", "new", "birth", "of", "freedom",
+  "and", "that", "government", "of", "the", "people", "by", "the", "people", "for",
+  "the", "people", "shall", "not", "perish", "from", "the", "earth")
+
+# the number of letters in each word (the num_letters column of gettysburg.Rda)
+word.lengths <- nchar(gettysburg.words)
+
+# set the randomization seed so everyone can get the same results
+set.seed(1)
+
+# the current sample size, sampling distribution, and last sample
+current.n <- 10
+sampling.distribution <- numeric(0)
+last.sample <- integer(0)   # the positions (in the speech) of the words in the last sample
+
+# start a new sampling distribution (when n changes)
+reset.samples <- function(n) {
+  current.n <<- n
+  sampling.distribution <<- numeric(0)
+  last.sample <<- integer(0)
+  invisible(NULL)
+}
+
+# add the means of num.samples new random samples of words
+# (sampling the positions of the words gives the same random samples as
+#  sample(word.lengths, n) in the Shiny app)
+add.samples <- function(num.samples) {
+  new.means <- numeric(num.samples)
+  for (i in seq_len(num.samples)) {
+    last.sample <<- sample(seq_along(word.lengths), current.n)
+    new.means[i] <- mean(word.lengths[last.sample])
+  }
+  sampling.distribution <<- c(sampling.distribution, new.means)
+  invisible(NULL)
+}
+
+# the number of samples, and the mean and SE of the sampling distribution
+# (0 when there are not enough samples; the web page shows these as "-")
+sampling.stats <- function() {
+  k <- length(sampling.distribution)
+  as.numeric(c(k, if (k > 0) mean(sampling.distribution) else 0,
+               if (k > 1) sd(sampling.distribution) else 0))
+}
+
+# larger text and lines when the web page draws plots at a higher resolution
+set.plot.scale <- function(scale) {
+  par(cex = scale, lwd = scale, mar = c(4.4, 4.6, 3.2, 1), mgp = c(2.8, 0.8, 0))
+}
+
+# A dot plot where each dot is one sample statistic. Dots are stacked in bins of
+# width bin.width (like geom_dotplot(method = "histodot")), so the y-axis is the
+# number of samples in each bin. When a stack gets too tall to fit, the y-axis
+# grows and the dots get smaller. The most recent value can be highlighted.
+dot.plot <- function(values, xlim, bin.width, xlab, main, line.at = NULL,
+                     highlight.last = FALSE, scale = 1) {
+  set.plot.scale(scale)
+  plot.new()
+  plot.window(xlim = xlim, ylim = c(0, 1))
+  x.per.inch <- diff(par("usr")[1:2]) / par("pin")[1]
+  plot.height <- par("pin")[2]
+
+  dot.size <- bin.width / x.per.inch               # dot diameter (inches) when bins touch
+  bins <- round(values / bin.width)                # the bin that each value falls in
+  heights <- ave(seq_along(bins), bins, FUN = seq_along)   # position of each dot in its stack
+  tallest <- if (length(values) > 0) max(heights) else 0
+  y.max <- plot.height / dot.size                  # how many dots fit in one stack
+  if (tallest > 0.9 * y.max) {
+    y.max <- tallest / 0.9
+    dot.size <- plot.height / y.max
+  }
+  y.max <- max(y.max, 5)
+
+  plot.window(xlim = xlim, ylim = c(0, y.max), yaxs = "i")
+  abline(v = axTicks(1), h = axTicks(2), col = "gray90", lwd = par("lwd"))
+  axis(1); axis(2, las = 1); box()
+  title(main = main, font.main = 1, xlab = xlab, ylab = "Count")
+  if (!is.null(line.at)) abline(v = line.at, col = adjustcolor("red", 0.55), lwd = 1.5 * par("lwd"))
+
+  if (length(values) == 0) {
+    text(mean(xlim), y.max / 2, "Click a “Generate” button to draw samples", col = "gray40")
+    return(invisible(NULL))
+  }
+  colors <- rep("#1f2328", length(values))
+  if (highlight.last) colors[length(values)] <- "#1a9e2a"
+  radius <- 0.45 * dot.size * x.per.inch           # in x-axis units (a small gap between dots)
+  symbols(bins * bin.width, heights - 0.5, circles = rep(radius, length(values)),
+          inches = FALSE, add = TRUE, bg = colors, fg = colors)
+
+  # a green arrow above the most recent value (it is at the top of its stack)
+  if (highlight.last) {
+    last <- length(values)
+    arrows(bins[last] * bin.width, heights[last] + 0.06 * y.max,
+           bins[last] * bin.width, heights[last] + 0.01 * y.max,
+           length = 0.08 * scale, col = "#1a9e2a", lwd = 2 * par("lwd"))
+  }
+}
+
+plot.sampling.distribution <- function(scale = 1) {
+  k <- length(sampling.distribution)
+  the.title <- if (k == 0) paste0("No samples yet (n = ", current.n, ")") else
+    paste0(k, if (k == 1) " sample" else " samples", " of size n = ", current.n)
+  dot.plot(sampling.distribution, xlim = c(0, 11), bin.width = 1/20,
+           xlab = expression(paste("Sample mean values (", bar(x), ")")),
+           main = the.title, line.at = mean(word.lengths), highlight.last = TRUE,
+           scale = scale)
+}
+</script>
+
+
+<script type="module">
+import { WebR } from "https://webr.r-wasm.org/v0.6.0/webr.mjs";
+
+const POPULATION_SIZE = 268;
+
+const el = {
+  n: document.getElementById("n"),
+  generate1: document.getElementById("generate-1"),
+  generate10: document.getElementById("generate-10"),
+  generate100: document.getElementById("generate-100"),
+  showSample: document.getElementById("show-sample"),
+  showStats: document.getElementById("show-stats"),
+  status: document.getElementById("status"),
+  plot: document.getElementById("plot"),
+  caption: document.getElementById("caption"),
+  lastSample: document.getElementById("last-sample"),
+  lastSampleTitle: document.getElementById("last-sample-title"),
+  lastSampleWords: document.getElementById("last-sample-words"),
+  stats: document.getElementById("stats"),
+  statCount: document.getElementById("stat-count"),
+  statMean: document.getElementById("stat-mean"),
+  statSE: document.getElementById("stat-se"),
+};
+const allInputs = [el.n, el.generate1, el.generate10, el.generate100, el.showSample, el.showStats];
+
+// state visible to automated tests
+window.appState = { ready: false, running: false, updates: 0, errors: [], stats: null, lastSample: null };
+
+// ---- starting input (optionally from the URL) -------------------------------------
+const params = new URLSearchParams(window.location.search);
+if (params.has("n") && params.get("n").trim() !== "" && Number.isFinite(Number(params.get("n")))) {
+  el.n.value = params.get("n");
+}
+
+function setStatus(message, isError = false) {
+  el.status.textContent = message;
+  el.status.classList.toggle("error", isError);
+}
+
+// the sample size, or null (with a message) if it is not valid
+function readSampleSize() {
+  const n = el.n.value.trim() === "" ? null : Number(el.n.value);
+  if (n === null || !Number.isInteger(n) || n < 1 || n > POPULATION_SIZE) {
+    setStatus(`Please enter a sample size (n) that is a whole number from 1 to ${POPULATION_SIZE}.`, true);
+    return null;
+  }
+  return n;
+}
+
+const showStat = (v) => (Number.isFinite(v) ? v.toFixed(4) : "–");
+
+// ---- R ------------------------------------------------------------------------------
+const webR = new WebR();
+
+// run an R plotting call and draw the plot it makes onto a canvas
+async function drawPlot(canvas, makeCall) {
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  const box = canvas.getBoundingClientRect();
+  const width = Math.round(box.width * ratio);
+  const height = Math.round(box.height * ratio);
+  const scale = ratio * Math.max(0.8, Math.min(1.35, box.width / 560));
+
+  const shelter = await new webR.Shelter();
+  try {
+    const capture = await shelter.captureR(makeCall(scale.toFixed(3)), {
+      captureGraphics: { width: width, height: height },
+    });
+    if (!capture.images.length) throw new Error("R did not produce a plot.");
+    const image = capture.images[capture.images.length - 1];
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(image, 0, 0, width, height);
+  } finally {
+    shelter.purge();
+  }
+}
+
+// ---- updates --------------------------------------------------------------------------
+// Each action (a button click, a change to n, a redraw) runs in order, so every click
+// adds its samples even when the buttons are clicked quickly.
+let queue = Promise.resolve();
+let queued = 0;
+
+function enqueue(task) {
+  queued += 1;
+  window.appState.running = true;
+  queue = queue.then(async () => {
+    try {
+      await task();
+      window.appState.updates += 1;
+    } catch (err) {
+      console.error(err);
+      window.appState.errors.push(String(err && err.message ? err.message : err));
+      setStatus("Something went wrong: " + (err && err.message ? err.message : err), true);
+    } finally {
+      queued -= 1;
+      window.appState.running = queued > 0;
+    }
+  });
+}
+
+let currentN = null; // the sample size of the current sampling distribution
+
+async function redraw() {
+  await drawPlot(el.plot, (s) => `plot.sampling.distribution(${s})`);
+  const [count, rawMean, rawSE] = await webR.evalRRaw("sampling.stats()", "number[]");
+  const mean = count > 0 ? rawMean : NaN; // no mean without samples
+  const se = count > 1 ? rawSE : NaN;     // no SE with fewer than 2 samples
+  const words = await webR.evalRRaw("gettysburg.words[last.sample]", "string[]");
+  const lengths = await webR.evalRRaw("as.numeric(word.lengths[last.sample])", "number[]");
+  const popMean = await webR.evalRNumber("mean(word.lengths)");
+
+  el.statCount.textContent = String(count);
+  el.statMean.textContent = showStat(mean);
+  el.statSE.textContent = showStat(se);
+  el.stats.hidden = !el.showStats.checked;
+  el.caption.textContent = `The red line is at the population mean word length, ` +
+    `μ = ${popMean.toFixed(2)} letters` +
+    (count > 0 ? ". The green dot (with the arrow) is the mean of the last sample." : ".");
+
+  // the words in the last sample, with their lengths
+  const sampleMean = lengths.length ? lengths.reduce((a, b) => a + b, 0) / lengths.length : NaN;
+  el.lastSampleTitle.textContent =
+    `The last sample (n = ${lengths.length}): x̄ = ${String(Number(sampleMean.toFixed(4)))} letters`;
+  el.lastSampleWords.replaceChildren(...words.map((word, i) => {
+    const li = document.createElement("li");
+    const count = document.createElement("span");
+    count.textContent = ` (${lengths[i]})`;
+    li.append(word, count);
+    return li;
+  }));
+  el.lastSample.hidden = !el.showSample.checked || lengths.length === 0;
+
+  el.plot.setAttribute("aria-label", `Sampling distribution of ${count} sample means ` +
+    `from samples of size n = ${currentN}; mean ${showStat(mean)}, SE ${showStat(se)}.`);
+  window.appState.stats = { count, mean, se, n: currentN };
+  window.appState.lastSample = { words, lengths, mean: sampleMean };
+}
+
+// start a new sampling distribution if n has changed
+async function resetIfChanged(n) {
+  if (currentN === n) return false;
+  await webR.evalRVoid(`reset.samples(${n})`);
+  currentN = n;
+  return true;
+}
+
+function sampleSizeChanged() {
+  enqueue(async () => {
+    const n = readSampleSize();
+    if (n === null) return;
+    setStatus("");
+    if (await resetIfChanged(n)) await redraw();
+  });
+}
+
+function generate(numSamples) {
+  enqueue(async () => {
+    const n = readSampleSize();
+    if (n === null) return;
+    setStatus("");
+    await resetIfChanged(n);
+    await webR.evalRVoid(`add.samples(${numSamples})`);
+    await redraw();
+  });
+}
+
+// update after a short pause while typing, and when the input is changed
+let typingTimer = null;
+el.n.addEventListener("input", () => {
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(sampleSizeChanged, 400);
+});
+el.n.addEventListener("change", () => {
+  clearTimeout(typingTimer);
+  sampleSizeChanged();
+});
+el.generate1.addEventListener("click", () => generate(1));
+el.generate10.addEventListener("click", () => generate(10));
+el.generate100.addEventListener("click", () => generate(100));
+el.showStats.addEventListener("change", () => { el.stats.hidden = !el.showStats.checked; });
+el.showSample.addEventListener("change", () => {
+  el.lastSample.hidden = !el.showSample.checked || el.lastSampleWords.children.length === 0;
+});
+
+// redraw when the window is resized
+let resizeTimer = null;
+window.addEventListener("resize", () => {
+  if (!window.appState.ready) return;
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => enqueue(async () => { if (currentN !== null) await redraw(); }), 250);
+});
+
+// ---- start ------------------------------------------------------------------------
+async function start() {
+  try {
+    setStatus("Loading R in your browser… (the first time, this can take up to a minute)");
+    await webR.init();
+    await webR.evalRVoid(document.getElementById("r-code").textContent);
+    for (const input of allInputs) input.disabled = false;
+    window.appState.ready = true;
+    sampleSizeChanged();
+  } catch (err) {
+    console.error(err);
+    window.appState.errors.push(String(err && err.message ? err.message : err));
+    setStatus("Could not start R in this browser: " + (err && err.message ? err.message : err), true);
+  }
+}
+
+start();
+</script>
+</body>
+</html>
