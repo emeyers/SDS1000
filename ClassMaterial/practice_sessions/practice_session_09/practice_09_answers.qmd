@@ -1,4 +1,3 @@
-
 ---
 title: "Practice Session 9 Answers"
 format: pdf
@@ -392,19 +391,19 @@ p_hat_incentive
 n * 0.06
 n * (1 - 0.06)
 
-# the standard error if the null hypothesis is true
-SE <- sqrt(0.06 * (1 - 0.06) / n)
-SE
-
 
 ```
 
-
-- $\hat{p} = 47/498 =0.0943 $ and $n = 498$.
-
 - Since:
-$$n\pi_0 = 498 \cdot 0.06 = 29.88 \geq 10$$ 
-and 
+
+```{r}
+# check that the sample size is large enough to use the normal distribution
+n * 0.06
+n * (1 - 0.06)
+```
+
+
+$$n\pi_0 = 498 \cdot 0.06 = 29.88 \geq 10$$ and 
 $$n(1 - \pi_0) = 498 \cdot 0.94 = 468.12 \geq 10$$ 
 
 the sample size is large enough to use the normal distribution.
@@ -428,8 +427,6 @@ z_stat
 
 ```
 
-
-$$z = \frac{\hat{p} -\pi_0}{SE} = 3.23035$$
 
 
 **Step 3: Create the null distribution.**
