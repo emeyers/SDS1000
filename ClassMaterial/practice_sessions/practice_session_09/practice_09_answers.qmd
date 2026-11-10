@@ -196,7 +196,7 @@ n <- nrow(ICUAdmissions)
 n
 
 # the sample proportion of patients who lived
-p_hat <- sum(ICUAdmissions$Status == 0) / n
+p_hat <- get_proportion(ICUAdmissions$Status, "0")
 p_hat
 
 # check that the sample size is large enough to use the normal distribution
