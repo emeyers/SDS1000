@@ -1,1 +1,351 @@
+---
+title: "Practice Session 9 "
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r }
+library(SDS1000)
+library(Lock5Data)
+
+# Setting the seed makes the random numbers (and thus all answers below)
+# the same every time this document is rendered
+set.seed(1000)
+```
+
+## Introduction
+
+* **Distribution of a sample proportion**
+
+When selecting random samples of size $n$ from a population with proportion $\pi$, the distribution of the sample proportions is centered at the population proportion $\pi$ and has a standard error given by:
+
+$$
+SE = \sqrt{\frac{\pi(1 - \pi)}{n}}
+$$
+
+The distribution is reasonably normal if $n\pi \geq 10$ and $n(1 - \pi) \geq 10$.
+
+* **Confidence interval for a proportion**
+
+If $z^*$ is the standard normal endpoint for the desired level of confidence, and if $n\hat{p} \geq 10$ and $n(1 - \hat{p}) \geq 10$, the confidence interval for a population proportion $\pi$ is:
+
+$$
+\text{sample statistic} \pm z^* \cdot SE
+$$
+
+where the sample statistic is the sample proportion $\hat{p}$ from a random sample of size $n$, and the standard error is estimated by:
+
+$$
+SE = \sqrt{\frac{\hat{p}(1 - \hat{p})}{n}}
+$$
+
+* **Hypothesis test for a proportion**
+
+If $n\pi_0 \geq 10$ and $n(1 - \pi_0) \geq 10$, then we can test $H_0: \pi = \pi_0$ vs. $H_A: \pi \neq \pi_0$ (or a one-tailed alternative) using the standardized test statistic:
+
+$$
+z = \frac{\text{sample statistic} - \text{null value}}{SE} = \frac{\hat{p} - \pi_0}{\sqrt{\frac{\pi_0(1 - \pi_0)}{n}}}
+$$
+
+When the null hypothesis is true, this $z$-statistic comes from a standard normal distribution, $N(0, 1)$.
+
+We run every hypothesis test using the same 5 steps:
+
+1. State the null and alternative hypotheses.
+2. Calculate the observed statistic.
+3. Create the null distribution.
+4. Calculate the p-value.
+5. Draw a conclusion.
+
+
+## Exercise 1. Practice with `rnorm()`, `pnorm()`, and `cnorm()`
+
+a. Using `rnorm()`, generate 100 random observations from a normal distribution. What are the default mean and standard deviation values? Plot a histogram of the data.
+
+```{r}
+# your code here #
+```
+
+
+
+b. Now, change the mean and standard deviation to $\mu = 10$ and $\sigma = 5$. Plot a histogram of the data and compare.
+
+```{r}
+# your code here #
+```
+
+
+
+c. Using `pnorm()` with $\mu = 10$ and $\sigma = 5$, calculate the probability of observing a value greater than 13.
+
+```{r}
+# your code here #
+
+```
+
+
+d. Using `pnorm()` with $\mu = 10$ and $\sigma = 5$, calculate the probability of observing a value less than 7.
+
+```{r}
+# your code here #
+```
+
+
+
+e. Using `pnorm()` with $\mu = 10$ and $\sigma = 5$, calculate the probability of observing a value between 11 and 15.
+
+```{r}
+# your code here #
+```
+
+f. Using `cnorm()` with $\mu = 0$ and $\sigma = 1$, find the critical value corresponding to a 95% confidence interval.
+
+```{r}
+# your code here #
+```
+
+
+
+$\\$
+
+
+## Exercise 2. Z-Scores and the Standard Normal Distribution
+
+a. Generate 1000 random observations from a normal distribution with mean 10 and standard deviation 2. Save the result to the variable `norm_data`.
+
+```{r}
+# your code here #
+```
+
+b. Create a histogram of `norm_data`.
+
+```{r}
+# your code here #
+```
+
+c. Convert `norm_data` into a vector of z-scores using the formula below, where $\mu = 10$ and $\sigma = 2$ are the values used in part (a). Call this vector `z_data`.
+
+```{r}
+# your code here #
+```
+d. Compute the mean and standard deviation of `z_data`. What values would you expect for standardized data?
+
+
+```{r}
+# your code here #
+```
+
+
+
+e. Create a histogram of `z_data`. How do its center and spread compare to the histogram you created in part (b)?
+
+```{r}
+# your code here #
+```
+
+
+
+$\\$
+
+
+
+## Exercise 3. Confidence Interval With ICU Patients
+
+The dataset `ICUAdmissions` in the `Lock5Data` package includes information on 200 patients admitted to an Intensive Care Unit. One of the variables, `Status`, indicates whether each patient lived (indicated with a 0) or died (indicated with a 1).
+
+Construct and interpret a 95% confidence interval for the proportion of ICU patients who lived.
+
+```{r}
+library(Lock5Data)
+library(SDS1000)
+data(ICUAdmissions)
+```
+
+
+
+```{r}
+# your code here #
+```
+
+
+
+$\\$
+
+
+## Exercise 4. Hypothesis Test: Is B a Good Choice on a Multiple-Choice Exam?
+
+Multiple-choice questions on Advanced Placement (AP) exams have five options: A, B, C, D, and E. A random sample of 400 multiple-choice questions from a variety of AP exams found that B was the most common correct answer: 90 of the 400 questions had B as the correct answer.
+
+Does this provide evidence that B is more likely to be the correct answer than would be expected if all five options were equally likely? Use a parametric hypothesis test based on the normal distribution, and a significance level of $\alpha = 0.05$. The data are available in `APMultipleChoice` from the `Lock5Data` package.
+
+```{r}
+data(APMultipleChoice)
+
+# counts of each correct answer
+table(APMultipleChoice$Answer)
+```
+
+
+**Step 1: State the null and alternative hypotheses in words and symbols.**
+
+*In words:*
+
+-
+*In symbols:*
+
+
+
+
+
+**Step 2: Calculate the observed statistic.**
+```{r}
+# your code here #
+```
+
+
+
+
+**Step 3: Create the null distribution.**
+
+```{r}
+# your code here #
+```
+
+
+**Step 4: Calculate the p-value.**
+
+```{r}
+# your code here #
+```
+
+
+
+
+**Step 5: Draw a conclusion.**
+
+
+$\\$
+
+
+
+
+
+
+## Exercise 5. Incentives for Quitting Smoking: Do They Work?
+**Comparing parametric method vs computational methods**
+
+
+With no incentives, the proportion of smokers trying to quit who are still abstaining six months later is about 0.06. Participants in a study were randomly assigned to one of four different incentives, and the proportion who were successful was measured six months later. Of the 498 participants in the group with the least success, 47 were still abstaining from smoking six months later.
+
+We wish to test whether this provides evidence that even the smallest incentive works better than the proportion of 0.06 with no incentive at all. Use a significance level of $\alpha = 0.05$.
+
+
+### Part 1: Parametric hypothesis test
+
+
+**Step 1: State the null and alternative hypotheses in words and symbols.**
+
+*In words:*
+
+
+
+*In symbols:*
+
+
+
+
+**Step 2: Calculate the observed statistic.**
+
+```{r}
+# your code here #
+```
+
+
+
+
+
+**Step 3: Create the null distribution.**
+```{r}
+# your code here #
+```
+
+
+**Step 4: Calculate the p-value.**
+
+```{r}
+# your code here #
+```
+
+
+
+
+**Step 5: Draw a conclusion.**
+
+
+$\\$
+
+
+
+## Extra Practice (optional): 
+
+### Excercise 6: Comparing to a randomization test
+
+Now let's see how this compares to a randomization test. Since we have already stated the hypotheses (step 1) and calculated the observed proportion (step 2), we can go straight to step 3.
+
+**Step 3: Create the null distribution using simulations.**
+
+```{r}
+# your code here #
+```
+
+
+**Step 4: Calculate the p-value.**
+
+```{r}
+# your code here #
+```
+
+
+
+**Step 5: Draw a conclusion.**
+
+
+
+**Connecting the randomization distribution to the normal distribution**
+
+a. Give the mean and standard error of the normal distribution that most closely matches the randomization distribution, and then use this normal distribution with the observed sample statistic to find the p-value.
+
+```{r}
+# your code here #
+```
+
+The randomization distribution is centered at the null value $\pi_0 = 0.06$ and has a standard error of $SE = `0.01064`$, so we use a $N(0.06, 0.01064))$ distribution. The area above the observed proportion $\hat{p} =  0.094$ gives a p-value of `0.000623`.
+
+Notice that the standard error from the randomization distribution is very close to the standard error from the formula in Part 1.
+
+
+
+b. Use the standard error found from the randomization distribution in part (a) to find the standardized test statistic, and then use that test statistic to find the p-value using a standard normal distribution.
+
+```{r}
+# your code here #
+```
+
+
+
+
+c. Compare the p-values from the different methods.
+
+| Method | p-value |
+|---|---|
+| Parametric test (SE from the formula) |  |
+| Randomization test |  |
+| Normal distribution with the randomization SE, parts (a) and (b) ||
+
+
+
+$\\$
+
 
