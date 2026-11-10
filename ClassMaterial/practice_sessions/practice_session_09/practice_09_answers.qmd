@@ -1,1 +1,564 @@
 
+---
+title: "Practice Session 9 Answers"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r }
+library(SDS1000)
+library(Lock5Data)
+
+# Setting the seed makes the random numbers (and thus all answers below)
+# the same every time this document is rendered
+set.seed(1000)
+```
+
+## Introduction
+
+* **Distribution of a sample proportion**
+
+When selecting random samples of size $n$ from a population with proportion $\pi$, the distribution of the sample proportions is centered at the population proportion $\pi$ and has a standard error given by:
+
+$$
+SE = \sqrt{\frac{\pi(1 - \pi)}{n}}
+$$
+
+The distribution is reasonably normal if $n\pi \geq 10$ and $n(1 - \pi) \geq 10$.
+
+* **Confidence interval for a proportion**
+
+If $z^*$ is the standard normal endpoint for the desired level of confidence, and if $n\hat{p} \geq 10$ and $n(1 - \hat{p}) \geq 10$, the confidence interval for a population proportion $\pi$ is:
+
+$$
+\text{sample statistic} \pm z^* \cdot SE
+$$
+
+where the sample statistic is the sample proportion $\hat{p}$ from a random sample of size $n$, and the standard error is estimated by:
+
+$$
+SE = \sqrt{\frac{\hat{p}(1 - \hat{p})}{n}}
+$$
+
+* **Hypothesis test for a proportion**
+
+If $n\pi_0 \geq 10$ and $n(1 - \pi_0) \geq 10$, then we can test $H_0: \pi = \pi_0$ vs. $H_A: \pi \neq \pi_0$ (or a one-tailed alternative) using the standardized test statistic:
+
+$$
+z = \frac{\text{sample statistic} - \text{null value}}{SE} = \frac{\hat{p} - \pi_0}{\sqrt{\frac{\pi_0(1 - \pi_0)}{n}}}
+$$
+
+When the null hypothesis is true, this $z$-statistic comes from a standard normal distribution, $N(0, 1)$.
+
+We run every hypothesis test using the same 5 steps:
+
+1. State the null and alternative hypotheses.
+2. Calculate the observed statistic.
+3. Create the null distribution.
+4. Calculate the p-value.
+5. Draw a conclusion.
+
+
+## Exercise 1. Practice with `rnorm()`, `pnorm()`, and `cnorm()`
+
+a. Using `rnorm()`, generate 100 random observations from a normal distribution. What are the default mean and standard deviation values? Plot a histogram of the data.
+
+```{r}
+hist(rnorm(100),
+     main = "100 random values from N(0, 1)",
+     xlab = "Value")
+```
+
+The default values are a mean of 0 and a standard deviation of 1, so `rnorm(100)` draws from the standard normal distribution $N(0, 1)$.
+
+b. Now, change the mean and standard deviation to $\mu = 10$ and $\sigma = 5$. Plot a histogram of the data and compare.
+
+```{r}
+hist(rnorm(100, mean = 10, sd = 5),
+     main = "100 random values from N(10, 5)",
+     xlab = "Value")
+```
+
+Both histograms are roughly bell-shaped. The second one is centered around 10 instead of 0, and it is about five times as spread out: most values fall between about $-5$ and $25$ instead of between $-3$ and $3$.
+
+c. Using `pnorm()` with $\mu = 10$ and $\sigma = 5$, calculate the probability of observing a value greater than 13.
+
+```{r}
+pnorm(13, mean = 10, sd = 5, lower.tail = FALSE)
+```
+
+d. Using `pnorm()` with $\mu = 10$ and $\sigma = 5$, calculate the probability of observing a value less than 7.
+
+```{r}
+pnorm(7, mean = 10, sd = 5)
+```
+
+Parts (c) and (d) give exactly the same answer. This is because 13 is 0.6 standard deviations above the mean, and 7 is 0.6 standard deviations below it. Since the normal distribution is symmetric, the area above 13 equals the area below 7.
+
+e. Using `pnorm()` with $\mu = 10$ and $\sigma = 5$, calculate the probability of observing a value between 11 and 15.
+
+```{r}
+pnorm(15, mean = 10, sd = 5) - pnorm(11, mean = 10, sd = 5)
+```
+
+f. Using `cnorm()` with $\mu = 0$ and $\sigma = 1$, find the critical value corresponding to a 95% confidence interval.
+
+```{r}
+cnorm(0.95, mean = 0, sd = 1)
+```
+
+
+
+$\\$
+
+
+## Exercise 2. Z-Scores and the Standard Normal Distribution
+
+a. Generate 1000 random observations from a normal distribution with mean 10 and standard deviation 2. Save the result to the variable `norm_data`.
+
+```{r}
+norm_data <- rnorm(1000, mean = 10, sd = 2)
+```
+
+b. Create a histogram of `norm_data`.
+
+```{r}
+hist(norm_data,
+     main = "1000 random values from N(10, 2)",
+     xlab = "Value")
+```
+
+c. Convert `norm_data` into a vector of z-scores using the formula below, where $\mu = 10$ and $\sigma = 2$ are the values used in part (a). Call this vector `z_data`.
+
+$$
+z = \frac{x - \mu}{\sigma}
+$$
+
+```{r}
+z_data <- (norm_data - 10) / 2
+```
+
+d. Compute the mean and standard deviation of `z_data`. What values would you expect for standardized data?
+
+```{r}
+mean(z_data)
+
+sd(z_data)
+```
+
+We would expect standardized data to have a mean of 0 and a standard deviation of 1. `z_data` has a mean of approximately 0 (`-0.0030`) and a standard deviation of approximately 1 (`0.986`).
+
+They are not exactly 0 and 1 because we standardized using the *population* parameters ($\mu = 10$, $\sigma = 2$), not this sample's own mean and standard deviation. If we instead standardize using the sample's mean and standard deviation, we get exactly 0 and 1 (up to tiny rounding errors in the computer):
+
+```{r}
+z_sample <- (norm_data - mean(norm_data)) / sd(norm_data)
+
+round(mean(z_sample), 10)
+
+sd(z_sample)
+```
+
+e. Create a histogram of `z_data`. How do its center and spread compare to the histogram you created in part (b)?
+
+```{r}
+hist(z_data,
+     main = "Z-scores of norm_data",
+     xlab = "z-score")
+```
+
+This histogram is centered at 0 instead of 10, and its spread is half as large (a standard deviation of about 1 instead of 2). However, the *shape* is identical to the histogram in part (b). Standardizing only shifts and rescales the values, so it changes the numbers on the x-axis but not the shape of the distribution.
+
+$\\$
+
+
+
+## Exercise 3. Confidence Interval With ICU Patients
+
+The dataset `ICUAdmissions` in the `Lock5Data` package includes information on 200 patients admitted to an Intensive Care Unit. One of the variables, `Status`, indicates whether each patient lived (indicated with a 0) or died (indicated with a 1).
+
+Construct and interpret a 95% confidence interval for the proportion of ICU patients who lived.
+
+```{r}
+library(Lock5Data)
+library(SDS1000)
+data(ICUAdmissions)
+```
+
+**Answer:**
+
+```{r}
+
+# counts of patients who lived (0) and died (1)
+table(ICUAdmissions$Status)
+
+n <- nrow(ICUAdmissions)
+n
+
+# the sample proportion of patients who lived
+p_hat <- sum(ICUAdmissions$Status == 0) / n
+p_hat
+
+# check that the sample size is large enough to use the normal distribution
+n * p_hat
+n * (1 - p_hat)
+
+# standard error
+SE <- sqrt(p_hat * (1 - p_hat) / n)
+SE
+
+# critical value for the middle 95%
+z_star <- cnorm(0.95, 0, 1)
+z_star
+
+# confidence interval
+CI <- c(p_hat - z_star * SE, p_hat + z_star * SE)
+round(CI, 3)
+```
+
+
+- In the sample, 160 of the 200 patients lived and 40 died, so the sample statistic is $\hat{p} = 160/200 = 0.80$.
+
+- Since $n\hat{p} = 200 \cdot 0.80 = 160 \geq 10$ and $n(1 - \hat{p}) = 200 \cdot 0.20 = 40 \geq 10$, we can use the normal distribution to construct the confidence interval.
+
+- For 95% confidence, $z^* = 1.96$, so the interval is:
+
+$$0.80 \pm 1.96 \sqrt{\frac{0.80(1 - 0.80)}{200}} = 0.80 \pm 0.055 = (0.745, 0.855)$$
+
+We are 95% confident that the proportion of all ICU patients (at this hospital) who live is between 74.5% and 85.5%.
+
+
+$\\$
+
+
+## Exercise 4. Hypothesis Test: Is B a Good Choice on a Multiple-Choice Exam?
+
+Multiple-choice questions on Advanced Placement (AP) exams have five options: A, B, C, D, and E. A random sample of 400 multiple-choice questions from a variety of AP exams found that B was the most common correct answer: 90 of the 400 questions had B as the correct answer.
+
+Does this provide evidence that B is more likely to be the correct answer than would be expected if all five options were equally likely? Use a parametric hypothesis test based on the normal distribution, and a significance level of $\alpha = 0.05$. The data are available in `APMultipleChoice` from the `Lock5Data` package.
+
+```{r}
+data(APMultipleChoice)
+
+# counts of each correct answer
+table(APMultipleChoice$Answer)
+```
+**Answers**:
+
+**Step 1: State the null and alternative hypotheses in words and symbols.**
+
+*In words:*
+
+- Null hypothesis: B is no more likely to be the correct answer than any other option; i.e., B is the correct answer for 1/5 = 20% of all questions.
+- Alternative hypothesis: B is more likely to be the correct answer; i.e., B is the correct answer for more than 20% of all questions.
+
+*In symbols:*
+
+$$H_0: \pi = 0.20$$
+
+$$H_A: \pi > 0.20$$
+
+where $\pi$ is the proportion of all AP multiple-choice questions that have B as the correct answer.
+
+
+**Step 2: Calculate the observed statistic.**
+
+To calculate the $z$-statistic, we need the observed proportion $\hat{p}$, the sample size $n$, and the standard error we would get if the null hypothesis was true.
+
+```{r}
+
+n <- length(APMultipleChoice$Answer)
+n
+
+# the observed proportion of questions with B as the correct answer
+p_hat_choice_b <- get_proportion(APMultipleChoice$Answer, "B")
+p_hat_choice_b
+
+# check that the sample size is large enough to use the normal distribution
+n * 0.20
+n * (1 - 0.20)
+
+```
+
+- $\hat{p} = 90/400 = 0.225$ and $n = 400$.
+
+- Since:
+$$n\pi_0 = 400 \cdot 0.20 = 80 \geq 10$$
+and 
+$$n(1 - \pi_0) = 400 \cdot 0.80 = 320 \geq 10$$ 
+Thus. we can use the normal distribution approximation.
+
+- The standard error under the null hypothesis is 
+
+```{r}
+
+se_choice_b <- sqrt(0.2 * (1 - 0.2) / 400)
+se_choice_b
+
+```
+
+$SE = \sqrt{\frac{0.20(1 - 0.20)}{400}} = 0.02$.
+
+- The $z$-statistic is:
+
+```{r}
+z_stat_choice_b <- (p_hat_choice_b- 0.2)/ se_choice_b
+z_stat_choice_b
+
+
+```
+
+
+$$z = \frac{\hat{p} - \pi_0}{SE} = \frac{0.225 - 0.20}{0.02} = 1.25$$
+
+
+**Step 3: Create the null distribution.**
+
+If the null hypothesis is true, the $z$-statistic comes from a standard normal distribution, $N(0, 1)$. Let's plot this null distribution and add a red line at our observed $z$-statistic.
+
+```{r}
+plot_norm(0, 1,
+          xlab = "z-statistic values",
+          ylab = "Density",
+          main = "Null distribution")
+
+abline(v = z_stat_choice_b , col = "red")
+```
+
+
+**Step 4: Calculate the p-value.**
+
+Since this is an upper-tailed test ($H_A: \pi > 0.20$), the p-value is the area under the null distribution above our observed $z$-statistic.
+
+```{r}
+p_value <- pnorm(z_stat_choice_b , 0, 1, lower.tail = FALSE)
+p_value
+
+```
+
+The p-value is 0.0006181945.
+
+
+**Step 5: Draw a conclusion.**
+
+Since the p-value of 0.1056 is greater than our significance level of $\alpha = 0.05$, we **fail to reject** $H_0$. The data do not provide enough evidence to conclude that B is more likely to be the correct answer than would be expected if all five options were equally likely.
+
+$\\$
+
+
+
+
+
+
+## Exercise 5. Incentives for Quitting Smoking: Do They Work?
+**Comparing parametric method vs computational methods*
+
+
+With no incentives, the proportion of smokers trying to quit who are still abstaining six months later is about 0.06. Participants in a study were randomly assigned to one of four different incentives, and the proportion who were successful was measured six months later. Of the 498 participants in the group with the least success, 47 were still abstaining from smoking six months later.
+
+We wish to test whether this provides evidence that even the smallest incentive works better than the proportion of 0.06 with no incentive at all. Use a significance level of $\alpha = 0.05$.
+
+
+### Part 1: Parametric hypothesis test
+
+
+**Step 1: State the null and alternative hypotheses in words and symbols.**
+
+*In words:*
+
+- Null hypothesis: The incentive does not help; i.e., the proportion of smokers who are still abstaining six months later with the incentive is 0.06.
+
+- Alternative hypothesis: The incentive helps; i.e., the proportion of smokers who are still abstaining six months later with the incentive is greater than 0.06.
+
+*In symbols:*
+
+$$H_0: \pi = 0.06 $$
+
+$$ H_A: \pi > 0.06$$
+
+- where $\pi$ is the proportion of all smokers trying to quit with this incentive who are still abstaining six months later.
+
+**Step 2: Calculate the observed statistic.**
+
+```{r}
+n <- 498
+
+# the observed proportion still abstaining
+p_hat_incentive <- 47/498
+p_hat_incentive
+
+# check that the sample size is large enough to use the normal distribution
+n * 0.06
+n * (1 - 0.06)
+
+# the standard error if the null hypothesis is true
+SE <- sqrt(0.06 * (1 - 0.06) / n)
+SE
+
+
+```
+
+
+- $\hat{p} = 47/498 =0.0943 $ and $n = 498$.
+
+- Since:
+$$n\pi_0 = 498 \cdot 0.06 = 29.88 \geq 10$$ 
+and 
+$$n(1 - \pi_0) = 498 \cdot 0.94 = 468.12 \geq 10$$ 
+
+the sample size is large enough to use the normal distribution.
+
+- The standard error under the null hypothesis is $SE = \sqrt{\frac{0.06(1 - 0.06)}{498}} =  0.01064$.
+
+```{r}
+# the standard error if the null hypothesis is true
+SE <- sqrt(0.06 * (1 - 0.06) / n)
+SE
+
+```
+
+
+- The $z$-statistic is:
+
+```{r}
+# the z-statistic
+z_stat <- (p_hat_incentive - 0.06) / SE
+z_stat
+
+```
+
+
+$$z = \frac{\hat{p} -\pi_0}{SE} = 3.23035$$
+
+
+**Step 3: Create the null distribution.**
+
+```{r}
+plot_norm(0, 1,
+          xlab = "z-statistic values",
+          ylab = "Density",
+          main = "Null distribution")
+
+abline(v = z_stat, col = "red")
+```
+
+
+**Step 4: Calculate the p-value.**
+
+```{r}
+library(SDS1000)
+p_value_parametric <- pnorm(z_stat, 0, 1, lower.tail = FALSE)
+p_value_parametric
+```
+
+-The p-value is `0.0006181945`.
+
+**Step 5: Draw a conclusion.**
+
+Since the p-value of `0.0006181945` is much less than our significance level of $\alpha = 0.05$, we **reject** $H_0$. We have strong evidence that the proportion of smokers who are still abstaining six months later is greater than 0.06 with even the smallest incentive, so incentives appear to help people quit smoking.
+
+
+$\\$
+
+
+
+## Extra Practice (optional): 
+
+### Excercise 6: Comparing to a randomization test
+
+Now let's see how this compares to a randomization test. Since we have already stated the hypotheses (step 1) and calculated the observed proportion (step 2), we can go straight to step 3.
+
+**Step 3: Create the null distribution using simulations.**
+
+Here we create a null distribution of proportions (rather than $z$-statistics).
+
+```{r}
+# Number of participants in each simulated sample
+n <- 498
+
+# Simulate the null distribution
+null_incentive <- do_it(10000) * {
+  rflip(n, 0.06) / n
+}
+
+# Visualize the null distribution
+hist(null_incentive, breaks = 50,
+     main = "Null distribution",
+     xlab = "Proportion still abstaining",
+     col = "forestgreen", border = "skyblue1")
+
+abline(v = p_hat_incentive, col = "red")
+```
+
+**Step 4: Calculate the p-value.**
+
+```{r}
+p_value_randomization <- pnull(p_hat_incentive, null_incentive, lower.tail = FALSE)
+p_value_randomization
+
+# how many of the 10,000 simulated proportions are at or above our observed value?
+#sum(null_incentive >= p_hat_incentive)
+```
+
+**Answer:** The p-value from the randomization test is `0.0011`.
+
+**Step 5: Draw a conclusion.**
+
+Since the p-value of `0.0011` is less than $\alpha = 0.05$, we again reject $H_0$ and come to the same conclusion as the parametric test: the incentive appears to help people quit smoking.
+
+
+**Connecting the randomization distribution to the normal distribution**
+
+a. Give the mean and standard error of the normal distribution that most closely matches the randomization distribution, and then use this normal distribution with the observed sample statistic to find the p-value.
+
+```{r}
+se_null_dist <- sd(null_incentive)
+se_null_dist
+
+plot_norm(0.06, se_null_dist,
+          xlab = "Proportion still abstaining",
+          ylab = "Density",
+          main = "Normal distribution matching the randomization distribution")
+
+abline(v = p_hat_incentive, col = "red")
+
+p_value_normal_dist <- pnorm(p_hat_incentive, 0.06, se_null_dist, lower.tail = FALSE)
+p_value_normal_dist
+```
+
+The randomization distribution is centered at the null value $\pi_0 = 0.06$ and has a standard error of $SE = `0.01064`$, so we use a $N(0.06, 0.01064))$ distribution. The area above the observed proportion $\hat{p} =  0.094$ gives a p-value of `0.000623`.
+
+Notice that the standard error from the randomization distribution is very close to the standard error from the formula in Part 1.
+
+
+
+b. Use the standard error found from the randomization distribution in part (a) to find the standardized test statistic, and then use that test statistic to find the p-value using a standard normal distribution.
+
+```{r}
+z_stat_randomization_se <- (p_hat_incentive - 0.06) / se_null_dist
+z_stat_randomization_se
+
+p_value_standard_normal <- pnorm(z_stat_randomization_se, 0, 1, lower.tail = FALSE)
+p_value_standard_normal
+```
+
+The null value is 0.06 and the standard error from the randomization distribution in part (a) is `0.01064989`, so the standardized test statistic is:`3.22797`
+
+
+
+The area above this value in a standard normal distribution gives a p-value of `0.0006233612`. This is exactly the same p-value as in part (a). Standardizing a normal distribution does not change the areas under it, so finding the area above $\hat{p}$ in $N(0.06, SE)$ is the same as finding the area above $z$ in $N(0, 1)$.
+
+
+c. Compare the p-values from the different methods.
+
+| Method | p-value |
+|---|---|
+| Parametric test (SE from the formula) | `0.000623` |
+| Randomization test | `0.0017` |
+| Normal distribution with the randomization SE, parts (a) and (b) | `0.000623` |
+
+All of the p-values are very small, and in every case we reject $H_0$ at the 5% level. The randomization p-value may differ from the others by a noticeable relative amount, though. 
+
+$\\$
+
