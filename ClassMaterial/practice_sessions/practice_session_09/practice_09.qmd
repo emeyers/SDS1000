@@ -126,7 +126,7 @@ b. Create a histogram of `norm_data`.
 ```
 
 c. Convert `norm_data` into a vector of z-scores using the formula below, where $\mu = 10$ and $\sigma = 2$ are the values used in part (a). Call this vector `z_data`.
-
+$$z = \frac{x - \mu}{\sigma}$$
 ```{r}
 # your code here #
 ```
