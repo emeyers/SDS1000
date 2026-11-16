@@ -1,0 +1,428 @@
+---
+title: "Final Project: Add title here"
+format:
+  pdf:
+    geometry:
+      - margin=1in
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+
+<!--  
+
+This is a template for creating your final project write-up. It lays out the
+sections that should be in your write-up and describes a little about these
+sections. Your write-up should be between 5 and 8 pages long (not counting the
+optional appendix) and should contain:
+
+    1. Introduction: 
+      - What question are you addressing?
+      - Why is the question important? 
+      - Where did you get the data from?
+      - What other analyses have already been done with the data? 
+    
+    2. Loading and cleaning the data
+      - Load your data into R and do any cleaning you need.
+
+    3. Plots of the data
+      - One or more plots.
+    
+    4. Hypothesis tests: 
+      - Go through all 5 steps of a randomization test. 
+      - Also run a parametric test.
+    
+    5. Confidence intervals: 
+      - Calculate using the bootstrap
+      - Also calculate a confidence interval using a parametric method. 
+    
+    6. Conclusions: 
+      - What did you find?
+      - Future directions.
+      - Anything else you want to discuss.
+    
+    7. Reflection: 
+      - What went well?
+      - What did you struggle with?
+      - What analyses did you do that you are not including?
+      - Anything else you want to mention about the learning process, etc.
+      - Also fill out the final project reflection on Canvas.
+
+    8. Appendix (optional): 
+      - If there is additional code you would like to include you can create an 
+          appendix that has this code (this will help ensure your project is within
+          the 8 page limit). 
+      - Having this section is not necessary however.
+
+
+Make sure that your write-up looks good! Using additional Quarto features can
+help with this, and so some useful websites are:
+
+1)  https://rstudio.github.io/cheatsheets/quarto.pdf
+2)  https://quarto.org/docs/authoring/markdown-basics.html
+
+
+Note: For this final project you may NOT use R functions that run an entire
+hypothesis test or create a confidence interval for you (e.g., t.test(),
+prop.test(), chisq.test(), cor.test()). Instead, go through the steps we covered
+in class. You can use the functions we used in class to get p-values and
+critical values, such as pnorm(), pt(), pchisq(), pf(), cnorm(), ct() and
+ptail(). For regression, you can use lm() and summary() to get the slope and its
+standard error, but please calculate the t-statistic, p-value and confidence
+interval yourself. You can use R's built-in test functions (including shortcuts
+such as cor.test() and confint() that appear in the Class Summaries on the class
+website) to check your answers.
+
+If your question calls for a hypothesis test or confidence interval that we did
+not cover in detail in class (e.g., comparing two proportions, comparing more
+than two groups, or a correlation), see the "Class Summaries" menu on the class
+website, https://emeyers.github.io/SDS1000/, which walks through the
+randomization and parametric versions of each test and confidence interval.
+
+
+
+--> 
+
+
+
+
+
+
+<!-- There are some options that will make your document look better  -->
+```{r message=FALSE, warning=FALSE, tidy=TRUE, echo=FALSE}
+
+library(SDS1000)    
+library(knitr)
+
+
+# makes sure the code is wrapped to fit when it creates a pdf
+# (tidy can't split long text strings or comments, so keep each line of code
+# under about 80 characters)
+opts_chunk$set(tidy.opts=list(width.cutoff=60))   
+   
+# set the random number generator to always give the same sequence of random numbers
+set.seed(1)  
+    
+
+```
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+## Introduction 
+
+
+<!--  
+
+Write ~1-3 paragraphs describing:
+
+1. What problem you are addressing and why the problem you are addressing is
+interesting?
+
+2. Where did you get the data from? Include a link to the website where you got
+the data if applicable.
+
+3. What other analyses have already been done with the data? Include links to
+other analyses.
+
+--> 
+
+
+
+
+
+   
+$\\$   
+   
+    
+
+
+
+
+
+## Results
+
+
+
+
+$\\$
+    
+
+
+
+
+### Loading and cleaning the data
+
+
+<!--
+
+Load your data into R and do any cleaning you need (e.g., selecting the rows
+and columns you will use, converting text to numbers, or removing missing
+values). Keep your data file in the same folder as this .qmd file so that R can
+find it when you render your document. If this code is long, you can hide it in
+the pdf by adding echo=FALSE to the chunk options below, and then put a copy of
+the code in the appendix in a chunk with the option eval=FALSE (so that it is
+shown there but not run a second time).
+
+-->
+
+
+
+
+```{r message=FALSE, warning=FALSE, tidy=TRUE}
+
+
+
+
+
+```
+
+
+
+
+$\\$
+
+
+
+
+### Plot the data: Change the subtitle here to describe what you are plotting
+
+
+<!--  
+
+Create one or more plots of your data. Describe the plot(s), what they show, and
+why they are of interest to your question. Include the code to create these
+plots in the R chunk below. You can also discuss the plots after the code
+section.
+
+--> 
+
+
+
+
+```{r message=FALSE, warning=FALSE, tidy=TRUE}
+
+
+
+
+
+
+```
+
+
+
+
+
+<!--  
+
+Possible additional discussion of the plots here. 
+
+--> 
+
+
+
+
+
+
+
+
+$\\$    
+    
+
+
+
+
+
+
+
+    
+
+### Hypothesis tests: Change this sub-title to describe what the tests consist of
+
+<!--  
+
+Run hypothesis tests on your data using computational randomization methods, as
+well as parametric methods. For the randomization methods, please be sure to
+complete all 5 steps of the 5 step procedure discussed in class, and include
+your code in the R chunk below. For the parametric test, make sure that you get
+the same result (i.e., a similar p-value) or if you don't, explain why you think
+these types of tests differ. Also, be sure to check that the conditions for any
+parametric test are met (e.g., that the sample size is large enough, or the data
+are close enough to normally distributed, for the parametric null distribution
+to be valid).
+--> 
+
+
+
+
+```{r message=FALSE, warning=FALSE, tidy=TRUE}
+
+
+
+
+```
+
+
+<!--  
+
+Possible additional discussion of the 5-step procedure and hypothesis tests here. 
+
+--> 
+
+
+
+
+
+
+
+
+$\\$      
+    
+    
+    
+    
+    
+    
+    
+    
+
+### Confidence intervals: Change this sub-title to describe the confidence intervals you are creating
+
+<!--  
+
+Calculate a confidence interval using the bootstrap and parametric methods.
+Describe what the confidence interval tells you about your question of interest,
+and include your code in the R chunk below. If your hypothesis test compares
+more than two groups, create a confidence interval for the difference between
+two groups of interest (or for a single group). Check the conditions for the
+parametric confidence interval as well.
+
+--> 
+
+
+
+```{r message=FALSE, warning=FALSE, tidy=TRUE}
+
+
+
+
+```
+
+
+<!--  
+
+Possible additional discussion of the confidence intervals here. 
+
+--> 
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+    
+    
+    
+    
+    
+    
+
+
+## Conclusion 
+
+
+
+<!--  
+
+1-3 paragraphs summarizing what you found, how the findings address your
+question of interest, and possible future directions.
+
+-->
+
+
+
+
+
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Reflection  
+
+
+
+<!--  
+
+
+Write 1-3 paragraphs describing what went well with this project and what was
+more difficult. Also describe any additional things you tried that you did not
+end up including in this write-up, and approximately how much time you spent
+working on the project.
+
+Finally, please go to Canvas and fill out the Final Project Reflection to let us
+know how this project (and the class overall) went.
+
+
+
+-->
+
+
+
+
+
+$\\$
+
+
+
+
+
+
+
+## Appendix
+
+
+<!--  
+
+
+You can include additional code here if you could not fit it into the body of
+the document. This code will not count toward the page limit so if your paper is
+too long, moving some code to the appendix can be a useful strategy. Make sure
+any code you include here is well commented and easy to read.
+
+This section is optional, so it is fine if you do not include this section as well. 
+
+-->
+
+
+
+
+
