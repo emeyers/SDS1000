@@ -1,1 +1,324 @@
+---
+title: "Practice Session 10 "
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+## Introduction
+
+The Central Limit Theorem for Sample Means indicates that if the sample size $n$ is large, the distribution of sample means from a population with mean $\mu$ and standard deviation $\sigma$ is approximately normally distributed with mean $\mu$ and standard deviation $\sigma/\sqrt{n}$.
+
+Unfortunately, we find two difficulties when trying to use this result in practice. First, we generally don't know the standard deviation $\sigma$, so we use the standard deviation from the sample, $s$, when estimating the standard error of the sample means:
+
+$$
+SE = \frac{s}{\sqrt{n}}
+$$
+
+The second difficulty is that when we use $SE = s/\sqrt{n}$ to estimate the standard error of the sampling distribution of the means, the distribution is no longer normal. Instead, it follows a **t-distribution** with degrees of freedom $df = n - 1$.
+
+In this session we compute every confidence interval and hypothesis test **by hand**, step by step, so that you can see where each number comes from. R also has a built-in function, `t.test()`, that does these calculations in one line; we are deliberately not using it here.
+
+### 1. Single Mean
+
+Let $\bar{x}$ and $s$ be the sample mean and standard deviation, respectively, from a sample of size $n$. If the population is approximately normal or the sample size is large, we can use a t-distribution with $df = n - 1$, and $t^*$ is an endpoint chosen from that t-distribution.
+
+- **Confidence Interval for One Mean**
+
+The confidence interval for the population mean, $\mu$, is
+
+$$
+\bar{x} \pm t^* \cdot \frac{s}{\sqrt{n}}
+$$
+
+- **Hypothesis Test for One Mean: t-Test**
+
+To test $H_0: \mu = \mu_0$ vs $H_A: \mu \neq \mu_0$ (or a one-tail alternative), we use the t-test statistic:
+
+$$
+t = \frac{\text{Statistic} - \text{Null value}}{SE} = \frac{\bar{x} - \mu_0}{s/\sqrt{n}}
+$$
+
+The p-value of the test is computed using the appropriate tail(s) of a t-distribution with $n - 1$ degrees of freedom.
+
+$\\$
+
+### 2. Inference for a Difference in Two Means
+
+Consider two populations that are approximately normally distributed, or two samples that are both large. Let $\bar{x}_1$ and $\bar{x}_2$ be the sample means, $s_1$ and $s_2$ the sample standard deviations, and $n_1$ and $n_2$ the sample sizes.
+
+- **Confidence Interval for a Difference in Two Means**
+
+The confidence interval for the difference in two population means, $\mu_1 - \mu_2$, is
+
+$$
+(\bar{x}_1 - \bar{x}_2) \pm t^* \cdot \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}
+$$
+
+where $t^*$ is an endpoint chosen from a t-distribution with $df = \min(n_1 - 1, n_2 - 1)$.
+
+
+
+- **Hypothesis Test for a Difference in Two Means (Two-Sample t-Test)**
+
+To test $H_0: \mu_1 = \mu_2$ vs $H_A: \mu_1 \neq \mu_2$ (or a one-tail alternative), we use the two-sample t-statistic:
+
+$$
+t = \frac{\text{Statistic} - \text{Null value}}{SE} = \frac{(\bar{x}_1 - \bar{x}_2) - 0}{\sqrt{\dfrac{s_1^2}{n_1} + \dfrac{s_2^2}{n_2}}}
+$$
+
+We use a t-distribution with $df = \min(n_1 - 1, n_2 - 1)$ to find the p-value.
+
+
+**A note on degrees of freedom.** The rule $df = \min(n_1 - 1, n_2 - 1)$ is a conservative approximation that is easy to compute by hand. If you check your work with R's `t.test()`, you will see slightly different numbers, because `t.test()` uses a more complicated formula (the Welch approximation) that usually gives a larger, non-integer df. For example:
+
+| | Our df and result | `t.test()` (Welch) |
+|---|---|---|
+| Exercise 3.1 | df = 7, p = 0.7352 | df = 11.2, p = 0.7313 |
+| Exercise 4 | df = 40, CI (−2.67, 3.55) | df = 74.5, CI (−2.63, 3.51) |
+
+The conclusions are the same either way; the small differences come only from the df.
+
+$\\$
+
+### 3. Inference for a Difference in Means with Paired Data
+
+- **Confidence Interval for a Difference in Means with Paired Data**
+
+To estimate the difference in means based on paired data, we first subtract to compute the difference for each data pair, then compute the mean $\bar{x}_{diff}$, the standard deviation $s_{diff}$, and the sample size $n_{diff}$ of those differences. Provided the differences are reasonably normally distributed (or the sample size is large), the confidence interval for the mean difference is:
+
+$$
+\text{Statistic} \pm t^* \cdot SE = \bar{x}_{diff} \pm t^* \cdot \frac{s_{diff}}{\sqrt{n_{diff}}}
+$$
+
+where $t^*$ is an endpoint chosen from a t-distribution with $n_{diff} - 1$ degrees of freedom.
+
+
+
+- **Hypothesis Test for a Difference in Means with Paired Data**
+
+To test $H_0: \mu_{diff} = 0$ vs $H_A: \mu_{diff} \neq 0$ (or a one-tail alternative), we use the t-test statistic:
+
+$$
+t = \frac{\text{Statistic} - \text{Null value}}{SE} = \frac{\bar{x}_{diff} - 0}{s_{diff}/\sqrt{n_{diff}}}
+$$
+
+If the differences are reasonably normally distributed (or the sample size is large), we use a t-distribution with $n_{diff} - 1$ degrees of freedom to compute the p-value for this test statistic.
+
+
+$\\$
+
+## Exercise 1: One-Sample t-Test
+
+According to a local statistics instructor, the average score on his first exam of the semester (`Exam1`) is historically around 80%. The data is available in the `StatGrades` data set from the `Lock5Data` library.
+
+Run a one-sample t-test to see if this year's students performed significantly better than the historic average.
+
+```{r}
+
+library(SDS1000)
+library(Lock5Data)
+data(StatGrades)
+
+```
+
+a. Visualize the data using a boxplot and a histogram. Do you see any outliers?
+
+```{r}
+## your code here ##
+```
+
+
+b. Step 1: State the null and alternative hypotheses using symbols.
+
+
+
+c. Step 2: Calculate the sample statistic.
+
+```{r}
+## your code here ##
+```
+
+d. Step 3: Calculate the t-test statistic.
+
+```{r}
+## your code here ##
+```
+
+e. Step 4: Calculate the p-value of the test.
+
+
+```{r}
+## your code here ##
+```
+
+f. Step 5: State your conclusion.
+
+
+
+$\\$
+
+
+## Exercise 2: Comparing Two Exams
+
+The same local statistics instructor believes that students perform differently on the two exams, `Exam1` and `Exam2`. Again, the data is available in the `StatGrades` data set from the `Lock5Data` library. Visualize the differences between the two exam scores (Exam 2 − Exam 1) for each student.
+
+```{r}
+library(SDS1000)
+library(Lock5Data)
+data(StatGrades)
+
+## your code here ##
+
+```
+
+
+d. Step 3: Calculate the t-test statistic.
+
+
+```{r}
+## your code here ##
+```
+
+
+e. Step 4: Calculate the p-value of the test.
+
+
+```{r}
+## your code here ##
+```
+
+
+f. Step 5: State your conclusion.
+
+
+$\\$
+
+##  Mental Imaging and Muscle Fatigue
+
+A new study explores how actual muscle fatigue affects mental imaging. Participants were asked to either perform actual pointing motions (`Actual`) or to mentally imagine equivalent arm pointing motions (`Mental`).
+
+Participants then developed muscle fatigue by holding a heavy weight out horizontally as long as they could. After becoming fatigued, they were asked to repeat the previous mental or actual motions. Eight participants were assigned to each group, and the time in seconds to complete the motions is given in the data set `MentalMuscle`. Use a 5% significance level for the tests.
+
+*Note: Data is approximated from this research paper: Demougeot, L., and Papaxanthis, C., Muscle Fatigue Affects Mental Simulation of Action, The Journal of Neuroscience, 2011;31(29): 10712–20.*
+
+The raw `MentalMuscle` data set has 32 rows, but 16 of them have missing values (`NA`) for `PreFatigue` and `PostFatigue`. We remove those rows with `na.omit()`, which leaves the 16 participants: 8 in the `Mental` group and 8 in the `Actual` group. The `Action` variable also keeps an empty category, so we use `droplevels()` to remove it; otherwise `table()` would show a stray blank category.
+
+```{r}
+
+library(SDS1000)
+library(Lock5Data)
+data(MentalMuscle)
+nrow(MentalMuscle)
+
+# remove the rows with missing values (NA)
+mental_muscle <- na.omit(MentalMuscle)
+nrow(mental_muscle)
+
+# drop the empty category from Action, then count participants in each group
+mental_muscle$Action <- droplevels(mental_muscle$Action)
+table(mental_muscle$Action)
+```
+
+
+$\\$
+
+### Exercise 3: Pre-fatigue: Mental vs. Actual
+
+Test to see whether there is a significant difference in mean times between mentally imaging doing the actions and actually doing the actions before any muscle fatigue (pre-fatigue).
+
+a. Is this a t-test for a paired difference in means, or a t-test for a difference in two means from two independent samples?
+
+```{r}
+## your code here ##
+```
+
+
+b. Step 1: State the null and alternative hypotheses.
+
+```{r}
+## your code here ##
+```
+
+c. Step 2: Calculate the statistic of interest.
+
+```{r}
+## your code here ##
+```
+
+
+
+d. Step 3: Calculate the t-test statistic.
+
+```{r}
+## your code here ##
+```
+
+
+
+e. Step 4: Calculate the p-value of the test.
+
+```{r}
+## your code here ##
+```
+
+
+f. Step 5: State your conclusion.
+
+
+
+$\\$
+
+### Exercise 4: Mental group: Pre-fatigue vs. Post-fatigue
+
+Now test to see whether people who mentally perform the motions are faster, on average, at mentally imaging the actions post-fatigue than pre-fatigue.
+
+a. Is this a t-test for a paired difference in means, or a t-test for a difference in two means from two independent samples?
+
+
+
+b. Step 1: State the null and alternative hypotheses.
+
+
+c. Step 2: Calculate the observed statistic.
+
+```{r}
+## your code here ##
+```
+
+d. Step 3: Calculate the t-test statistic.
+
+```{r}
+## your code here ##
+```
+
+e. Step 4: Calculate the p-value of the test.
+
+```{r}
+## your code here ##
+```
+
+
+f. Step 5: State your conclusion.
+
+
+
+$\\$
+
+
+## Extra Exercises
+
+## Exercise 5: Warriors Free Throws at Home vs. Away
+
+How many more (or fewer) free throw attempts do the Golden State Warriors tend to get, on average, at home games compared to their road (away) games? Find a 95% confidence interval for the difference in mean free throw attempts.
+
+```{r}
+#| message: false
+library(SDS1000)
+library(Lock5Data)
+data(GSWarriors2019)
+```
+
 
