@@ -1,1 +1,554 @@
+---
+title: "Practice Session 10 Answers"
+format: pdf
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+
+## Introduction
+
+The Central Limit Theorem for Sample Means indicates that if the sample size $n$ is large, the distribution of sample means from a population with mean $\mu$ and standard deviation $\sigma$ is approximately normally distributed with mean $\mu$ and standard deviation $\sigma/\sqrt{n}$.
+
+Unfortunately, we find two difficulties when trying to use this result in practice. First, we generally don't know the standard deviation $\sigma$, so we use the standard deviation from the sample, $s$, when estimating the standard error of the sample means:
+
+$$
+SE = \frac{s}{\sqrt{n}}
+$$
+
+The second difficulty is that when we use $SE = s/\sqrt{n}$ to estimate the standard error of the sampling distribution of the means, the distribution is no longer normal. Instead, it follows a **t-distribution** with degrees of freedom $df = n - 1$.
+
+In this session we compute every confidence interval and hypothesis test **by hand**, step by step, so that you can see where each number comes from. R also has a built-in function, `t.test()`, that does these calculations in one line; we are deliberately not using it here.
+
+### 1. Single Mean
+
+Let $\bar{x}$ and $s$ be the sample mean and standard deviation, respectively, from a sample of size $n$. If the population is approximately normal or the sample size is large, we can use a t-distribution with $df = n - 1$, and $t^*$ is an endpoint chosen from that t-distribution.
+
+- **Confidence Interval for One Mean**
+
+The confidence interval for the population mean, $\mu$, is
+
+$$
+\bar{x} \pm t^* \cdot \frac{s}{\sqrt{n}}
+$$
+
+- **Hypothesis Test for One Mean: t-Test**
+
+To test $H_0: \mu = \mu_0$ vs $H_A: \mu \neq \mu_0$ (or a one-tail alternative), we use the t-test statistic:
+
+$$
+t = \frac{\text{Statistic} - \text{Null value}}{SE} = \frac{\bar{x} - \mu_0}{s/\sqrt{n}}
+$$
+
+The p-value of the test is computed using the appropriate tail(s) of a t-distribution with $n - 1$ degrees of freedom.
+
+
+
+### 2. Inference for a Difference in Two Means
+
+Consider two populations that are approximately normally distributed, or two samples that are both large. Let $\bar{x}_1$ and $\bar{x}_2$ be the sample means, $s_1$ and $s_2$ the sample standard deviations, and $n_1$ and $n_2$ the sample sizes.
+
+- **Confidence Interval for a Difference in Two Means**
+
+The confidence interval for the difference in two population means, $\mu_1 - \mu_2$, is
+
+$$
+(\bar{x}_1 - \bar{x}_2) \pm t^* \cdot \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}
+$$
+
+where $t^*$ is an endpoint chosen from a t-distribution with $df = \min(n_1 - 1, n_2 - 1)$.
+
+
+
+- **Hypothesis Test for a Difference in Two Means (Two-Sample t-Test)**
+
+To test $H_0: \mu_1 = \mu_2$ vs $H_A: \mu_1 \neq \mu_2$ (or a one-tail alternative), we use the two-sample t-statistic:
+
+$$
+t = \frac{\text{Statistic} - \text{Null value}}{SE} = \frac{(\bar{x}_1 - \bar{x}_2) - 0}{\sqrt{\dfrac{s_1^2}{n_1} + \dfrac{s_2^2}{n_2}}}
+$$
+
+We use a t-distribution with $df = \min(n_1 - 1, n_2 - 1)$ to find the p-value.
+
+
+**A note on degrees of freedom.** The rule $df = \min(n_1 - 1, n_2 - 1)$ is a conservative approximation that is easy to compute by hand. If you check your work with R's `t.test()`, you will see slightly different numbers, because `t.test()` uses a more complicated formula (the Welch approximation) that usually gives a larger, non-integer df. For example:
+
+| | Our df and result | `t.test()` (Welch) |
+|---|---|---|
+| Exercise 3.1 | df = 7, p = 0.7352 | df = 11.2, p = 0.7313 |
+| Exercise 4 | df = 40, CI (−2.67, 3.55) | df = 74.5, CI (−2.63, 3.51) |
+
+The conclusions are the same either way; the small differences come only from the df.
+
+
+
+### 3. Inference for a Difference in Means with Paired Data
+
+- **Confidence Interval for a Difference in Means with Paired Data**
+
+To estimate the difference in means based on paired data, we first subtract to compute the difference for each data pair, then compute the mean $\bar{x}_{diff}$, the standard deviation $s_{diff}$, and the sample size $n_{diff}$ of those differences. Provided the differences are reasonably normally distributed (or the sample size is large), the confidence interval for the mean difference is:
+
+$$
+\text{Statistic} \pm t^* \cdot SE = \bar{x}_{diff} \pm t^* \cdot \frac{s_{diff}}{\sqrt{n_{diff}}}
+$$
+
+where $t^*$ is an endpoint chosen from a t-distribution with $n_{diff} - 1$ degrees of freedom.
+
+
+
+- **Hypothesis Test for a Difference in Means with Paired Data**
+
+To test $H_0: \mu_{diff} = 0$ vs $H_A: \mu_{diff} \neq 0$ (or a one-tail alternative), we use the t-test statistic:
+
+$$
+t = \frac{\text{Statistic} - \text{Null value}}{SE} = \frac{\bar{x}_{diff} - 0}{s_{diff}/\sqrt{n_{diff}}}
+$$
+
+If the differences are reasonably normally distributed (or the sample size is large), we use a t-distribution with $n_{diff} - 1$ degrees of freedom to compute the p-value for this test statistic.
+
+
+$\\$
+
+## Exercise 1: One-Sample t-Test
+
+According to a local statistics instructor, the average score on his first exam of the semester (`Exam1`) is historically around 80%. The data is available in the `StatGrades` data set from the `Lock5Data` library.
+
+Run a one-sample t-test to see if this year's students performed significantly better than the historic average.
+
+```{r}
+
+library(SDS1000)
+library(Lock5Data)
+data(StatGrades)
+
+```
+
+a. Visualize the data using a boxplot and a histogram. Do you see any outliers?
+
+```{r}
+exam1 <- StatGrades$Exam1
+
+par(mfrow = c(1, 2))   # put two plots side by side
+
+boxplot(exam1,
+        main = "Boxplot of Exam 1",
+        ylab = "Exam 1 Scores")
+
+hist(exam1,
+     main = "Histogram of Exam 1",
+     xlab = "Exam 1 Scores")
+
+par(mfrow = c(1, 1))   # reset to one plot at a time
+```
+
+There appears to be one outlier. We might want to investigate this score further.
+
+b. Step 1: State the null and alternative hypotheses using symbols.
+
+- $H_0: \mu = 80$
+- $H_A: \mu > 80$
+
+c. Step 2: Calculate the sample statistic.
+
+```{r}
+# compute the sample mean
+mean_exam1 <- mean(exam1)
+mean_exam1
+```
+
+d. Step 3: Calculate the t-test statistic.
+
+```{r}
+# get the sample size
+n1 <- length(exam1)
+n1
+
+# compute the standard error
+sd_exam1 <- sd(exam1)
+se_exam1 <- sd_exam1 / sqrt(n1)
+
+# t-test statistic
+t_stat_exam1 <- (mean_exam1 - 80) / se_exam1
+t_stat_exam1
+```
+
+e. Step 4: Calculate the p-value of the test.
+
+This is an upper-tail test, so the p-value is the area above the t-statistic in a t-distribution with $df = n - 1 = 49$.
+
+```{r}
+pt(t_stat_exam1, df = n1 - 1, lower.tail = FALSE)
+```
+
+f. Step 5: State your conclusion.
+
+Since our p-value is greater than 0.05, we fail to reject the null hypothesis. We do not have evidence that students' Exam 1 scores this year are significantly higher than 80.
+
+g. Use the `plot_t()` function to visualize the t-distribution. The degrees of freedom will be the same as for the test. Add a vertical red line to the plot at the observed t-statistic.
+
+```{r}
+plot_t(df = n1 - 1)
+abline(v = t_stat_exam1, col = "red")   # add vertical red line at the t-statistic
+```
+
+The observed t-statistic is not far from 0, the center of the t-distribution we would expect if the null hypothesis were true. In other words, a sample mean of about 81 is not unusual if the true mean is 80, which matches the lack of significance in our test.
+
+$\\$
+
+
+## Exercise 2: Comparing Two Exams
+
+The same local statistics instructor believes that students perform differently on the two exams, `Exam1` and `Exam2`. Again, the data is available in the `StatGrades` data set from the `Lock5Data` library. Visualize the differences between the two exam scores (Exam 2 − Exam 1) for each student.
+
+```{r}
+library(SDS1000)
+library(Lock5Data)
+data(StatGrades)
+
+exam1 <- StatGrades$Exam1
+exam2 <- StatGrades$Exam2
+
+# compute the difference once and reuse it below
+diff_exams <- exam2 - exam1
+
+par(mfrow = c(1, 2))   # put two plots side by side
+
+boxplot(diff_exams,
+        main = "Boxplot of Exam 2 - Exam 1",
+        ylab = "Exam 2 - Exam 1 Scores")
+
+hist(diff_exams,
+     main = "Histogram of Exam 2 - Exam 1",
+     xlab = "Exam 2 - Exam 1 Scores")
+
+par(mfrow = c(1, 1))   # reset to one plot at a time
+```
+
+a. Should this research question be answered with a t-test for two independent samples, or a t-test for paired data?
+
+This is a t-test for paired data: each student took both exams, so the two scores come in pairs, one pair per student.
+
+
+b. Step 1: State the null and alternative hypotheses using symbols.
+
+Let $\mu_{diff}$ be the true mean difference between Exam 2 and Exam 1 scores. We will perform the following two-sided test:
+
+- $H_0: \mu_{diff} = 0$
+- $H_A: \mu_{diff} \neq 0$
+
+
+c. Step 2: Calculate the statistic of interest.
+
+```{r}
+# compute the mean difference
+mean_diff <- mean(diff_exams)
+mean_diff
+```
+
+
+d. Step 3: Calculate the t-test statistic.
+
+```{r}
+# find the sample size
+n_diff <- length(diff_exams)
+n_diff
+
+# find the SE of the differences
+se_diff <- sd(diff_exams) / sqrt(n_diff)
+
+# find the t-test statistic for the mean difference between the two exams
+t_stat_diff <- (mean_diff - 0) / se_diff
+t_stat_diff
+```
+
+
+e. Step 4: Calculate the p-value of the test.
+
+Since we are doing a two-sided test, we find the area in one tail beyond $|t|$ and multiply it by 2. Using `-abs()` makes this work whether the t-statistic is positive or negative.
+
+```{r}
+pv <- 2 * pt(-abs(t_stat_diff), df = n_diff - 1, lower.tail = TRUE)
+pv
+```
+
+
+f. Step 5: State your conclusion.
+
+Since our p-value (about 0.014) is less than 0.05, we reject the null hypothesis. We have evidence that students performed differently on the two exams; on average, students scored about 2 points higher on Exam 2 than on Exam 1.
+
+
+$\\$
+
+## Exercise 3: Mental Imaging and Muscle Fatigue
+
+A new study explores how actual muscle fatigue affects mental imaging. Participants were asked to either perform actual pointing motions (`Actual`) or to mentally imagine equivalent arm pointing motions (`Mental`).
+
+Participants then developed muscle fatigue by holding a heavy weight out horizontally as long as they could. After becoming fatigued, they were asked to repeat the previous mental or actual motions. Eight participants were assigned to each group, and the time in seconds to complete the motions is given in the data set `MentalMuscle`. Use a 5% significance level for the tests.
+
+*Note: Data is approximated from this research paper: Demougeot, L., and Papaxanthis, C., Muscle Fatigue Affects Mental Simulation of Action, The Journal of Neuroscience, 2011;31(29): 10712–20.*
+
+The raw `MentalMuscle` data set has 32 rows, but 16 of them have missing values (`NA`) for `PreFatigue` and `PostFatigue`. We remove those rows with `na.omit()`, which leaves the 16 participants: 8 in the `Mental` group and 8 in the `Actual` group. The `Action` variable also keeps an empty category, so we use `droplevels()` to remove it; otherwise `table()` would show a stray blank category.
+
+```{r}
+
+library(SDS1000)
+library(Lock5Data)
+data(MentalMuscle)
+
+nrow(MentalMuscle)
+
+# remove the rows with missing values (NA)
+mental_muscle <- na.omit(MentalMuscle)
+nrow(mental_muscle)
+
+# drop the empty category from Action, then count participants in each group
+mental_muscle$Action <- droplevels(mental_muscle$Action)
+table(mental_muscle$Action)
+```
+
+### 1. Pre-fatigue: Mental vs. Actual
+
+Test to see whether there is a significant difference in mean times between mentally imaging doing the actions and actually doing the actions before any muscle fatigue (pre-fatigue).
+
+a. Is this a t-test for a paired difference in means, or a t-test for a difference in two means from two independent samples?
+
+This is a t-test for a difference in two means from two independent samples: the `Actual` group and the `Mental` group are different people.
+
+b. Step 1: State the null and alternative hypotheses.
+
+Let $\mu_M$ represent the mean time for someone mentally imaging the actions before any muscle fatigue, and $\mu_A$ the mean time for someone actually performing the actions before any muscle fatigue. Our hypotheses are:
+
+$$
+H_0: \mu_M - \mu_A = 0
+$$
+$$
+H_A: \mu_M - \mu_A \neq 0
+$$
+
+
+c. Step 2: Calculate the statistic of interest.
+
+```{r}
+pre_fatigue_mental <- mental_muscle$PreFatigue[mental_muscle$Action == "Mental"]
+mean(pre_fatigue_mental)
+
+pre_fatigue_actual <- mental_muscle$PreFatigue[mental_muscle$Action == "Actual"]
+mean(pre_fatigue_actual)
+
+obs_stat <- mean(pre_fatigue_mental) - mean(pre_fatigue_actual)
+obs_stat
+```
+
+d. Step 3: Calculate the t-test statistic.
+
+```{r}
+# find the sample sizes
+n_m <- length(pre_fatigue_mental)
+n_a <- length(pre_fatigue_actual)
+
+# find the sd for each of the two samples
+sd_m <- sd(pre_fatigue_mental)
+sd_a <- sd(pre_fatigue_actual)
+sd_m
+sd_a
+
+# find the t-test statistic for the difference between the Mental and Actual groups
+t_stat_pre_mental_actual <- (obs_stat - 0) / sqrt((sd_m^2 / n_m) + (sd_a^2 / n_a))
+t_stat_pre_mental_actual
+```
+
+Written out with the numbers from above:
+
+$$
+t = \frac{(\bar{x}_M - \bar{x}_A) - 0}{\sqrt{\dfrac{s_M^2}{n_M} + \dfrac{s_A^2}{n_A}}}
+= \frac{(7.34 - 7.16) - 0}{\sqrt{\dfrac{1.22^2}{8} + \dfrac{0.70^2}{8}}}
+= 0.352
+$$
+
+
+e. Step 4: Calculate the p-value of the test.
+
+This is a two-tail test, so the p-value is twice the area above 0.352 in a t-distribution with $df = \min(8 - 1, 8 - 1) = 7$.
+
+```{r}
+pv <- 2 * pt(-abs(t_stat_pre_mental_actual), df = min(n_m, n_a) - 1, lower.tail = TRUE)
+pv
+```
+
+
+f. Step 5: State your conclusion.
+
+The p-value is about 0.735. This is a very large p-value, so we do not reject $H_0$. There is no convincing evidence of a difference between the two groups before muscle fatigue.
+
+The plot below shows where the observed t-statistic (and its mirror image, since this is a two-tail test) falls on the t-distribution.
+
+```{r}
+plot_t(df = min(n_m, n_a) - 1)
+abline(v = c(t_stat_pre_mental_actual, -t_stat_pre_mental_actual),
+       col = "red")   # add vertical red lines at +t and -t
+```
+
+
+$\\$
+
+### 2. Mental group: Pre-fatigue vs. Post-fatigue
+
+Now test to see whether people who mentally perform the motions are faster, on average, at mentally imaging the actions post-fatigue than pre-fatigue.
+
+a. Is this a t-test for a paired difference in means, or a t-test for a difference in two means from two independent samples?
+
+The same 8 people in the `Mental` group perform the movements twice, once before muscle fatigue and once after. Because each person gives us a pair of times, we compare the pre-fatigue and post-fatigue means with a paired difference in means test.
+
+b. Step 1: State the null and alternative hypotheses.
+
+Let $\mu_{diff}$ be the true mean of PostFatigue − PreFatigue for people mentally imaging the motions. Being faster after fatigue means a shorter time, so a negative difference. The hypotheses are:
+
+$$
+H_0: \mu_{diff} = 0
+$$
+
+$$
+H_A: \mu_{diff} < 0
+$$
+
+Notice that if we had subtracted in the other direction (PreFatigue − PostFatigue), all the differences would have the opposite sign and the alternative would point in the other direction, but the results would be identical.
+
+c. Step 2: Calculate the observed statistic.
+
+```{r}
+# compute the differences for the Mental group
+pre_fatigue_mental  <- mental_muscle$PreFatigue[mental_muscle$Action == "Mental"]
+post_fatigue_mental <- mental_muscle$PostFatigue[mental_muscle$Action == "Mental"]
+
+diff_mental_post_pre <- post_fatigue_mental - pre_fatigue_mental
+diff_mental_post_pre
+
+obs_diff_mental <- mean(diff_mental_post_pre)
+obs_diff_mental
+```
+
+d. Step 3: Calculate the t-test statistic.
+
+```{r}
+# find the sample size
+n_diff_mental <- length(diff_mental_post_pre)
+n_diff_mental
+
+# find the SD of the differences between post and pre in the Mental group
+sd_diff_mental <- sd(diff_mental_post_pre)
+sd_diff_mental
+
+t_test_diff_mental <- (obs_diff_mental - 0) / (sd_diff_mental / sqrt(n_diff_mental))
+t_test_diff_mental
+```
+
+Written out with the numbers from above:
+
+$$
+t = \frac{\bar{x}_{diff} - 0}{s_{diff}/\sqrt{n_{diff}}} = \frac{-1.2375}{1.538958/\sqrt{8}} = -2.274
+$$
+
+e. Step 4: Calculate the p-value of the test.
+
+This is a lower-tail test, so the p-value is the area below −2.274 in a t-distribution with $df = 8 - 1 = 7$.
+
+```{r}
+pv <- pt(t_test_diff_mental, df = n_diff_mental - 1, lower.tail = TRUE)
+pv
+```
+
+The p-value is about 0.029.
+
+f. Step 5: State your conclusion.
+
+At a 5% significance level, we reject $H_0$ and conclude that people are faster, on average, at mentally imaging physical motions when they have muscle fatigue.
+
+This is the new finding from the study: when people have muscle fatigue, they speed up their mental imaging, presumably because they just want to get done! It is likely that this makes the mental imagery less effective.
+
+```{r}
+plot_t(df = n_diff_mental - 1)
+abline(v = t_test_diff_mental, col = "red")   # add vertical red line at the t-statistic
+```
+
+$\\$
+
+
+## Extra Exercises
+
+## Exercise 4: Warriors Free Throws at Home vs. Away
+
+How many more (or fewer) free throw attempts do the Golden State Warriors tend to get, on average, at home games compared to their road (away) games? Find a 95% confidence interval for the difference in mean free throw attempts.
+
+```{r}
+#| message: false
+library(SDS1000)
+library(Lock5Data)
+data(GSWarriors2019)
+```
+
+This question asks for an estimate and a confidence interval for the difference in means, $\mu_H - \mu_A$, where $\mu$ is the mean number of free throw attempts (`FTA`) in a game, $H$ stands for home games, and $A$ stands for away games.
+
+First, we compute the sample statistics for each location.
+
+```{r}
+fta_home <- GSWarriors2019$FTA[GSWarriors2019$Location == "Home"]
+fta_away <- GSWarriors2019$FTA[GSWarriors2019$Location == "Away"]
+
+# sample sizes
+n_home <- length(fta_home)
+n_away <- length(fta_away)
+n_home
+n_away
+
+# sample means
+mean_home <- mean(fta_home)
+mean_away <- mean(fta_away)
+mean_home
+mean_away
+
+# sample standard deviations
+sd_home <- sd(fta_home)
+sd_away <- sd(fta_away)
+sd_home
+sd_away
+```
+
+The sample sizes are both more than 30 and the `FTA` amounts have no outliers, so we use a t-distribution with $df = \min(41 - 1, 41 - 1) = 40$ degrees of freedom.
+
+To find $t^*$ for a 95% confidence interval, we use the function `ct()`.
+
+```{r}
+t_cv <- ct(0.95, df = min(n_home, n_away) - 1, side = "both")
+t_cv
+```
+
+Now we put the pieces together.
+
+```{r}
+# observed difference in means (Home - Away)
+obs_diff_fta <- mean_home - mean_away
+obs_diff_fta
+
+# standard error of the difference
+se_fta <- sqrt(sd_home^2 / n_home + sd_away^2 / n_away)
+se_fta
+
+# confidence interval: statistic + (-t*, +t*) * SE
+ci_fta <- obs_diff_fta + t_cv * se_fta
+ci_fta
+```
+
+Written out with the numbers from above:
+
+$$
+\begin{aligned}
+(\bar{x}_H - \bar{x}_A) &\pm t^* \cdot \sqrt{\frac{s_H^2}{n_H} + \frac{s_A^2}{n_A}} \\
+(20.61 - 20.17) &\pm 2.021 \cdot \sqrt{\frac{5.95^2}{41} + \frac{7.86^2}{41}} \\
+0.44 &\pm 3.11 \\
+-2.67 &\text{ to } 3.55
+\end{aligned}
+$$
+
+**Interpretation.** The interval from −2.67 to 3.55 gives a range of plausible values for the true difference in mean free throw attempts per game: anywhere from about 2.67 fewer to 3.55 more attempts at home than on the road. The "95%" describes the method, not this one interval: if we repeatedly took samples and built an interval this way each time, about 95% of those intervals would contain the true difference $\mu_H - \mu_A$. Because this interval includes 0, the data are consistent with the Warriors getting the same number of free throw attempts, on average, at home and on the road.
 
