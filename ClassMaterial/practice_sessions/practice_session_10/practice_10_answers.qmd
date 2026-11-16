@@ -280,7 +280,7 @@ Since our p-value (about 0.014) is less than 0.05, we reject the null hypothesis
 
 $\\$
 
-## Exercise 3: Mental Imaging and Muscle Fatigue
+##  Mental Imaging and Muscle Fatigue
 
 A new study explores how actual muscle fatigue affects mental imaging. Participants were asked to either perform actual pointing motions (`Actual`) or to mentally imagine equivalent arm pointing motions (`Mental`).
 
@@ -307,7 +307,10 @@ mental_muscle$Action <- droplevels(mental_muscle$Action)
 table(mental_muscle$Action)
 ```
 
-### 1. Pre-fatigue: Mental vs. Actual
+
+$\\$
+
+### Exercise 3: Pre-fatigue: Mental vs. Actual
 
 Test to see whether there is a significant difference in mean times between mentally imaging doing the actions and actually doing the actions before any muscle fatigue (pre-fatigue).
 
@@ -392,7 +395,7 @@ abline(v = c(t_stat_pre_mental_actual, -t_stat_pre_mental_actual),
 
 $\\$
 
-### 2. Mental group: Pre-fatigue vs. Post-fatigue
+### Exercise 4 : Mental group: Pre-fatigue vs. Post-fatigue
 
 Now test to see whether people who mentally perform the motions are faster, on average, at mentally imaging the actions post-fatigue than pre-fatigue.
 
@@ -476,7 +479,7 @@ $\\$
 
 ## Extra Exercises
 
-## Exercise 4: Warriors Free Throws at Home vs. Away
+## Exercise 5: Warriors Free Throws at Home vs. Away
 
 How many more (or fewer) free throw attempts do the Golden State Warriors tend to get, on average, at home games compared to their road (away) games? Find a 95% confidence interval for the difference in mean free throw attempts.
 
@@ -551,4 +554,3 @@ $$
 $$
 
 **Interpretation.** The interval from −2.67 to 3.55 gives a range of plausible values for the true difference in mean free throw attempts per game: anywhere from about 2.67 fewer to 3.55 more attempts at home than on the road. The "95%" describes the method, not this one interval: if we repeatedly took samples and built an interval this way each time, about 95% of those intervals would contain the true difference $\mu_H - \mu_A$. Because this interval includes 0, the data are consistent with the Warriors getting the same number of free throw attempts, on average, at home and on the road.
-
